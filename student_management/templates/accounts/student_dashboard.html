@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}学生面板 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-user-graduate"></i> 学生面板</h3>
+        <hr>
+    </div>
+</div>
+
+{% if student_profile %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-user"></i> 基本信息</h5>
+                <p class="card-text">
+                    <strong>姓名:</strong> {{ student_profile.real_name }}<br>
+                    <strong>学号:</strong> {{ student_profile.student_id }}<br>
+                    <strong>性别:</strong> {{ student_profile.get_gender_display }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-book"></i> 选课统计</h5>
+                <p class="card-text">
+                    <h2>{{ enrollments.count }}</h2>
+                    <p>已选课程</p>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> 我的选课记录</h5>
+            </div>
+            <div class="card-body">
+                {% if enrollments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>课程名称</th>
+                                    <th>课程代码</th>
+                                    <th>专业</th>
+                                    <th>学期</th>
+                                    <th>学年</th>
+                                    <th>成绩</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                    <tr>
+                                        <td>{{ enrollment.course.name }}</td>
+                                        <td>{{ enrollment.course.code }}</td>
+                                        <td>{{ enrollment.major.name }}</td>
+                                        <td>{{ enrollment.semester }}</td>
+                                        <td>{{ enrollment.academic_year }}</td>
+                                        <td>
+                                            {% if enrollment.grade %}
+                                                <span class="badge {% if enrollment.grade == 'A' %}bg-success{% elif enrollment.grade == 'B' %}bg-info{% elif enrollment.grade == 'C' %}bg-warning{% elif enrollment.grade == 'D' %}bg-secondary{% else %}bg-danger{% endif %}">
+                                                    {{ enrollment.get_grade_display }}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">未评定</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">暂无选课记录</h4>
+                        <p class="text-muted">您还没有选择任何课程</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <h5><i class="fas fa-exclamation-triangle"></i> 信息不完整</h5>
+            <p>您的学生档案尚未完善，请联系管理员为您创建学生档案。</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cogs"></i> 快速操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary btn-block">
+                            <i class="fas fa-user"></i> 个人资料
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'students:my_enrollments' %}" class="btn btn-outline-info btn-block">
+                            <i class="fas fa-book"></i> 我的课程
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'students:course_selection' %}" class="btn btn-outline-success btn-block">
+                            <i class="fas fa-plus-circle"></i> 选择课程
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-warning btn-block">
+                            <i class="fas fa-edit"></i> 编辑资料
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger btn-block">
+                            <i class="fas fa-sign-out-alt"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

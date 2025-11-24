@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}专业管理 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-book-open"></i> 专业管理</h2>
+            <div>
+                <a href="{% url 'students:major_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 添加专业
+                </a>
+                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left"></i> 返回管理员面板
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> 专业列表</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>专业代码</th>
+                                <th>专业名称</th>
+                                <th>所属院系</th>
+                                <th>学制</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for major in object_list %}
+                            <tr>
+                                <td><strong>{{ major.code }}</strong></td>
+                                <td>{{ major.name }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ major.department.name }}</span>
+                                </td>
+                                <td>{{ major.duration }}年</td>
+                                <td>{{ major.description|default:"暂无描述"|truncatewords:10 }}</td>
+                                <td>{{ major.created_at|date:"Y-m-d" }}</td>
+                                <td>
+                                    <a href="{% url 'students:major_update' major.pk %}" class="btn btn-sm btn-outline-primary" title="编辑专业">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'students:major_delete' major.pk %}" class="btn btn-sm btn-outline-danger" title="删除专业" onclick="return confirm('确定要删除这个专业吗？')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> 暂无专业数据
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

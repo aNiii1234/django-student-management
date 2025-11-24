@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %}创建学生档案 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-user-plus"></i> 创建学生档案</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-user"></i> 为 {{ user.get_full_name|default:user.username }} 创建学生档案</h5>
+            </div>
+            <div class="card-body">
+                <!-- 用户信息展示 -->
+                <div class="alert alert-light mb-4">
+                    <h6>用户信息：</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>用户名：</strong>{{ user.username }}<br>
+                            <strong>邮箱：</strong>{{ user.email }}<br>
+                            <strong>角色：</strong><span class="badge bg-success">学生</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>姓名：</strong>{{ user.get_full_name|default:"未设置" }}<br>
+                            <strong>手机号：</strong>{{ user.phone|default:"未设置" }}<br>
+                            <strong>注册时间：</strong>{{ user.created_at|date:"Y-m-d H:i" }}
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="student_id" class="form-label">学号 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="student_id" name="student_id" required
+                                       pattern="[0-9]{4,20}" title="请输入4-20位数字的学号">
+                                <div class="form-text">请输入4-20位数字的学号，必须唯一</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="real_name" class="form-label">真实姓名 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="real_name" name="real_name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">性别 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">请选择性别</option>
+                                    <option value="M">男</option>
+                                    <option value="F">女</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="birth_date" class="form-label">出生日期</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date"
+                                       max="{% now 'Y-m-d' %}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">所属院系</label>
+                                <select class="form-select" id="department" name="department">
+                                    <option value="">请选择院系</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="major" class="form-label">专业</label>
+                                <select class="form-select" id="major" name="major" disabled>
+                                    <option value="">请先选择院系</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">家庭住址</label>
+                        <textarea class="form-control" id="address" name="address" rows="3"
+                                  placeholder="请输入详细的家庭住址"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="emergency_contact" class="form-label">紧急联系人</label>
+                                <input type="text" class="form-control" id="emergency_contact" name="emergency_contact"
+                                       placeholder="请输入紧急联系人姓名">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="emergency_phone" class="form-label">紧急联系电话</label>
+                                <input type="tel" class="form-control" id="emergency_phone" name="emergency_phone"
+                                       pattern="[0-9]{11}" title="请输入11位手机号"
+                                       placeholder="请输入11位手机号">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>提示：</strong> 院系和专业为可选字段，建议填写以便于后续管理。
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>重要提示：</strong> 学号必须唯一，请仔细核对后再提交。一旦创建后将无法修改学号。
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'accounts:pending_student_profiles' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 创建学生档案
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for department-major联动 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.getElementById('department');
+    const majorSelect = document.getElementById('major');
+
+    // 院系专业数据 - 从模板中获取
+    const departmentMajorData = {
+        {% for dept in departments %}
+        '{{ dept.id }}': [
+            {% for major in dept.major_set.all %}
+            {
+                'id': '{{ major.id }}',
+                'name': '{{ major.name }}'
+            },
+            {% endfor %}
+        ],
+        {% endfor %}
+    };
+
+    departmentSelect.addEventListener('change', function() {
+        const departmentId = this.value;
+
+        // 清空专业选择框
+        majorSelect.innerHTML = '<option value="">请选择专业</option>';
+
+        if (departmentId && departmentMajorData[departmentId]) {
+            const majors = departmentMajorData[departmentId];
+            majors.forEach(function(major) {
+                const option = document.createElement('option');
+                option.value = major.id;
+                option.textContent = major.name;
+                majorSelect.appendChild(option);
+            });
+            majorSelect.disabled = false;
+        } else {
+            majorSelect.innerHTML = '<option value="">请先选择院系</option>';
+            majorSelect.disabled = true;
+        }
+    });
+});
+</script>
+{% endblock %}

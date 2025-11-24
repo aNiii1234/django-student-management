@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %}管理员面板 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> 管理员面板</h2>
+        <hr>
+    </div>
+</div>
+
+<!-- 新用户提示 -->
+{% if students_without_profiles_count > 0 %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-lg me-3"></i>
+                <div>
+                    <h6 class="alert-heading mb-1">待处理的学生档案</h6>
+                    <p class="mb-2">
+                        有 <strong>{{ students_without_profiles_count }}</strong> 位学生用户还没有创建学生档案。
+                        请尽快为他们创建档案，以便学生能够正常使用系统。
+                    </p>
+                    <a href="{% url 'accounts:pending_student_profiles' %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-user-plus"></i> 立即处理
+                    </a>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <h6 class="alert-heading"><i class="fas fa-users"></i> 最近注册的新用户</h6>
+            <div class="row">
+                {% for user in recent_users|slice:":3" %}
+                <div class="col-md-4">
+                    <small>
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <span class="badge {% if user.role == 'admin' %}bg-danger{% elif user.role == 'student' %}bg-success{% else %}bg-info{% endif %} ms-1">
+                            {{ user.get_role_display }}
+                        </span><br>
+                        注册时间：{{ user.created_at|date:"m-d H:i" }}
+                    </small>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <small class="text-muted">最近3天内没有新用户注册</small>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <a href="{% url 'accounts:user_list' %}" class="text-decoration-none">
+            <div class="card text-center bg-primary text-white clickable-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> 总用户数</h5>
+                    <h2>{{ total_users }}</h2>
+                    <small><i class="fas fa-arrow-right"></i> 点击查看所有用户</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <a href="{% url 'accounts:user_list' %}?type=students" class="text-decoration-none">
+            <div class="card text-center bg-success text-white clickable-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-user-graduate"></i> 学生总数</h5>
+                    <h2>{{ total_students }}</h2>
+                    <small><i class="fas fa-arrow-right"></i> 点击查看学生用户</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <a href="{% url 'accounts:user_list' %}?type=teachers" class="text-decoration-none">
+            <div class="card text-center bg-info text-white clickable-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-chalkboard-teacher"></i> 教师总数</h5>
+                    <h2>{{ total_teachers }}</h2>
+                    <small><i class="fas fa-arrow-right"></i> 点击查看教师用户</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <a href="{% url 'accounts:student_profile_list_admin' %}" class="text-decoration-none">
+            <div class="card text-center bg-warning text-white clickable-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-id-card"></i> 学生档案</h5>
+                    <h2>{{ total_student_profiles }}</h2>
+                    <small><i class="fas fa-arrow-right"></i> 点击查看学生档案</small>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h4><i class="fas fa-cogs"></i> 快速操作</h4>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="list-group">
+            <a href="{% url 'students:student_profile_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-users text-primary"></i> 学生管理
+                <small class="text-muted">管理学生档案和信息</small>
+            </a>
+            <a href="{% url 'students:department_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-university text-success"></i> 院系管理
+                <small class="text-muted">管理院系信息</small>
+            </a>
+            <a href="{% url 'students:major_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-book-open text-info"></i> 专业管理
+                <small class="text-muted">管理专业信息</small>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="list-group">
+            <a href="{% url 'students:course_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-book text-warning"></i> 课程管理
+                <small class="text-muted">管理课程信息</small>
+            </a>
+            <a href="{% url 'students:enrollment_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-clipboard-list text-danger"></i> 选课管理
+                <small class="text-muted">管理选课记录</small>
+            </a>
+            <a href="{% url 'students:enrollment_grade_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-chart-bar text-secondary"></i> 成绩管理
+                <small class="text-muted">管理学生成绩</small>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 待处理学生档案快速链接 -->
+{% if students_without_profiles_count > 0 %}
+<div class="row">
+    <div class="col-12">
+        <div class="list-group">
+            <a href="{% url 'accounts:pending_student_profiles' %}" class="list-group-item list-group-item-action list-group-item-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>待处理学生档案 ({{ students_without_profiles_count }})</strong>
+                <small class="text-muted">点击为注册学生创建档案</small>
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> 系统信息</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>管理员用户：</strong> {{ user.username }}</p>
+                <p class="mb-1"><strong>邮箱：</strong> {{ user.email }}</p>
+                <p class="mb-1"><strong>登录时间：</strong> {% now 'Y-m-d H:i:s' %}</p>
+                <p class="mb-0"><strong>系统版本：</strong> 学生信息管理系统 v1.0</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

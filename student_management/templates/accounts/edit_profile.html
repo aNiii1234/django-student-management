@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title %}编辑个人资料 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-edit"></i> 编辑个人资料</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <h5><i class="fas fa-user"></i> 基本信息</h5>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">手机号</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">姓</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">名</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                        </div>
+                    </div>
+
+                    {% if student_profile %}
+                    <h5 class="mt-4"><i class="fas fa-user-graduate"></i> 学生信息</h5>
+                    <hr>
+
+                    {% if user.role == 'admin' %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="department" class="form-label">所属院系</label>
+                            <select class="form-select" id="department" name="department">
+                                <option value="">请选择院系</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if student_profile.department and student_profile.department.id == dept.id %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="major" class="form-label">专业</label>
+                            <select class="form-select" id="major" name="major">
+                                <option value="">请选择专业</option>
+                                {% if student_profile.department %}
+                                    {% for major in student_profile.department.major_set.all %}
+                                    <option value="{{ major.id }}" {% if student_profile.major and student_profile.major.id == major.id %}selected{% endif %}>
+                                        {{ major.name }}
+                                    </option>
+                                    {% endfor %}
+                                {% else %}
+                                <option value="">请先选择院系</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="department_display" class="form-label">所属院系</label>
+                            <input type="text" class="form-control" id="department_display" readonly
+                                   value="{% if student_profile.department %}{{ student_profile.department.name }}{% else %}未设置{% endif %}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="major_display" class="form-label">专业</label>
+                            <input type="text" class="form-control" id="major_display" readonly
+                                   value="{% if student_profile.major %}{{ student_profile.major.name }}{% else %}未设置{% endif %}">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="address" class="form-label">家庭住址</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ student_profile.address }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="emergency_contact" class="form-label">紧急联系人</label>
+                                    <input type="text" class="form-control" id="emergency_contact" name="emergency_contact" value="{{ student_profile.emergency_contact }}">
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="emergency_phone" class="form-label">紧急联系电话</label>
+                                    <input type="text" class="form-control" id="emergency_phone" name="emergency_phone" value="{{ student_profile.emergency_phone }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 保存修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> 提示</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">请确保您填写的邮箱地址是有效的，系统可能会使用此邮箱与您联系。</p>
+                <p class="mb-2">手机号码用于紧急联系，请务必填写正确。</p>
+                {% if student_profile %}
+                <p class="mb-2">紧急联系人信息将在紧急情况下使用，请确保联系人了解相关情况。</p>
+                {% if user.role == 'admin' %}
+                <p class="mb-0"><i class="fas fa-info-circle text-primary"></i> 作为管理员，您可以修改学生的院系和专业信息。</p>
+                {% else %}
+                <p class="mb-0"><i class="fas fa-lock text-warning"></i> 院系和专业信息由管理员管理，如需修改请联系管理员。</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for department-major联动 (仅管理员) -->
+{% if user.role == 'admin' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.getElementById('department');
+    const majorSelect = document.getElementById('major');
+
+    // 院系专业数据 - 从模板中获取
+    const departmentMajorData = {
+        {% for dept in departments %}
+        '{{ dept.id }}': [
+            {% for major in dept.major_set.all %}
+            {
+                'id': '{{ major.id }}',
+                'name': '{{ major.name }}'
+            },
+            {% endfor %}
+        ],
+        {% endfor %}
+    };
+
+    // 存储当前选中的专业ID
+    const currentMajorId = '{{ student_profile.major.id|default:"" }}';
+
+    if (departmentSelect && majorSelect) {
+        departmentSelect.addEventListener('change', function() {
+            const departmentId = this.value;
+
+            // 清空专业选择框
+            majorSelect.innerHTML = '<option value="">请选择专业</option>';
+
+            if (departmentId && departmentMajorData[departmentId]) {
+                const majors = departmentMajorData[departmentId];
+                majors.forEach(function(major) {
+                    const option = document.createElement('option');
+                    option.value = major.id;
+                    option.textContent = major.name;
+                    // 如果是之前选中的专业，则保持选中状态
+                    if (major.id === currentMajorId) {
+                        option.selected = true;
+                    }
+                    majorSelect.appendChild(option);
+                });
+                majorSelect.disabled = false;
+            } else {
+                majorSelect.innerHTML = '<option value="">请先选择院系</option>';
+                majorSelect.disabled = true;
+            }
+        });
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

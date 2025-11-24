@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}个人资料 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-user"></i> 个人资料</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> 基本信息</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>用户名:</strong></div>
+                    <div class="col-sm-8">{{ user.username }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>姓名:</strong></div>
+                    <div class="col-sm-8">{{ user.get_full_name|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>邮箱:</strong></div>
+                    <div class="col-sm-8">{{ user.email|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>手机号:</strong></div>
+                    <div class="col-sm-8">{{ user.phone|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>角色:</strong></div>
+                    <div class="col-sm-8">{{ user.get_role_display }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>注册时间:</strong></div>
+                    <div class="col-sm-8">{{ user.date_joined|date:"Y-m-d H:i:s" }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if student_profile %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-user-graduate"></i> 学生信息</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>学号:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.student_id }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>真实姓名:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.real_name }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>性别:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.get_gender_display }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>出生日期:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.birth_date|date:"Y-m-d"|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>所属院系:</strong></div>
+                    <div class="col-sm-8">
+                        {% if student_profile.department %}
+                            <span class="badge bg-info">{{ student_profile.department.name }}</span>
+                        {% else %}
+                            <span class="text-muted">未设置</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>专业:</strong></div>
+                    <div class="col-sm-8">
+                        {% if student_profile.major %}
+                            <span class="badge bg-success">{{ student_profile.major.name }}</span>
+                        {% else %}
+                            <span class="text-muted">未设置</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>家庭住址:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.address|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>紧急联系人:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.emergency_contact|default:"未设置" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>紧急联系电话:</strong></div>
+                    <div class="col-sm-8">{{ student_profile.emergency_phone|default:"未设置" }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cog"></i> 操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> 编辑资料
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> 退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if user.role == 'admin' %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-tachometer-alt"></i> 管理员</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-success">
+                        <i class="fas fa-tachometer-alt"></i> 管理面板
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user.role == 'student' %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-graduation-cap"></i> 学生</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:student_dashboard' %}" class="btn btn-info">
+                        <i class="fas fa-graduation-cap"></i> 学生面板
+                    </a>
+                    <a href="{% url 'students:my_enrollments' %}" class="btn btn-outline-info">
+                        <i class="fas fa-book"></i> 我的课程
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

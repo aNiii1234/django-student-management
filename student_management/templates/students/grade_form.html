@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}录入成绩 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-graduation-cap"></i> 录入成绩</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-user-graduate"></i> {{ enrollment.student.real_name }} - {{ enrollment.course.name }}</h5>
+            </div>
+            <div class="card-body">
+                <!-- 课程信息显示 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <strong>学号：</strong> {{ enrollment.student.student_id }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>课程代码：</strong> {{ enrollment.course.code }}
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <strong>专业：</strong> {{ enrollment.major.name }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>学期：</strong> {{ enrollment.semester }} {{ enrollment.academic_year }}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>错误！</strong> 请检查表单中的错误。
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <br>{{ field }}: {{ error }}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.grade.id_for_label }}" class="form-label">{{ form.grade.label }} *</label>
+                            {{ form.grade }}
+                            {% if form.grade.errors %}
+                                <div class="text-danger">
+                                    {{ form.grade.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">请选择成绩等级</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.score.id_for_label }}" class="form-label">{{ form.score.label }}</label>
+                            {{ form.score }}
+                            {% if form.score.errors %}
+                                <div class="text-danger">
+                                    {{ form.score.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">请输入具体分数 (0-100)</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'students:enrollment_grade_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回成绩列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 保存成绩
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> 成绩等级说明</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-success me-2">优秀 (A)</span> 90-100分
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-info me-2">良好 (B)</span> 80-89分
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-warning me-2">中等 (C)</span> 70-79分
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-secondary me-2">及格 (D)</span> 60-69分
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-danger me-2">不及格 (F)</span> 60分以下
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-warning text-dark mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-exclamation-triangle"></i> 注意事项</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-warning"></i> 成绩等级和分数应该匹配
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-warning"></i> 分数范围为0-100分
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-warning"></i> 成绩一旦录入，学生可以查看
+                    </li>
+                    <li>
+                        <i class="fas fa-warning"></i> 如需修改，请重新编辑
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gradeSelect = document.getElementById('{{ form.grade.id_for_label }}');
+    const scoreInput = document.getElementById('{{ form.score.id_for_label }}');
+
+    if (gradeSelect && scoreInput) {
+        // 根据成绩等级自动建议分数范围
+        gradeSelect.addEventListener('change', function() {
+            const grade = this.value;
+            let suggestedScore = '';
+
+            switch(grade) {
+                case 'A':
+                    suggestedScore = '90';
+                    break;
+                case 'B':
+                    suggestedScore = '85';
+                    break;
+                case 'C':
+                    suggestedScore = '75';
+                    break;
+                case 'D':
+                    suggestedScore = '65';
+                    break;
+                case 'F':
+                    suggestedScore = '50';
+                    break;
+            }
+
+            if (suggestedScore && !scoreInput.value) {
+                scoreInput.value = suggestedScore;
+                scoreInput.placeholder = `建议范围: ${suggestedScore}`;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

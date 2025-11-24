@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}学生档案管理 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-id-card"></i> 学生档案管理</h2>
+            <div>
+                <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 添加学生档案
+                </a>
+                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left"></i> 返回管理员面板
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> 学生档案列表 (共 {{ students.count }} 份档案)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>性别</th>
+                                <th>院系</th>
+                                <th>专业</th>
+                                <th>用户名</th>
+                                <th>邮箱</th>
+                                <th>出生日期</th>
+                                <th>家庭住址</th>
+                                <th>紧急联系人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td><strong>{{ student.student_id }}</strong></td>
+                                <td>{{ student.real_name }}</td>
+                                <td>
+                                    {% if student.gender == 'M' %}
+                                        <span class="badge bg-primary">男</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">女</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.department %}
+                                        <span class="badge bg-info">{{ student.department.name }}</span>
+                                    {% else %}
+                                        <span class="text-muted">未设置</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.major %}
+                                        <span class="badge bg-success">{{ student.major.name }}</span>
+                                    {% else %}
+                                        <span class="text-muted">未设置</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.user.username }}</td>
+                                <td>{{ student.user.email|default:"未设置" }}</td>
+                                <td>{{ student.birth_date|date:"Y-m-d"|default:"未设置" }}</td>
+                                <td>{{ student.address|default:"未设置" }}</td>
+                                <td>
+                                    <small>
+                                        {{ student.emergency_contact|default:"未设置" }}<br>
+                                        {{ student.emergency_phone|default:"未设置" }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <a href="{% url 'students:student_profile_update' student.pk %}" class="btn btn-sm btn-outline-primary" title="编辑档案">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'students:student_profile_delete' student.pk %}" class="btn btn-sm btn-outline-danger" title="删除档案" onclick="return confirm('确定要删除这份学生档案吗？')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="11" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> 暂无学生档案数据
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

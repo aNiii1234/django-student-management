@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}删除课程 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-trash"></i> 删除课程</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="fas fa-exclamation-triangle"></i> 确认删除</h5>
+            </div>
+            <div class="card-body">
+                <p class="alert alert-warning">
+                    <strong>警告：</strong>您即将删除课程 <strong>{{ object.name }}</strong>。
+                    此操作不可撤销！
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="table-secondary" style="width: 150px;">课程代码：</th>
+                                <td>{{ object.code }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">课程名称：</th>
+                                <td>{{ object.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">课程类型：</th>
+                                <td>
+                                    {% if object.course_type == 'required' %}
+                                        <span class="badge bg-danger">必修课</span>
+                                    {% elif object.course_type == 'elective' %}
+                                        <span class="badge bg-success">选修课</span>
+                                    {% elif object.course_type == 'practical' %}
+                                        <span class="badge bg-info">实践课</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学分：</th>
+                                <td>{{ object.credits }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学时：</th>
+                                <td>{{ object.hours }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">描述：</th>
+                                <td>{{ object.description|default:"暂无描述" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">创建时间：</th>
+                                <td>{{ object.created_at|date:"Y-m-d H:i:s" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-danger mt-3">
+                    <h6><i class="fas fa-info-circle"></i> 删除前请注意：</h6>
+                    <ul class="mb-0">
+                        <li>删除课程后，相关的选课记录也将被删除</li>
+                        <li>如果已有学生选了这门课，删除操作可能会影响学生的学业记录</li>
+                        <li>建议先禁用课程，等学期结束后再删除</li>
+                    </ul>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <a href="{% url 'students:course_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 取消
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> 确认删除
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> 安全提醒</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>重要提醒：</strong>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 删除操作不可恢复
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 将同时删除所有相关选课记录
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 可能影响学生成绩统计
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-info"></i> 建议先备份重要数据
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

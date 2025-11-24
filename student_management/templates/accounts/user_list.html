@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-users"></i> {{ title }}</h2>
+            <div>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'accounts:user_list' %}?type=all" class="btn {% if user_type == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">所有用户</a>
+                    <a href="{% url 'accounts:user_list' %}?type=students" class="btn {% if user_type == 'students' %}btn-success{% else %}btn-outline-success{% endif %}">学生</a>
+                    <a href="{% url 'accounts:user_list' %}?type=teachers" class="btn {% if user_type == 'teachers' %}btn-info{% else %}btn-outline-info{% endif %}">教师</a>
+                    <a href="{% url 'accounts:user_list' %}?type=admins" class="btn {% if user_type == 'admins' %}btn-warning{% else %}btn-outline-warning{% endif %}">管理员</a>
+                </div>
+                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left"></i> 返回管理员面板
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> 用户列表 (共 {{ users.count }} 位用户)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>用户名</th>
+                                <th>姓名</th>
+                                <th>邮箱</th>
+                                <th>角色</th>
+                                <th>手机号</th>
+                                <th>注册时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <strong>{{ user.username }}</strong>
+                                    {% if user.is_superuser %}
+                                        <span class="badge badge-danger ml-1">超级管理员</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.get_full_name|default:"未设置" }}</td>
+                                <td>{{ user.email|default:"未设置" }}</td>
+                                <td>
+                                    {% if user.role == 'admin' %}
+                                        <span class="badge bg-danger">管理员</span>
+                                    {% elif user.role == 'teacher' %}
+                                        <span class="badge bg-info">教师</span>
+                                    {% elif user.role == 'student' %}
+                                        <span class="badge bg-success">学生</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.phone|default:"未设置" }}</td>
+                                <td>{{ user.created_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if user.role == 'student' %}
+                                        <a href="#" class="btn btn-sm btn-outline-primary" title="查看学生档案">
+                                            <i class="fas fa-id-card"></i>
+                                        </a>
+                                    {% endif %}
+                                    <a href="#" class="btn btn-sm btn-outline-secondary" title="编辑用户">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> 暂无用户数据
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

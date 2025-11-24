@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}删除选课记录 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h3><i class="fas fa-trash"></i> 删除选课记录</h3>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="fas fa-exclamation-triangle"></i> 确认删除</h5>
+            </div>
+            <div class="card-body">
+                <p class="alert alert-warning">
+                    <strong>警告：</strong>您即将删除学生的选课记录 <strong>{{ object.student.real_name }} - {{ object.course.name }}</strong>。
+                    此操作不可撤销！
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="table-secondary" style="width: 150px;">学生姓名：</th>
+                                <td>{{ object.student.real_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学号：</th>
+                                <td>{{ object.student.student_id }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">课程名称：</th>
+                                <td>{{ object.course.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">课程代码：</th>
+                                <td>{{ object.course.code }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">课程类型：</th>
+                                <td>
+                                    {% if object.course.course_type == 'required' %}
+                                        <span class="badge bg-danger">必修课</span>
+                                    {% elif object.course.course_type == 'elective' %}
+                                        <span class="badge bg-success">选修课</span>
+                                    {% elif object.course.course_type == 'practical' %}
+                                        <span class="badge bg-info">实践课</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">专业：</th>
+                                <td>{{ object.major.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学期：</th>
+                                <td>{{ object.semester }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学年：</th>
+                                <td>{{ object.academic_year }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">学分：</th>
+                                <td>{{ object.course.credits }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">当前成绩：</th>
+                                <td>
+                                    {% if object.grade %}
+                                        <span class="badge {% if object.grade == 'A' %}bg-success{% elif object.grade == 'B' %}bg-info{% elif object.grade == 'C' %}bg-warning{% elif object.grade == 'D' %}bg-secondary{% else %}bg-danger{% endif %}">
+                                            {{ object.get_grade_display }}
+                                        </span>
+                                        {% if object.score %}({{ object.score }}分){% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">未评定</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">选课时间：</th>
+                                <td>{{ object.created_at|date:"Y-m-d H:i:s" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-danger mt-3">
+                    <h6><i class="fas fa-info-circle"></i> 删除前请注意：</h6>
+                    <ul class="mb-0">
+                        <li>删除选课记录后，相关成绩信息也将被永久删除</li>
+                        <li>这将影响学生的学业记录和学分统计</li>
+                        <li>如果学生已经完成课程并获得成绩，不建议删除</li>
+                        <li>建议使用成绩管理功能来处理有问题的选课记录</li>
+                    </ul>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <a href="{% url 'students:enrollment_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 取消
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> 确认删除
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> 安全提醒</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>重要提醒：</strong>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 删除操作不可恢复
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 将同时删除所有相关成绩记录
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 可能影响学生毕业要求
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger"></i> 会影响学分统计和学业分析
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-info"></i> 建议先备份重要数据
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
