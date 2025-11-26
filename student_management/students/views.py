@@ -6,6 +6,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import StudentProfile, Department, Major, Course, Enrollment
 from .forms import StudentProfileForm, DepartmentForm, MajorForm, CourseForm, EnrollmentForm, AdminEnrollmentForm, GradeForm
 
@@ -106,8 +107,65 @@ def student_profile_list(request):
         messages.error(request, '您没有权限访问此页面！')
         return redirect('home')
 
-    students = StudentProfile.objects.all().select_related('user')
-    return render(request, 'students/student_profile_list.html', {'students': students})
+    # 获取查询参数
+    search_query = request.GET.get('search', '').strip()
+    department_id = request.GET.get('department', '')
+    status = request.GET.get('status', '')
+    gender = request.GET.get('gender', '')
+
+    # 构建查询
+    students = StudentProfile.objects.all().select_related('user', 'department', 'major')
+
+    # 搜索功能
+    if search_query:
+        students = students.filter(
+            Q(student_id__icontains=search_query) |
+            Q(real_name__icontains=search_query) |
+            Q(class_name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+
+    # 院系筛选
+    if department_id:
+        students = students.filter(department_id=department_id)
+
+    # 学籍状态筛选
+    if status:
+        students = students.filter(enrollment_status=status)
+
+    # 性别筛选
+    if gender:
+        students = students.filter(gender=gender)
+
+    # 排序
+    students = students.order_by('-created_at')
+
+    # 分页
+    paginator = Paginator(students, 20)  # 每页显示20条
+    page = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # 获取所有院系用于筛选
+    departments = Department.objects.all()
+
+    context = {
+        'students': page_obj,
+        'departments': departments,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
+        # 统计数据
+        'total_students': StudentProfile.objects.count(),
+        'enrolled_students': StudentProfile.objects.filter(enrollment_status='enrolled').count(),
+        'total_departments': Department.objects.count(),
+        'total_majors': Major.objects.count(),
+    }
+
+    return render(request, 'students/student_profile_list.html', context)
 
 @login_required
 def student_profile_create(request):

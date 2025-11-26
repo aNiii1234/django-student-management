@@ -41,18 +41,64 @@ class StudentProfile(models.Model):
         ('F', '女'),
     ]
 
+    POLITICAL_STATUS_CHOICES = [
+        ('', '请选择'),
+        ('member', '党员'),
+        ('probationary_member', '预备党员'),
+        ('league_member', '团员'),
+        ('masses', '群众'),
+    ]
+
+    ENROLLMENT_STATUS_CHOICES = [
+        ('enrolled', '在读'),
+        ('suspended', '休学'),
+        ('graduated', '已毕业'),
+        ('dropped_out', '退学'),
+        ('transferred', '转出'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='用户')
     student_id = models.CharField(max_length=20, unique=True, verbose_name='学号')
     real_name = models.CharField(max_length=50, verbose_name='真实姓名')
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, verbose_name='性别')
     birth_date = models.DateField(null=True, blank=True, verbose_name='出生日期')
+
+    # 身份证件信息
+    id_card_number = models.CharField(max_length=18, blank=True, null=True, unique=True, verbose_name='身份证号')
+    nationality = models.CharField(max_length=20, default='汉族', verbose_name='民族')
+
+    # 联系方式
+    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name='手机号码')
+    email = models.EmailField(blank=True, null=True, verbose_name='个人邮箱')
     address = models.TextField(blank=True, null=True, verbose_name='家庭住址')
-    emergency_contact = models.CharField(max_length=50, blank=True, null=True, verbose_name='紧急联系人')
-    emergency_phone = models.CharField(max_length=15, blank=True, null=True, verbose_name='紧急联系电话')
+
+    # 学籍信息
+    enrollment_date = models.DateField(null=True, blank=True, verbose_name='入学日期')
+    graduation_date = models.DateField(null=True, blank=True, verbose_name='预计毕业日期')
+    class_name = models.CharField(max_length=50, blank=True, null=True, verbose_name='班级')
+    enrollment_status = models.CharField(max_length=20, choices=ENROLLMENT_STATUS_CHOICES, default='enrolled', verbose_name='学籍状态')
+
+    # 政治面貌
+    political_status = models.CharField(max_length=20, choices=POLITICAL_STATUS_CHOICES, blank=True, null=True, verbose_name='政治面貌')
+
+    # 紧急联系人
+    emergency_contact = models.CharField(max_length=50, blank=True, null=True, verbose_name='紧急联系人1')
+    emergency_phone = models.CharField(max_length=15, blank=True, null=True, verbose_name='紧急联系电话1')
+    emergency_relation = models.CharField(max_length=20, blank=True, null=True, verbose_name='与学生关系1')
+
+    # 第二位紧急联系人
+    emergency_contact2 = models.CharField(max_length=50, blank=True, null=True, verbose_name='紧急联系人2')
+    emergency_phone2 = models.CharField(max_length=15, blank=True, null=True, verbose_name='紧急联系电话2')
+    emergency_relation2 = models.CharField(max_length=20, blank=True, null=True, verbose_name='与学生关系2')
 
     # 新增院系和专业关联
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='所属院系')
     major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='专业')
+
+    # 个人描述
+    bio = models.TextField(blank=True, null=True, verbose_name='个人简介')
+    hobbies = models.CharField(max_length=500, blank=True, null=True, verbose_name='兴趣爱好')
+    skills = models.CharField(max_length=500, blank=True, null=True, verbose_name='特长技能')
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')

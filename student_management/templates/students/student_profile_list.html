@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}学生管理 - 学生信息管理系统{% endblock %}
+{% block title %}学生档案管理 - 学生信息管理系统{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3><i class="fas fa-users"></i> 学生管理</h3>
+            <div>
+                <h3><i class="fas fa-users"></i> 学生档案管理</h3>
+                <p class="text-muted mb-0">管理学生基本信息和档案</p>
+            </div>
             <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> 添加学生
             </a>
@@ -16,6 +19,9 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> 学生档案列表</h5>
+            </div>
             <div class="card-body">
                 {% if students %}
                     <div class="table-responsive">
@@ -26,8 +32,11 @@
                                     <th>姓名</th>
                                     <th>性别</th>
                                     <th>出生日期</th>
+                                    <th>班级</th>
+                                    <th>院系</th>
+                                    <th>专业</th>
                                     <th>手机号</th>
-                                    <th>家庭住址</th>
+                                    <th>学籍状态</th>
                                     <th>紧急联系人</th>
                                     <th>创建时间</th>
                                     <th>操作</th>
@@ -37,35 +46,147 @@
                                 {% for student in students %}
                                     <tr>
                                         <td>{{ student.student_id }}</td>
-                                        <td>{{ student.real_name }}</td>
-                                        <td>{{ student.get_gender_display }}</td>
-                                        <td>{{ student.birth_date|date:'Y-m-d'|default:'-' }}</td>
-                                        <td>{{ student.user.phone|default:'-' }}</td>
-                                        <td>{{ student.address|default:'-'|truncatechars:20 }}</td>
-                                        <td>{{ student.emergency_contact|default:'-' }}</td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <strong class="text-primary">{{ student.real_name }}</strong>
+                                                {% if student.bio %}
+                                                    <small class="text-muted" title="{{ student.bio|truncatechars:50 }}">{{ student.bio|truncatechars:20 }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if student.gender == 'F' %}
+                                                <span class="badge bg-pink">女</span>
+                                            {% elif student.gender == 'M' %}
+                                                <span class="badge bg-blue">男</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ student.get_gender_display|default:'--' }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ student.birth_date|date:'Y-m-d'|default:'--' }}</td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <small>{{ student.class_name|default:'--' }}</small>
+                                                {% if student.enrollment_status == 'enrolled' %}
+                                                    <span class="badge bg-success">在读</span>
+                                                {% elif student.enrollment_status == 'suspended' %}
+                                                    <span class="badge bg-warning">休学</span>
+                                                {% elif student.enrollment_status == 'graduated' %}
+                                                    <span class="badge bg-primary">已毕业</span>
+                                                {% elif student.enrollment_status == 'dropped_out' %}
+                                                    <span class="badge bg-danger">退学</span>
+                                                {% elif student.enrollment_status == 'transferred' %}
+                                                    <span class="badge bg-info">转出</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ student.get_enrollment_status_display|default:'--' }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if student.department %}
+                                                <small>{{ student.department.name|truncatechars:10 }}</small>
+                                            {% else %}
+                                                <span class="text-muted">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.major %}
+                                                <small>{{ student.major.name|truncatechars:10 }}</small>
+                                            {% else %}
+                                                <span class="text-muted">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.phone %}
+                                                <span title="{{ student.phone }}">{{ student.phone|truncatechars:15 }}</span>
+                                            {% else %}
+                                                <span class="text-muted">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.enrollment_status == 'enrolled' %}
+                                                <span class="badge bg-success">在读</span>
+                                            {% elif student.enrollment_status == 'suspended' %}
+                                                <span class="badge bg-warning">休学</span>
+                                            {% elif student.enrollment_status == 'graduated' %}
+                                                <span class="badge bg-primary">已毕业</span>
+                                            {% elif student.enrollment_status == 'dropped_out' %}
+                                                <span class="badge bg-danger">退学</span>
+                                            {% elif student.enrollment_status == 'transferred' %}
+                                                <span class="badge bg-info">转出</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ student.get_enrollment_status_display|default:'--' }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.emergency_contact %}
+                                                <div class="d-flex flex-column">
+                                                    <small>{{ student.emergency_contact|truncatechars:8 }}</small>
+                                                    {% if student.emergency_phone %}
+                                                        <small class="text-muted">{{ student.emergency_phone|truncatechars:10 }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">--</span>
+                                            {% endif %}
+                                        </td>
                                         <td>{{ student.created_at|date:'Y-m-d' }}</td>
                                         <td>
-                                            <a href="{% url 'students:student_profile_update' student.pk %}"
-                                               class="btn btn-sm btn-outline-primary" title="编辑">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{% url 'students:student_profile_delete' student.pk %}"
-                                               class="btn btn-sm btn-outline-danger" title="删除">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <div class="btn-group-sm" role="group">
+                                                <a href="{% url 'students:student_profile_update' student.pk %}"
+                                                   class="btn btn-sm btn-outline-primary" title="编辑学生档案">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'students:student_profile_delete' student.pk %}"
+                                                   class="btn btn-sm btn-outline-danger" title="删除学生档案">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- 分页 -->
+                    {% if is_paginated %}
+                    <div class="card-footer bg-light">
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0 justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">首页</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">上一页</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">第 {{ page_obj.number }} 页，共 {{ page_obj.paginator.num_pages }} 页</span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">下一页</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">末页</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+
                 {% else %}
                     <div class="text-center py-5">
-                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">暂无学生数据</h4>
-                        <p class="text-muted">点击"添加学生"按钮添加第一个学生</p>
-                        <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> 添加学生
+                        <i class="fas fa-user-graduate fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted mb-3">暂无学生数据</h4>
+                        <p class="text-muted mb-4">开始添加第一个学生档案吧！</p>
+                        <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus-circle"></i> 添加学生档案
                         </a>
                     </div>
                 {% endif %}
@@ -73,4 +194,19 @@
         </div>
     </div>
 </div>
+
+<style>
+.bg-pink {
+    background-color: #e83e8c !important;
+}
+
+.bg-blue {
+    background-color: #007bff !important;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+</style>
 {% endblock %}

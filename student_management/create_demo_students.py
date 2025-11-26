@@ -91,9 +91,23 @@ demo_students = [
         'student_id': '2024001',
         'real_name': '张三',
         'gender': 'M',
-        'address': '北京市海淀区',
+        'birth_date': '2003-05-15',
+        'id_card_number': '110101200305150001',
+        'nationality': '汉族',
+        'phone': '13800138001',
+        'email': 'zhangsan@example.com',
+        'enrollment_date': '2023-09-01',
+        'graduation_date': '2027-06-30',
+        'class_name': '计科2101班',
+        'enrollment_status': 'enrolled',
+        'political_status': 'league_member',
+        'address': '北京市海淀区中关村南大街5号',
         'emergency_contact': '张父',
-        'emergency_phone': '13800138001'
+        'emergency_phone': '13900139001',
+        'emergency_relation': '父亲',
+        'emergency_contact2': '张母',
+        'emergency_phone2': '13900139002',
+        'emergency_relation2': '母亲'
     },
     {
         'username': '2024002',
@@ -104,9 +118,23 @@ demo_students = [
         'student_id': '2024002',
         'real_name': '李四',
         'gender': 'F',
-        'address': '上海市浦东新区',
+        'birth_date': '2003-08-20',
+        'id_card_number': '310101200308200002',
+        'nationality': '汉族',
+        'phone': '13900139002',
+        'email': 'lisi@example.com',
+        'enrollment_date': '2023-09-01',
+        'graduation_date': '2027-06-30',
+        'class_name': '计科2102班',
+        'enrollment_status': 'enrolled',
+        'political_status': 'league_member',
+        'address': '上海市浦东新区世纪大道100号',
         'emergency_contact': '李母',
-        'emergency_phone': '13900139002'
+        'emergency_phone': '13800138002',
+        'emergency_relation': '母亲',
+        'emergency_contact2': '',
+        'emergency_phone2': '',
+        'emergency_relation2': ''
     }
 ]
 
@@ -133,9 +161,25 @@ for student_data in demo_students:
             student_id=student_data['student_id'],
             real_name=student_data['real_name'],
             gender=student_data['gender'],
+            birth_date=student_data['birth_date'],
+            id_card_number=student_data['id_card_number'],
+            nationality=student_data['nationality'],
+            phone=student_data['phone'],
+            email=student_data['email'],
+            enrollment_date=student_data['enrollment_date'],
+            graduation_date=student_data['graduation_date'],
+            class_name=student_data['class_name'],
+            enrollment_status=student_data['enrollment_status'],
+            political_status=student_data['political_status'],
             address=student_data['address'],
             emergency_contact=student_data['emergency_contact'],
-            emergency_phone=student_data['emergency_phone']
+            emergency_phone=student_data['emergency_phone'],
+            emergency_relation=student_data['emergency_relation'],
+            emergency_contact2=student_data['emergency_contact2'],
+            emergency_phone2=student_data['emergency_phone2'],
+            emergency_relation2=student_data['emergency_relation2'],
+            department=dept,
+            major=major
         )
         print(f"  - 创建学生档案: {student_data['real_name']} ({student_data['student_id']})")
     else:
