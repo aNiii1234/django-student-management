@@ -1,144 +1,342 @@
 {% extends 'base.html' %}
-{% block title %}{% if form.instance.pk %}编辑学生{% else %}添加学生{% endif %} - 学生信息管理系统{% endblock %}
+{% block title %}{% if form.instance.pk %}编辑学生档案{% else %}添加学生档案{% endif %} - 学生信息管理系统{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <h3><i class="fas fa-user-graduate"></i> {% if form.instance.pk %}编辑学生{% else %}添加学生{% endif %}</h3>
+        <h3><i class="fas fa-user-graduate"></i> {% if form.instance.pk %}编辑学生档案{% else %}添加学生档案{% endif %}</h3>
+        <p class="text-muted">完善学生基本信息，建立完整的学生档案</p>
         <hr>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-8">
-        <div class="card">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-edit"></i> {% if form.instance.pk %}编辑{% else %}填写{% endif %}学生档案</h5>
+            </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
 
                     {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <strong>错误！</strong> 请检查表单中的错误。
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="fas fa-exclamation-triangle"></i> 表单错误！</strong>
+                            请检查以下字段：
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <ul class="mb-0 mt-2">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ field|title }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
                         </div>
                     {% endif %}
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.student_id.id_for_label }}" class="form-label">学号 *</label>
-                            <input type="text" class="form-control" id="{{ form.student_id.id_for_label }}"
-                                   name="{{ form.student_id.name }}" value="{{ form.student_id.value|default:'' }}" required>
-                            {% if form.student_id.errors %}
-                                <div class="text-danger">
-                                    {{ form.student_id.errors.0 }}
-                                </div>
-                            {% endif %}
-                            <small class="form-text text-muted">将作为默认用户名</small>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.real_name.id_for_label }}" class="form-label">真实姓名 *</label>
-                            <input type="text" class="form-control" id="{{ form.real_name.id_for_label }}"
-                                   name="{{ form.real_name.name }}" value="{{ form.real_name.value|default:'' }}" required>
-                            {% if form.real_name.errors %}
-                                <div class="text-danger">
-                                    {{ form.real_name.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.gender.id_for_label }}" class="form-label">性别 *</label>
-                            <select class="form-control" id="{{ form.gender.id_for_label }}"
-                                    name="{{ form.gender.name }}" required>
-                                <option value="">请选择性别</option>
-                                {% for value, label in form.gender.field.choices %}
-                                    <option value="{{ value }}" {% if form.gender.value == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            {% if form.gender.errors %}
-                                <div class="text-danger">
-                                    {{ form.gender.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.birth_date.id_for_label }}" class="form-label">出生日期</label>
-                            <input type="date" class="form-control" id="{{ form.birth_date.id_for_label }}"
-                                   name="{{ form.birth_date.name }}" value="{{ form.birth_date.value|default:'' }}">
-                            {% if form.birth_date.errors %}
-                                <div class="text-danger">
-                                    {{ form.birth_date.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.user.id_for_label }}" class="form-label">关联用户</label>
-                            <input type="text" class="form-control" id="{{ form.user.id_for_label }}"
-                                   name="{{ form.user.name }}" value="{{ form.user.value|default:'' }}"
-                                   readonly placeholder="系统自动关联">
-                            <small class="form-text text-muted">创建学生档案后自动关联用户账号</small>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.department.id_for_label }}" class="form-label">{{ form.department.label }}</label>
-                            {{ form.department }}
-                            {% if form.department.errors %}
-                                <div class="text-danger">
-                                    {{ form.department.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.major.id_for_label }}" class="form-label">{{ form.major.label }}</label>
-                            {{ form.major }}
-                            {% if form.major.errors %}
-                                <div class="text-danger">
-                                    {{ form.major.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.address.id_for_label }}" class="form-label">家庭住址</label>
-                        <textarea class="form-control" id="{{ form.address.id_for_label }}"
-                                  name="{{ form.address.name }}" rows="3">{{ form.address.value|default:'' }}</textarea>
-                        {% if form.address.errors %}
-                            <div class="text-danger">
-                                {{ form.address.errors.0 }}
+                    <!-- 基本信息 -->
+                    <div class="section-group mb-4">
+                        <h6 class="section-title"><i class="fas fa-user"></i> 基本信息</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.student_id.id_for_label }}" class="form-label">{{ form.student_id.label }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="{{ form.student_id.id_for_label }}"
+                                       name="{{ form.student_id.name }}"
+                                       value="{{ form.student_id.value|default:'' }}"
+                                       {% if form.instance.pk %}readonly{% endif %} required>
+                                {% if form.student_id.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.student_id.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">将作为默认用户名，创建后不可修改</small>
                             </div>
-                        {% endif %}
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.real_name.id_for_label }}" class="form-label">{{ form.real_name.label }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="{{ form.real_name.id_for_label }}"
+                                       name="{{ form.real_name.name }}" value="{{ form.real_name.value|default:'' }}" required>
+                                {% if form.real_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.real_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.gender.id_for_label }}" class="form-label">{{ form.gender.label }} <span class="text-danger">*</span></label>
+                                <select class="form-select" id="{{ form.gender.id_for_label }}"
+                                        name="{{ form.gender.name }}" required>
+                                    <option value="">请选择性别</option>
+                                    {% for value, label in form.gender.field.choices %}
+                                        <option value="{{ value }}" {% if form.gender.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.gender.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.gender.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.birth_date.id_for_label }}" class="form-label">{{ form.birth_date.label }}</label>
+                                <input type="date" class="form-control" id="{{ form.birth_date.id_for_label }}"
+                                       name="{{ form.birth_date.name }}"
+                                       {% if form.birth_date.value %}value="{{ form.birth_date.value|date:'Y-m-d' }}"{% endif %}>
+                                {% if form.birth_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.birth_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.id_card_number.id_for_label }}" class="form-label">{{ form.id_card_number.label }}</label>
+                                <input type="text" class="form-control" id="{{ form.id_card_number.id_for_label }}"
+                                       name="{{ form.id_card_number.name }}"
+                                       value="{{ form.id_card_number.value|default:'' }}"
+                                       maxlength="18" pattern="[0-9Xx]+" title="请输入18位身份证号码">
+                                {% if form.id_card_number.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.id_card_number.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.nationality.id_for_label }}" class="form-label">{{ form.nationality.label }}</label>
+                                <input type="text" class="form-control" id="{{ form.nationality.id_for_label }}"
+                                       name="{{ form.nationality.name }}" value="{{ form.nationality.value|default:'汉族' }}">
+                                {% if form.nationality.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nationality.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+                                <input type="tel" class="form-control" id="{{ form.phone.id_for_label }}"
+                                       name="{{ form.phone.name }}" value="{{ form.phone.value|default:'' }}"
+                                       pattern="[0-9]+" title="请输入手机号码">
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                                <input type="email" class="form-control" id="{{ form.email.id_for_label }}"
+                                       name="{{ form.email.name }}" value="{{ form.email.value|default:'' }}">
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                                <textarea class="form-control" id="{{ form.address.id_for_label }}"
+                                          name="{{ form.address.name }}" rows="3">{{ form.address.value|default:'' }}</textarea>
+                                {% if form.address.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.address.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.emergency_contact.id_for_label }}" class="form-label">紧急联系人</label>
-                            <input type="text" class="form-control" id="{{ form.emergency_contact.id_for_label }}"
-                                   name="{{ form.emergency_contact.name }}" value="{{ form.emergency_contact.value|default:'' }}">
-                            {% if form.emergency_contact.errors %}
-                                <div class="text-danger">
-                                    {{ form.emergency_contact.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
+                    <!-- 学籍信息 -->
+                    <div class="section-group mb-4">
+                        <h6 class="section-title"><i class="fas fa-graduation-cap"></i> 学籍信息</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.enrollment_date.id_for_label }}" class="form-label">{{ form.enrollment_date.label }}</label>
+                                <input type="date" class="form-control" id="{{ form.enrollment_date.id_for_label }}"
+                                       name="{{ form.enrollment_date.name }}"
+                                       {% if form.enrollment_date.value %}value="{{ form.enrollment_date.value|date:'Y-m-d' }}"{% endif %}>
+                                {% if form.enrollment_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.enrollment_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.emergency_phone.id_for_label }}" class="form-label">紧急联系电话</label>
-                            <input type="text" class="form-control" id="{{ form.emergency_phone.id_for_label }}"
-                                   name="{{ form.emergency_phone.name }}" value="{{ form.emergency_phone.value|default:'' }}">
-                            {% if form.emergency_phone.errors %}
-                                <div class="text-danger">
-                                    {{ form.emergency_phone.errors.0 }}
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.graduation_date.id_for_label }}" class="form-label">{{ form.graduation_date.label }}</label>
+                                <input type="date" class="form-control" id="{{ form.graduation_date.id_for_label }}"
+                                       name="{{ form.graduation_date.name }}"
+                                       {% if form.graduation_date.value %}value="{{ form.graduation_date.value|date:'Y-m-d' }}"{% endif %}>
+                                {% if form.graduation_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.graduation_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.class_name.id_for_label }}" class="form-label">{{ form.class_name.label }}</label>
+                                <input type="text" class="form-control" id="{{ form.class_name.id_for_label }}"
+                                       name="{{ form.class_name.name }}" value="{{ form.class_name.value|default:'' }}">
+                                {% if form.class_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.class_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.enrollment_status.id_for_label }}" class="form-label">{{ form.enrollment_status.label }}</label>
+                                <select class="form-select" id="{{ form.enrollment_status.id_for_label }}"
+                                        name="{{ form.enrollment_status.name }}">
+                                    <option value="">请选择学籍状态</option>
+                                    {% for value, label in form.enrollment_status.field.choices %}
+                                        <option value="{{ value }}" {% if form.enrollment_status.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.enrollment_status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.enrollment_status.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.political_status.id_for_label }}" class="form-label">{{ form.political_status.label }}</label>
+                                <select class="form-select" id="{{ form.political_status.id_for_label }}"
+                                        name="{{ form.political_status.name }}">
+                                    {% for value, label in form.political_status.field.choices %}
+                                        <option value="{{ value }}" {% if form.political_status.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.political_status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.political_status.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.department.id_for_label }}" class="form-label">{{ form.department.label }}</label>
+                                {{ form.department }}
+                                {% if form.department.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.department.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.major.id_for_label }}" class="form-label">{{ form.major.label }}</label>
+                                {{ form.major }}
+                                {% if form.major.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.major.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 紧急联系人 -->
+                    <div class="section-group mb-4">
+                        <h6 class="section-title"><i class="fas fa-exclamation-triangle"></i> 紧急联系人</h6>
+                        <div class="row">
+                            <!-- 第一位紧急联系人 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3"><i class="fas fa-phone"></i> 第一位紧急联系人</h6>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_contact.id_for_label }}" class="form-label">{{ form.emergency_contact.label }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="{{ form.emergency_contact.id_for_label }}"
+                                               name="{{ form.emergency_contact.name }}" value="{{ form.emergency_contact.value|default:'' }}">
+                                        {% if form.emergency_contact.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_contact.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_phone.id_for_label }}" class="form-label">{{ form.emergency_phone.label }} <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="{{ form.emergency_phone.id_for_label }}"
+                                               name="{{ form.emergency_phone.name }}" value="{{ form.emergency_phone.value|default:'' }}"
+                                               pattern="[0-9]+" title="请输入手机号码">
+                                        {% if form.emergency_phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_phone.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_relation.id_for_label }}" class="form-label">{{ form.emergency_relation.label }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="{{ form.emergency_relation.id_for_label }}"
+                                               name="{{ form.emergency_relation.name }}" value="{{ form.emergency_relation.value|default:'' }}"
+                                               placeholder="如：父亲、母亲、监护人等">
+                                        {% if form.emergency_relation.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_relation.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endif %}
+                            </div>
+
+                            <!-- 第二位紧急联系人（可选） -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3"><i class="fas fa-phone"></i> 第二位紧急联系人（可选）</h6>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_contact2.id_for_label }}" class="form-label">{{ form.emergency_contact2.label }}</label>
+                                        <input type="text" class="form-control" id="{{ form.emergency_contact2.id_for_label }}"
+                                               name="{{ form.emergency_contact2.name }}" value="{{ form.emergency_contact2.value|default:'' }}"
+                                               placeholder="请填写第二位紧急联系人姓名">
+                                        {% if form.emergency_contact2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_contact2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_phone2.id_for_label }}" class="form-label">{{ form.emergency_phone2.label }}</label>
+                                        <input type="tel" class="form-control" id="{{ form.emergency_phone2.id_for_label }}"
+                                               name="{{ form.emergency_phone2.name }}" value="{{ form.emergency_phone2.value|default:'' }}"
+                                               pattern="[0-9]+" title="请输入手机号码"
+                                               placeholder="请填写第二位紧急联系人电话">
+                                        {% if form.emergency_phone2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_phone2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label for="{{ form.emergency_relation2.id_for_label }}" class="form-label">{{ form.emergency_relation2.label }}</label>
+                                        <input type="text" class="form-control" id="{{ form.emergency_relation2.id_for_label }}"
+                                               name="{{ form.emergency_relation2.name }}" value="{{ form.emergency_relation2.value|default:'' }}"
+                                               placeholder="如：亲属、朋友等">
+                                        {% if form.emergency_relation2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_relation2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -147,7 +345,8 @@
                             <i class="fas fa-arrow-left"></i> 返回列表
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> 保存
+                            <i class="fas fa-save"></i>
+                            {% if form.instance.pk %}更新档案{% else %}创建档案{% endif %}
                         </button>
                     </div>
                 </form>
@@ -156,14 +355,14 @@
     </div>
 
     <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-header">
-                <h5><i class="fas fa-info-circle"></i> 操作说明</h5>
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> 填写说明</h6>
             </div>
             <div class="card-body">
-                <ul class="list-unstyled mb-0">
+                <ul class="list-unstyled mb-0 small">
                     <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 学号为必填项，将作为用户登录名
+                        <i class="fas fa-check text-success"></i> <strong>学号</strong>为必填项，将作为登录用户名
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-check text-success"></i> 系统会自动创建对应的用户账号
@@ -174,14 +373,69 @@
                     <li class="mb-2">
                         <i class="fas fa-check text-success"></i> 用户角色自动设为"学生"
                     </li>
-                    <li>
+                    <li class="mb-2">
                         <i class="fas fa-check text-success"></i> 学生首次登录后建议修改密码
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-info"></i> 选择院系后才能选择对应专业
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-warning"></i> 紧急联系人是必填项，第二位为可选项
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-info"></i> 标记<span class="text-danger">*</span>的字段为必填项
                     </li>
                 </ul>
             </div>
         </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-shield-alt"></i> 隐私保护</h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">
+                    所有个人信息都将严格保密，仅用于学校管理用途。身份证号等敏感信息将采取加密存储。
+                </p>
+            </div>
+        </div>
+
+        {% if form.instance.pk %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-history"></i> 档案信息</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small mb-0">
+                    <li><strong>创建时间：</strong>{{ form.instance.created_at|date:"Y-m-d H:i" }}</li>
+                    <li><strong>更新时间：</strong>{{ form.instance.updated_at|date:"Y-m-d H:i" }}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<style>
+.section-title {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.section-group {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.card-header {
+    border-bottom: none;
+}
+</style>
 
 <!-- JavaScript for department-major联动 -->
 <script>
