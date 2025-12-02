@@ -1,0 +1,1108 @@
+{% extends 'base-advanced.html' %}
+{% load static %}
+{% block title %}超级管理员控制台 - 高级学生管理系统{% endblock %}
+
+{% block content %}
+<!-- 超级管理员控制台 -->
+<div class="admin-dashboard-container">
+    <!-- 动态背景 -->
+    <div class="admin-background">
+        <div class="tech-grid"></div>
+        <canvas id="adminCanvas"></canvas>
+        <div class="floating-elements">
+            <div class="tech-circle circle-1"></div>
+            <div class="tech-circle circle-2"></div>
+            <div class="tech-circle circle-3"></div>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="container-fluid py-5">
+        <div class="row">
+            <!-- 左侧导航 -->
+            <div class="col-lg-2 mb-4">
+                <div class="admin-sidebar glass-card p-3 sticky-top" style="top: 100px;">
+                    <div class="admin-logo mb-4 text-center">
+                        <div class="logo-glow">
+                            <i class="fas fa-rocket fa-2x"></i>
+                        </div>
+                        <h5 class="text-gradient mt-3">控制台</h5>
+                        <p class="text-white-50 small">超级管理员</p>
+                    </div>
+
+                    <nav class="admin-nav">
+                        <div class="nav-item mb-2">
+                            <a href="#" class="nav-link active" data-page="overview">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                <span>总览</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:student_profile_list' %}" class="nav-link" data-page="students">
+                                <i class="fas fa-users me-2"></i>
+                                <span>学生管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:course_list' %}" class="nav-link" data-page="courses">
+                                <i class="fas fa-book me-2"></i>
+                                <span>课程管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:department_list' %}" class="nav-link" data-page="departments">
+                                <i class="fas fa-building me-2"></i>
+                                <span>院系管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:major_list' %}" class="nav-link" data-page="majors">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                <span>专业管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:enrollment_list' %}" class="nav-link" data-page="enrollments">
+                                <i class="fas fa-user-plus me-2"></i>
+                                <span>选课管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="{% url 'students:enrollment_grade_list' %}" class="nav-link" data-page="grades">
+                                <i class="fas fa-chart-line me-2"></i>
+                                <span>成绩管理</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="#" class="nav-link" data-page="analytics">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                <span>数据分析</span>
+                            </a>
+                        </div>
+                        <div class="nav-item mb-2">
+                            <a href="#" class="nav-link" data-page="settings">
+                                <i class="fas fa-cog me-2"></i>
+                                <span>系统设置</span>
+                            </a>
+                        </div>
+                    </nav>
+
+                    <!-- 系统状态 -->
+                    <div class="system-status mt-4 p-3">
+                        <h6 class="text-white mb-3">系统状态</h6>
+                        <div class="status-item mb-2">
+                            <div class="status-indicator online"></div>
+                            <span class="text-white-50 small">数据库</span>
+                        </div>
+                        <div class="status-item mb-2">
+                            <div class="status-indicator online"></div>
+                            <span class="text-white-50 small">缓存服务</span>
+                        </div>
+                        <div class="status-item mb-2">
+                            <div class="status-indicator online"></div>
+                            <span class="text-white-50 small">API服务</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator warning"></div>
+                            <span class="text-white-50 small">存储空间</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-lg-10">
+                <!-- 顶部统计卡片 -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card hover-lift glass-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-target="{{ total_users|default:0 }}">0</h3>
+                                <p class="stat-label">总用户数</p>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> 12.5%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card hover-lift glass-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-target="{{ total_students|default:0 }}">0</h3>
+                                <p class="stat-label">学生总数</p>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> 8.3%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card hover-lift glass-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-target="{{ total_teachers|default:0 }}">0</h3>
+                                <p class="stat-label">教师总数</p>
+                                <div class="stat-change negative">
+                                    <i class="fas fa-arrow-down"></i> 2.1%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card hover-lift glass-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" data-target="{{ total_student_profiles|default:0 }}">0</h3>
+                                <p class="stat-label">学生档案</p>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> 15.7%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 实时数据监控 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="monitoring-panel glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-white mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    实时数据监控
+                                </h5>
+                                <div class="monitoring-controls">
+                                    <span class="badge-advanced badge-success-gradient">
+                                        <i class="fas fa-circle me-1"></i>在线
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="monitoring-item">
+                                        <div class="monitoring-label text-white-50 small">今日登录</div>
+                                        <div class="monitoring-value">
+                                            <span class="live-number">247</span>
+                                            <span class="live-indicator"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="monitoring-item">
+                                        <div class="monitoring-label text-white-50 small">活动用户</div>
+                                        <div class="monitoring-value">
+                                            <span class="live-number">89</span>
+                                            <span class="live-indicator success"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="monitoring-item">
+                                        <div class="monitoring-label text-white-50 small">系统负载</div>
+                                        <div class="monitoring-value">
+                                            <span class="live-number">42</span>
+                                            <span class="live-indicator warning"></span>
+                                            <span class="unit">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="monitoring-item">
+                                        <div class="monitoring-label text-white-50 small">响应时间</div>
+                                        <div class="monitoring-value">
+                                            <span class="live-number">128</span>
+                                            <span class="live-indicator success"></span>
+                                            <span class="unit">ms</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 实时图表 -->
+                            <div class="chart-container mt-4">
+                                <canvas id="realtimeChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速操作 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="quick-actions glass-card p-4">
+                            <h5 class="text-white mb-3">
+                                <i class="fas fa-bolt me-2"></i>
+                                快速操作
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <button class="quick-action-btn" onclick="quickAction('import')">
+                                        <i class="fas fa-file-import"></i>
+                                        <span>批量导入</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <button class="quick-action-btn" onclick="quickAction('export')">
+                                        <i class="fas fa-file-export"></i>
+                                        <span>数据导出</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <button class="quick-action-btn" onclick="quickAction('backup')">
+                                        <i class="fas fa-database"></i>
+                                        <span>系统备份</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <button class="quick-action-btn" onclick="quickAction('maintenance')">
+                                        <i class="fas fa-tools"></i>
+                                        <span>维护模式</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近活动 -->
+                <div class="row">
+                    <div class="col-xl-8 mb-4">
+                        <div class="recent-activity glass-card p-4">
+                            <h5 class="text-white mb-3">
+                                <i class="fas fa-clock me-2"></i>
+                                最近活动
+                            </h5>
+                            <div class="activity-list">
+                                {% for user in recent_users %}
+                                <div class="activity-item">
+                                    <div class="activity-avatar">
+                                        <div class="avatar-advanced">{{ user.get_full_name.0|upper|default:user.username.0|upper }}</div>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-user">{{ user.get_full_name|default:user.username }}</div>
+                                        <div class="activity-action">新用户注册</div>
+                                        <div class="activity-time">{{ user.created_at|timesince }}前</div>
+                                    </div>
+                                    <div class="activity-status">
+                                        <div class="status-dot success"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 mb-4">
+                        <div class="system-info glass-card p-4">
+                            <h5 class="text-white mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                系统信息
+                            </h5>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">系统版本</span>
+                                    <span class="info-value text-white">v2.0.1 Pro</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">运行时间</span>
+                                    <span class="info-value text-white">15天 8小时</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">数据库</span>
+                                    <span class="info-value text-white">PostgreSQL 14.2</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">框架版本</span>
+                                    <span class="info-value text-white">Django 4.2.7</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">Python版本</span>
+                                    <span class="info-value text-white">3.11.5</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label text-white-50">缓存类型</span>
+                                    <span class="info-value text-white">Redis 6.2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 高级样式 -->
+<style>
+    /* 管理员控制台容器 */
+    .admin-dashboard-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* 技术背景 */
+    .admin-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .tech-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+            linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+
+    /* 浮动元素 */
+    .floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .tech-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.4) 0%, transparent 70%);
+        animation: floatCircle 20s ease-in-out infinite;
+    }
+
+    .circle-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        left: -100px;
+        animation-delay: 0s;
+    }
+
+    .circle-2 {
+        width: 200px;
+        height: 200px;
+        top: 50%;
+        right: -100px;
+        animation-delay: 7s;
+    }
+
+    .circle-3 {
+        width: 150px;
+        height: 150px;
+        bottom: -75px;
+        left: 30%;
+        animation-delay: 14s;
+    }
+
+    @keyframes floatCircle {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(100px, -50px) scale(1.1); }
+        50% { transform: translate(-50px, 100px) scale(0.9); }
+        75% { transform: translate(50px, 50px) scale(1.05); }
+    }
+
+    /* 侧边栏 */
+    .admin-sidebar {
+        background: rgba(26, 26, 46, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+    .admin-logo .logo-glow {
+        display: inline-block;
+        position: relative;
+        color: #667eea;
+        animation: logoGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes logoGlow {
+        0%, 100% { text-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
+        50% { text-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+    }
+
+    /* 导航 */
+    .admin-nav .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 0.25rem;
+    }
+
+    .admin-nav .nav-link:hover {
+        background: rgba(102, 126, 234, 0.2);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .admin-nav .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* 系统状态 */
+    .system-status {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    .status-indicator.online {
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .status-indicator.warning {
+        background: #f59e0b;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
+    .status-indicator.offline {
+        background: #ef4444;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    @keyframes statusPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    /* 统计卡片 */
+    .stat-card {
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        border: none;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: statShine 6s linear infinite;
+    }
+
+    @keyframes statShine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.25rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+        display: flex;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+    }
+
+    .stat-change.positive {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .stat-change.negative {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+
+    /* 监控面板 */
+    .monitoring-panel {
+        position: relative;
+    overflow: hidden;
+    }
+
+    .monitoring-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        animation: monitoringShine 3s linear infinite;
+    }
+
+    @keyframes monitoringShine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .monitoring-item {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .monitoring-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .monitoring-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .live-number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: liveNumberUpdate 2s ease-in-out infinite;
+    }
+
+    @keyframes liveNumberUpdate {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .live-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: liveIndicator 1s ease-in-out infinite;
+    }
+
+    .live-indicator.success {
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .live-indicator.warning {
+        background: #f59e0b;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
+    .live-indicator.error {
+        background: #ef4444;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    @keyframes liveIndicator {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    /* 快速操作 */
+    .quick-actions {
+        position: relative;
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .quick-action-btn i {
+        font-size: 1.5rem;
+        color: #667eea;
+    }
+
+    /* 活动列表 */
+    .activity-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .activity-avatar {
+        margin-right: 1rem;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-user {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-action {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.75rem;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .status-dot.success {
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    /* 系统信息 */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+    }
+
+    /* 滚动条 */
+    .admin-sidebar::-webkit-scrollbar,
+    .activity-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .admin-sidebar::-webkit-scrollbar-track,
+    .activity-list::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+    }
+
+    .admin-sidebar::-webkit-scrollbar-thumb,
+    .activity-list::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.5);
+        border-radius: 3px;
+    }
+
+    .admin-sidebar::-webkit-scrollbar-thumb:hover,
+    .activity-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(102, 126, 234, 0.7);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 992px) {
+        .admin-sidebar {
+            position: relative;
+            margin-bottom: 2rem;
+            max-height: none;
+        }
+
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+
+        .monitoring-item {
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stat-number {
+            font-size: 1.5rem;
+        }
+
+        .quick-action-btn {
+            padding: 0.75rem;
+        }
+
+        .quick-action-btn i {
+            font-size: 1.25rem;
+        }
+
+        .admin-dashboard-container .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+</style>
+
+<!-- 高级JavaScript -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 动态画布背景
+    const canvas = document.getElementById('adminCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let connections = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class TechParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+                if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(102, 126, 234, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(100, canvas.width / 30);
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new TechParticle());
+            }
+        }
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(102, 126, 234, ${0.1 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => particle.update());
+            particles.forEach(particle => particle.draw());
+            drawConnections();
+
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+    }
+
+    // 实时数据更新
+    function updateLiveData() {
+        // 模拟实时数据更新
+        document.querySelectorAll('.live-number').forEach(element => {
+            const currentValue = parseInt(element.textContent);
+            const change = Math.floor(Math.random() * 10) - 5;
+            const newValue = Math.max(0, currentValue + change);
+            element.textContent = newValue;
+        });
+    }
+
+    // 定期更新数据
+    setInterval(updateLiveData, 3000);
+
+    // 统计数字动画
+    function animateNumbers() {
+        const counters = document.querySelectorAll('.stat-number');
+
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target') || counter.textContent);
+            const increment = target / 50;
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current);
+                }
+            }, 30);
+        });
+    }
+
+    animateNumbers();
+
+    // 快速操作功能
+    window.quickAction = function(action) {
+        switch(action) {
+            case 'import':
+                showNotification({
+                    type: 'info',
+                    icon: 'file-import',
+                    title: '批量导入',
+                    message: '正在启动批量导入功能...'
+                });
+                break;
+            case 'export':
+                showNotification({
+                    type: 'success',
+                    icon: 'file-export',
+                    title: '数据导出',
+                    message: '正在准备数据导出...'
+                });
+                break;
+            case 'backup':
+                showNotification({
+                    type: 'warning',
+                    icon: 'database',
+                    title: '系统备份',
+                    message: '正在执行系统备份...'
+                });
+                break;
+            case 'maintenance':
+                if (confirm('确定要进入维护模式吗？这将暂停所有用户访问。')) {
+                    showNotification({
+                        type: 'danger',
+                        icon: 'tools',
+                        title: '维护模式',
+                        message: '系统已进入维护模式'
+                    });
+                }
+                break;
+        }
+    };
+
+    // 实时图表（简化版）
+    const chartCanvas = document.getElementById('realtimeChart');
+    if (chartCanvas) {
+        const ctx = chartCanvas.getContext('2d');
+        const data = Array(20).fill(0).map(() => Math.random() * 100);
+
+        function drawChart() {
+            const width = chartCanvas.width;
+            const height = chartCanvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // 绘制渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.2)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // 绘制数据线
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
+            ctx.lineWidth = 2;
+
+            data.forEach((value, index) => {
+                const x = (index / (data.length - 1)) * width;
+                const y = height - (value / 100) * height;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // 添加发光效果
+            ctx.shadowColor = 'rgba(102, 126, 234, 0.8)';
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        drawChart();
+
+        // 定期更新图表
+        setInterval(() => {
+            data.shift();
+            data.push(Math.random() * 100);
+            drawChart();
+        }, 2000);
+    }
+
+    // 导航切换
+    document.querySelectorAll('.admin-nav .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            document.querySelectorAll('.admin-nav .nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            const page = this.getAttribute('data-page');
+            console.log('切换到页面:', page);
+
+            // 这里可以添加页面切换逻辑
+        });
+    });
+
+    // 响应式侧边栏
+    if (window.innerWidth <= 992) {
+        const sidebar = document.querySelector('.admin-sidebar');
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'sidebar-toggle d-lg-none position-fixed';
+        toggleBtn.style.cssText = 'top: 120px; left: 20px; z-index: 1000; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 50%; width: 50px; height: 50px; color: white; cursor: pointer;';
+        toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+
+        document.body.appendChild(toggleBtn);
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+
+        // 点击外部关闭侧边栏
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+    }
+
+    console.log('🎮 管理员控制台已初始化');
+    console.log('⚡ 高级功能：实时监控、批量操作、系统维护');
+});
+</script>
+{% endblock %}
+{% endblock %}

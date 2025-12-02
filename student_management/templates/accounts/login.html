@@ -1,50 +1,691 @@
-{% extends 'base.html' %}
+{% extends 'base-advanced.html' %}
 {% block title %}登录 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4><i class="fas fa-sign-in-alt"></i> 用户登录</h4>
+<!-- 登录页面背景装饰 -->
+<div class="login-background">
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+</div>
+
+<!-- 主登录容器 -->
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center w-100">
+        <!-- 左侧欢迎信息 -->
+        <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center text-white mb-5 mb-lg-0">
+            <div class="welcome-content text-center slide-in-left">
+                <div class="logo-container mb-4">
+                    <i class="fas fa-graduation-cap display-1 text-primary-custom"></i>
+                </div>
+                <h1 class="display-4 font-weight-bold mb-4">欢迎回来</h1>
+                <p class="lead mb-4">
+                    登录学生信息管理系统，访问您的个人档案、课程信息和学习进度
+                </p>
+                <div class="feature-list text-start">
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>完善的学生档案管理</span>
+                    </div>
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>智能课程选择系统</span>
+                    </div>
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>实时成绩查询</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <span>安全的数据保护</span>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
+        </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">用户名</label>
-                        <input type="text" class="form-control" id="{{ form.username.id_for_label }}"
-                               name="{{ form.username.name }}" required>
-                        {% if form.username.errors %}
-                            <div class="text-danger">
-                                {{ form.username.errors.0 }}
-                            </div>
+        <!-- 右侧登录表单 -->
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="login-container slide-in-up">
+                <!-- 登录卡片 -->
+                <div class="card login-card shadow-xl border-0">
+                    <div class="card-header login-header bg-gradient-primary text-white text-center p-4">
+                        <div class="login-icon mb-3">
+                            <i class="fas fa-user-circle fa-3x"></i>
+                        </div>
+                        <h3 class="mb-0 font-weight-bold">用户登录</h3>
+                        <p class="mb-0 mt-2 opacity-75">请输入您的登录凭据</p>
+                    </div>
+
+                    <div class="card-body p-4 p-lg-5">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
                         {% endif %}
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.password.id_for_label }}" class="form-label">密码</label>
-                        <input type="password" class="form-control" id="{{ form.password.id_for_label }}"
-                               name="{{ form.password.name }}" required>
-                        {% if form.password.errors %}
-                            <div class="text-danger">
-                                {{ form.password.errors.0 }}
+                        <form method="post" id="loginForm" class="needs-validation" novalidate>
+                            {% csrf_token %}
+
+                            <!-- 用户名输入框 -->
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control login-input" id="{{ form.username.id_for_label }}"
+                                       name="{{ form.username.name }}" placeholder="用户名" required
+                                       value="{{ form.username.value|default:'' }}">
+                                <label for="{{ form.username.id_for_label }}" class="form-label login-label">
+                                    <i class="fas fa-user me-2"></i>用户名
+                                </label>
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.username.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+
+                            <!-- 密码输入框 -->
+                            <div class="form-floating mb-4">
+                                <input type="password" class="form-control login-input" id="{{ form.password.id_for_label }}"
+                                       name="{{ form.password.name }}" placeholder="密码" required>
+                                <label for="{{ form.password.id_for_label }}" class="form-label login-label">
+                                    <i class="fas fa-lock me-2"></i>密码
+                                </label>
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.password.errors.0 }}
+                                    </div>
+                                {% endif %}
+
+                                <!-- 密码显示切换 -->
+                                <button type="button" class="btn password-toggle position-absolute end-0 top-50 translate-middle-y"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="显示/隐藏密码">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <!-- 记住我和忘记密码 -->
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
+                                        <label class="form-check-label" for="rememberMe">
+                                            记住我
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                                    <a href="#" class="text-decoration-none text-primary-custom" id="forgotPassword">
+                                        忘记密码？
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- 登录按钮 -->
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-lg btn-primary login-button" id="loginBtn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-sign-in-alt me-2"></i>
+                                        登录系统
+                                    </span>
+                                    <span class="btn-loading d-none">
+                                        <span class="loading-spinner me-2"></span>
+                                        登录中...
+                                    </span>
+                                </button>
+                            </div>
+
+                            <!-- 分割线 -->
+                            <div class="divider text-center mb-4">
+                                <span class="divider-text">或者</span>
+                            </div>
+
+                            <!-- 注册链接 -->
+                            <div class="text-center">
+                                <p class="mb-0 text-muted">
+                                    还没有账号？
+                                    <a href="{% url 'accounts:register' %}" class="text-decoration-none text-primary-custom fw-bold">
+                                        立即注册
+                                        <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i> 登录
-                        </button>
+                    <!-- 快速访问 -->
+                    <div class="card-footer bg-light p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">© 2024 学生管理系统</small>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="text-muted text-decoration-none" title="帮助">
+                                    <i class="fas fa-question-circle"></i>
+                                </a>
+                                <a href="#" class="text-muted text-decoration-none" title="联系支持">
+                                    <i class="fas fa-headset"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">还没有账号？ <a href="{% url 'accounts:register' %}">立即注册</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 自定义样式 -->
+<style>
+/* 登录页面背景 */
+.login-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 50%, #1e3a8a 100%);
+    z-index: -1;
+}
+
+/* 浮动形状 */
+.floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    right: -100px;
+    animation-delay: 5s;
+}
+
+.shape-3 {
+    width: 150px;
+    height: 150px;
+    bottom: -75px;
+    left: 30%;
+    animation-delay: 10s;
+}
+
+.shape-4 {
+    width: 100px;
+    height: 100px;
+    top: 30%;
+    left: 50%;
+    animation-delay: 15s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-30px) rotate(120deg); }
+    66% { transform: translateY(30px) rotate(240deg); }
+}
+
+/* 欢迎内容 */
+.welcome-content {
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.feature-item {
+    opacity: 0;
+    animation: fadeInLeft 0.6s ease-out forwards;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.5s; }
+.feature-item:nth-child(2) { animation-delay: 0.7s; }
+.feature-item:nth-child(3) { animation-delay: 0.9s; }
+.feature-item:nth-child(4) { animation-delay: 1.1s; }
+
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* 登录卡片 */
+.login-card {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    transition: var(--transition);
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.login-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-header:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.login-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* 表单样式 */
+.login-input {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    height: 3.5rem;
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    padding-right: 3rem !important;
+}
+
+.login-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+    background: var(--gray-50);
+}
+
+.login-label {
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.form-floating > .form-control:focus ~ .login-label,
+.form-floating > .form-control:not(:placeholder-shown) ~ .login-label {
+    color: var(--primary-color);
+}
+
+/* 密码切换按钮 */
+.password-toggle {
+    border: none;
+    background: transparent;
+    color: var(--gray-500);
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* 登录按钮 */
+.login-button {
+    height: 3rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* 分割线 */
+.divider {
+    position: relative;
+    text-align: center;
+}
+
+.divider-text {
+    background: white;
+    color: var(--gray-500);
+    padding: 0 1rem;
+    position: relative;
+    z-index: 1;
+    font-size: 0.875rem;
+}
+
+.divider:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gray-300);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .login-card {
+        margin: 1rem;
+        border-radius: var(--radius-lg);
+    }
+
+    .welcome-content {
+        padding: 1rem;
+    }
+
+    .login-header {
+        padding: 2rem 1rem !important;
+    }
+
+    .card-body {
+        padding: 2rem 1rem !important;
+    }
+
+    .login-input {
+        height: 3rem;
+    }
+
+    .login-button {
+        height: 2.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .floating-shapes {
+        display: none;
+    }
+
+    .login-background {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+}
+
+/* 表单验证样式 */
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+    background-image: none;
+}
+
+.form-control.is-valid {
+    border-color: var(--success-color);
+    background-image: none;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 动画类 */
+.slide-in-up {
+    animation: slideInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+
+<!-- 登录页面交互脚本 -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 密码显示/隐藏切换
+    const passwordToggle = document.querySelector('.password-toggle');
+    const passwordInput = document.querySelector('input[type="password"]');
+
+    if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            const icon = this.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                this.setAttribute('title', '隐藏密码');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                this.setAttribute('title', '显示密码');
+            }
+        });
+    }
+
+    // 表单验证增强
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const btnLoading = loginBtn.querySelector('.btn-loading');
+
+            if (loginForm.checkValidity()) {
+                e.preventDefault();
+
+                // 显示加载状态
+                loginBtn.disabled = true;
+                btnText.classList.add('d-none');
+                btnLoading.classList.remove('d-none');
+                loginBtn.classList.add('loading');
+
+                // 模拟登录延迟
+                setTimeout(function() {
+                    // 提交表单
+                    loginForm.submit();
+                }, 1500);
+            } else {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            loginForm.classList.add('was-validated');
+        });
+
+        // 实时验证
+        const inputs = loginForm.querySelectorAll('input[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    validateField(this);
+                }
+            });
+        });
+
+        function validateField(field) {
+            const value = field.value.trim();
+
+            if (value === '') {
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+        }
+    }
+
+    // 忘记密码功能
+    const forgotPasswordLink = document.getElementById('forgotPassword');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // 显示密码重置模态框
+            const modal = new bootstrap.Modal(document.getElementById('passwordResetModal') || createPasswordResetModal());
+            modal.show();
+        });
+    }
+
+    function createPasswordResetModal() {
+        const modalHtml = `
+            <div class="modal fade" id="passwordResetModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-key me-2"></i>重置密码
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3">请输入您的用户名或邮箱地址，我们将发送密码重置链接。</p>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="resetInput" placeholder="用户名或邮箱">
+                                <label for="resetInput">用户名或邮箱</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="sendResetLink">
+                                <i class="fas fa-paper-plane me-2"></i>发送重置链接
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        return document.getElementById('passwordResetModal');
+    }
+
+    // 初始化工具提示
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // 键盘快捷键
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter 提交表单
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn && !loginBtn.disabled) {
+                loginBtn.click();
+            }
+        }
+    });
+
+    // 添加涟漪效果
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', createRipple);
+    });
+
+    function createRipple(e) {
+        const button = e.currentTarget;
+        const ripple = document.createElement('span');
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple-effect');
+
+        button.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    }
+
+    // 涟漪效果样式
+    const style = document.createElement('style');
+    style.textContent = `
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button.loading {
+            background: linear-gradient(135deg, var(--gray-500) 0%, var(--gray-600) 100%);
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}
 {% endblock %}

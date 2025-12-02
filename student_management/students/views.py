@@ -21,20 +21,22 @@ class StudentOrAdminMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.role in ['admin', 'student']
 
-# 主页视图
-@login_required
+# 主页视图（公开访问）
 def home(request):
-    if request.user.role == 'admin':
-        return redirect('accounts:admin_dashboard')
-    elif request.user.role == 'student':
-        return redirect('accounts:student_dashboard')
+    if request.user.is_authenticated:
+        if request.user.role == 'admin':
+            return redirect('accounts:admin_dashboard')
+        elif request.user.role == 'student':
+            return redirect('accounts:student_dashboard')
+        else:
+            return render(request, 'students/home_clean.html')
     else:
-        return render(request, 'home.html')
+        return render(request, 'students/home_clean.html')
 
 # Department CRUD操作
-class DepartmentListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+class DepartmentListView(ListView):
     model = Department
-    template_name = 'students/department_list.html'
+    template_name = 'students/department_list_clean.html'
     context_object_name = 'departments'
 
 class DepartmentCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -165,7 +167,7 @@ def student_profile_list(request):
         'total_majors': Major.objects.count(),
     }
 
-    return render(request, 'students/student_profile_list.html', context)
+    return render(request, 'students/student_profile_list_clean.html', context)
 
 @login_required
 def student_profile_create(request):

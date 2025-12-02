@@ -1,0 +1,131 @@
+{% extends 'base-minimal.html' %}
+{% load static %}
+
+{% block title %}学生档案列表 - 学生管理系统{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <h1 class="page-title">学生档案列表</h1>
+        <div class="page-actions">
+            {% if user.role == 'admin' %}
+                <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
+                    添加学生档案
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-box">
+        <form method="get" class="w-100">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   placeholder="搜索学生姓名、学号或院系..."
+                   value="{{ request.GET.q }}">
+        </form>
+    </div>
+
+    <!-- 统计信息 -->
+    {% if user.role == 'admin' %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="card" style="text-align: center;">
+            <div style="padding: 1.5rem;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">
+                    {{ students.count }}
+                </div>
+                <div style="color: var(--text-secondary);">总学生数</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 学生列表 -->
+    {% if students %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+            {% for student in students %}
+                <div class="card">
+                    <div style="padding: 1.5rem;">
+                        <!-- 学生基本信息 -->
+                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 1.5rem;">
+                                {% if student.user.get_full_name %}
+                                    {{ student.user.get_full_name.0 }}
+                                {% else %}
+                                    {{ student.user.username.0|upper }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">
+                                    {{ student.real_name|default:student.user.username }}
+                                </h3>
+                                <p style="margin: 0.25rem 0; color: var(--text-secondary); font-size: 0.9rem;">
+                                    学号: {{ student.student_id|default:'未设置' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 详细信息 -->
+                        <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                            {% if student.department %}
+                                <p style="margin: 0.25rem 0;">
+                                    🏢 {{ student.department.name }}
+                                </p>
+                            {% endif %}
+                            {% if student.major %}
+                                <p style="margin: 0.25rem 0;">
+                                    📚 {{ student.major.name }}
+                                </p>
+                            {% endif %}
+                            {% if student.gender %}
+                                <p style="margin: 0.25rem 0;">
+                                    👤 {% if student.gender == 'M' %}男{% elif student.gender == 'F' %}女{% else %}其他{% endif %}
+                                </p>
+                            {% endif %}
+                            {% if student.birth_date %}
+                                <p style="margin: 0.25rem 0;">
+                                    📅 {{ student.birth_date }}
+                                </p>
+                            {% endif %}
+                            <p style="margin: 0.25rem 0;">
+                                📧 {{ student.user.email|default:'未设置邮箱' }}
+                            </p>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="table-card-actions" style="margin-top: 1rem;">
+                            {% if user.role == 'admin' %}
+                                <a href="{% url 'students:student_profile_update' student.id %}" class="btn btn-sm btn-outline">
+                                    编辑
+                                </a>
+                                <a href="{% url 'students:student_profile_delete' student.id %}" class="btn btn-sm btn-danger">
+                                    删除
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- 空状态 -->
+        <div class="empty-state">
+            <h3>没有找到学生档案</h3>
+            <p>
+                {% if request.GET.q %}
+                    没有找到包含 "{{ request.GET.q }}" 的学生档案。
+                {% else %}
+                    系统中还没有学生档案。
+                {% endif %}
+            </p>
+            {% if user.role == 'admin' and not request.GET.q %}
+                <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
+                    添加第一个学生档案
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

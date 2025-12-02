@@ -1,0 +1,74 @@
+{% extends 'base-minimal.html' %}
+{% load static %}
+
+{% block title %}院系列表 - 学生管理系统{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <h1 class="page-title">院系信息</h1>
+        {% if user.role == 'admin' %}
+            <div class="page-actions">
+                <a href="{% url 'students:department_create' %}" class="btn btn-primary">
+                    添加院系
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 院系列表 -->
+    {% if departments %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+            {% for department in departments %}
+                <div class="card">
+                    <div style="padding: 1.5rem;">
+                        <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">
+                            🏢 {{ department.name }}
+                        </h3>
+
+                        {% if department.description %}
+                            <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+                                {{ department.description|truncatewords:20 }}
+                            </p>
+                        {% endif %}
+
+                        <!-- 统计信息 -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">
+                                学生数: {{ department.studentprofile_set.count }}
+                            </span>
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">
+                                专业数: {{ department.major_set.count }}
+                            </span>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        {% if user.role == 'admin' %}
+                            <div class="table-card-actions">
+                                <a href="{% url 'students:department_update' department.id %}" class="btn btn-sm btn-outline">
+                                    编辑
+                                </a>
+                                <a href="{% url 'students:department_delete' department.id %}" class="btn btn-sm btn-danger">
+                                    删除
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- 空状态 -->
+        <div class="empty-state">
+            <h3>没有院系信息</h3>
+            <p>系统中还没有添加任何院系。</p>
+            {% if user.role == 'admin' %}
+                <a href="{% url 'students:department_create' %}" class="btn btn-primary">
+                    添加第一个院系
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

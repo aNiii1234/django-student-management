@@ -1,0 +1,1522 @@
+{% extends 'base-advanced.html' %}
+{% load static %}
+{% block title %}高级UI展示 - 学生管理系统{% endblock %}
+
+{% block content %}
+<!-- 高级UI展示页面 -->
+<div class="showcase-container">
+    <!-- 动态背景 -->
+    <div class="showcase-background">
+        <div class="showcase-grid"></div>
+        <div class="showcase-particles" id="showcaseCanvas"></div>
+        <div class="showcase-orbs">
+            <div class="showcase-orb orb-1"></div>
+            <div class="showcase-orb orb-2"></div>
+            <div class="showcase-orb orb-3"></div>
+            <div class="showcase-orb orb-4"></div>
+            <div class="showcase-orb orb-5"></div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="container-fluid py-5">
+        <!-- 页面标题 -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <div class="showcase-header glass-card p-4 p-lg-5 inline-block">
+                    <h1 class="display-3 font-weight-bold text-gradient mb-3">
+                        <i class="fas fa-rocket me-3"></i>
+                        高级UI展示中心
+                    </h1>
+                    <p class="lead text-white-50">
+                        体验最前沿的学生管理系统界面设计，融合玻璃态设计、动态背景、实时数据监控和高级交互效果
+                    </p>
+                    <div class="showcase-badges">
+                        <span class="badge-advanced badge-info-gradient">
+                            <i class="fas fa-brain me-1"></i> AI 智能设计
+                        </span>
+                        <span class="badge-advanced badge-success-gradient">
+                            <i class="fas fa-shield-alt me-1"></i> 企业级安全
+                        </span>
+                        <span class="badge-advanced badge-warning-gradient">
+                            <i class="fas fa-rocket me-1"></i> 超高性能
+                        </span>
+                        <span class="badge-advanced badge-danger-gradient">
+                            <i class="fas fa-mobile-alt me-1"></i> 全端适配
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能展示网格 -->
+        <div class="showcase-grid-container">
+            <!-- 1. 玻璃态设计 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.1s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>玻璃态设计</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            采用先进的玻璃态效果，提供半透明背景和模糊效果，创造现代感的视觉体验
+                        </p>
+                        <ul class="feature-list text-white-60">
+                            <li><i class="fas fa-check text-success me-2"></i> 半透明背景效果</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 动态模糊背景</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 光泽动画效果</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 响应式设计</li>
+                        </ul>
+                        <button class="btn btn-primary-gradient w-100" onclick="showFeatureDemo('glass')">
+                            <i class="fas fa-eye me-2"></i>查看演示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 动态背景系统 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.2s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-wave-square"></i>
+                        </div>
+                        <h3>动态背景</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            智能粒子系统、浮动几何图形和数据流动效果，创造沉浸式的视觉体验
+                        </p>
+                        <ul class="feature-list text-white-60">
+                            <li><i class="fas fa-check text-success me-2"></i> 粒子动画系统</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 浮动几何图形</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 数据流动效果</li>
+                            <li><i class="fas fa-check text-success me-2"></i> 交互式背景</li>
+                        </ul>
+                        <button class="btn btn-info-gradient w-100" onclick="showFeatureDemo('background')">
+                            <i class="fas fa-palette me-2"></i>查看演示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 实时数据监控 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.3s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>实时监控</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            实时数据更新、动态图表展示和系统状态监控，提供全方位的数据洞察
+                        </p>
+                        <div class="live-demo p-3 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-white-50">在线用户</span>
+                                <span class="live-badge">
+                                    <span class="live-number" data-target="127">0</span>
+                                    <div class="live-dot success"></div>
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-white-50">系统负载</span>
+                                <span class="live-badge">
+                                    <span class="live-number" data-target="67">0</span>
+                                    <span class="unit">%</span>
+                                    <div class="live-dot warning"></div>
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-white-50">响应时间</span>
+                                <span class="live-badge">
+                                    <span class="live-number" data-target="89">0</span>
+                                    <span class="unit">ms</span>
+                                    <div class="live-dot success"></div>
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn btn-success-gradient w-100" onclick="showFeatureDemo('monitoring')">
+                            <i class="fas fa-tachometer-alt me-2"></i>查看演示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 高级交互动画 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.4s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3>高级动画</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            流畅的过渡动画、3D变换效果和微交互，提供极致的用户体验
+                        </p>
+                        <div class="animation-demo p-3 mb-4">
+                            <div class="animation-demo-grid">
+                                <div class="demo-item" onclick="animateDemoItem(this, 'bounce')">
+                                    <div class="demo-box">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </div>
+                                    <span class="demo-label">弹跳</span>
+                                </div>
+                                <div class="demo-item" onclick="animateDemoItem(this, 'rotate')">
+                                    <div class="demo-box">
+                                        <i class="fas fa-sync"></i>
+                                    </div>
+                                    <span class="demo-label">旋转</span>
+                                </div>
+                                <div class="demo-item" onclick="animateDemoItem(this, 'pulse')">
+                                    <div class="demo-box">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <span class="demo-label">脉动</span>
+                                </div>
+                                <div class="demo-item" onclick="animateDemoItem(this, 'shake')">
+                                    <div class="demo-box">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <span class="demo-label">震动</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-warning-gradient w-100" onclick="showFeatureDemo('animations')">
+                            <i class="fas fa-film me-2"></i>查看演示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 智能表单系统 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.5s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-wpforms"></i>
+                        </div>
+                        <h3>智能表单</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            实时验证、智能提示、自动完成和错误处理，提升表单填写效率
+                        </p>
+                        <form class="smart-form" onsubmit="handleSmartFormSubmit(event)">
+                            <div class="form-group-advanced mb-3">
+                                <label class="form-label-advanced">
+                                    <i class="fas fa-user me-2"></i>
+                                    用户名
+                                </label>
+                                <div class="input-wrapper-advanced">
+                                    <input type="text" class="form-control-advanced" placeholder="请输入用户名" required>
+                                    <div class="input-validation-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-advanced mb-3">
+                                <label class="form-label-advanced">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    邮箱地址
+                                </label>
+                                <div class="input-wrapper-advanced">
+                                    <input type="email" class="form-control-advanced" placeholder="请输入邮箱" required>
+                                    <div class="input-validation-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-advanced mb-4">
+                                <label class="form-label-advanced">
+                                    <i class="fas fa-lock me-2"></i>
+                                    安全密码
+                                </label>
+                                <div class="input-wrapper-advanced">
+                                    <input type="password" class="form-control-advanced" placeholder="请输入密码" required>
+                                    <div class="input-validation-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength">
+                                    <div class="strength-bar"></div>
+                                    <span class="strength-text">密码强度</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-danger-gradient w-100">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                智能验证演示
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. 响应式设计 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.6s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>响应式设计</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            完美适配各种设备，从手机到平板再到桌面，提供一致的用户体验
+                        </p>
+                        <div class="responsive-demo">
+                            <div class="device-preview desktop active" onclick="switchDevice('desktop', this)">
+                                <div class="device-frame">
+                                    <div class="device-screen">
+                                        <i class="fas fa-desktop"></i>
+                                        <span>桌面端</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-preview tablet" onclick="switchDevice('tablet', this)">
+                                <div class="device-frame">
+                                    <div class="device-screen">
+                                        <i class="fas fa-tablet-alt"></i>
+                                        <span>平板端</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-preview mobile" onclick="switchDevice('mobile', this)">
+                                <div class="device-frame">
+                                    <div class="device-screen">
+                                        <i class="fas fa-mobile"></i>
+                                        <span>手机端</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-info-gradient w-100 mt-4" onclick="showFeatureDemo('responsive')">
+                            <i class="fas fa-devices me-2"></i>查看演示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. 暗色/亮色主题 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.7s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-adjust"></i>
+                        </div>
+                        <h3>主题切换</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            支持暗色和亮色主题自动切换，适应不同光线环境和个人偏好
+                        </p>
+                        <div class="theme-preview">
+                            <div class="theme-option">
+                                <div class="theme-demo dark-theme">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                                <span>暗色主题</span>
+                            </div>
+                            <div class="theme-option">
+                                <div class="theme-demo light-theme">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                                <span>亮色主题</span>
+                            </div>
+                        </div>
+                        <div class="theme-controls mt-4">
+                            <button class="btn btn-primary-gradient me-2" onclick="toggleShowcaseTheme('dark')">
+                                <i class="fas fa-moon me-2"></i>切换到暗色
+                            </button>
+                            <button class="btn btn-outline-light" onclick="toggleShowcaseTheme('light')">
+                                <i class="fas fa-sun me-2"></i>切换到亮色
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. 性能优化 -->
+            <div class="showcase-item fade-in-up" style="animation-delay: 0.8s;">
+                <div class="showcase-card glass-card hover-lift">
+                    <div class="card-header-advanced">
+                        <div class="feature-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3>性能优化</h3>
+                    </div>
+                    <div class="card-body-advanced">
+                        <p class="text-white-70 mb-4">
+                            优化的代码结构、懒加载机制和缓存策略，确保快速的加载和流畅的交互
+                        </p>
+                        <div class="performance-metrics">
+                            <div class="metric-item">
+                                <span class="metric-label">加载速度</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 95%"></div>
+                                </div>
+                                <span class="metric-value">95%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">渲染性能</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 88%"></div>
+                                </div>
+                                <span class="metric-value">88%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">内存效率</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 92%"></div>
+                                </div>
+                                <span class="metric-value">92%</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-success-gradient w-100 mt-4" onclick="showFeatureDemo('performance')">
+                            <i class="fas fa-chart-bar me-2"></i>性能分析
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部行动区 -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="action-section glass-card p-4 p-lg-5 inline-block">
+                    <h2 class="text-gradient mb-4">
+                        <i class="fas fa-rocket me-3"></i>
+                        准备体验高级UI了吗？
+                    </h2>
+                    <p class="text-white-70 mb-4 lead">
+                        选择适合您的入口，开始全新的管理体验
+                    </p>
+                    <div class="action-buttons">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-lg btn-primary-gradient btn-xl me-3 hover-lift">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            高级登录体验
+                        </a>
+                        <a href="{% url 'students:student_profile_list' %}" class="btn btn-lg btn-outline-light btn-xl hover-lift">
+                            <i class="fas fa-users me-2"></i>
+                            查看学生管理
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 特性演示模态框 -->
+<div class="modal fade" id="featureDemoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-eye me-2"></i>
+                    功能演示
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4" id="demoContent">
+                <!-- 动态内容将在这里插入 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 高级样式 -->
+<style>
+    /* 展示容器 */
+    .showcase-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* 展示背景 */
+    .showcase-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+
+    .showcase-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+            linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: showcaseGrid 20s linear infinite;
+    }
+
+    @keyframes showcaseGrid {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+
+    #showcaseCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .showcase-orbs {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .showcase-orb {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.4) 0%, transparent 70%);
+        animation: floatOrb 20s ease-in-out infinite;
+    }
+
+    .orb-1 {
+        width: 400px;
+        height: 400px;
+        top: -200px;
+        left: -100px;
+        animation-delay: 0s;
+    }
+
+    .orb-2 {
+        width: 300px;
+        height: 300px;
+        top: 50%;
+        right: -150px;
+        animation-delay: 7s;
+    }
+
+    .orb-3 {
+        width: 250px;
+        height: 250px;
+        bottom: -125px;
+        left: 30%;
+        animation-delay: 14s;
+    }
+
+    .orb-4 {
+        width: 200px;
+        height: 200px;
+        top: 30%;
+        left: 60%;
+        animation-delay: 21s;
+    }
+
+    .orb-5 {
+        width: 150px;
+        height: 150px;
+        top: 60%;
+        right: 20%;
+        animation-delay: 28s;
+    }
+
+    @keyframes floatOrb {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(50px, -30px) scale(1.1); }
+        50% { transform: translate(-30px, 50px) scale(0.9); }
+        75% { transform: translate(30px, -20px) scale(1.05); }
+    }
+
+    /* 展示网格容器 */
+    .showcase-grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .showcase-item {
+        animation-fill-mode: both;
+    }
+
+    /* 展示卡片 */
+    .showcase-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.5rem;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    .showcase-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.6), transparent);
+        animation: showcaseShine 3s linear infinite;
+    }
+
+    @keyframes showcaseShine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    /* 特性图标 */
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* 特性列表 */
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .feature-list li i {
+        width: 20px;
+        text-align: center;
+    }
+
+    /* 实时演示 */
+    .live-demo {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .live-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+    }
+
+    .live-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: white;
+    }
+
+    .live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: liveDot 2s ease-in-out infinite;
+    }
+
+    .live-dot.success {
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .live-dot.warning {
+        background: #f59e0b;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
+    .live-dot.error {
+        background: #ef4444;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    @keyframes liveDot {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .unit {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 500;
+    }
+
+    /* 动画演示 */
+    .animation-demo-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+    }
+
+    .demo-item {
+        text-align: center;
+        cursor: pointer;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .demo-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-5px);
+    }
+
+    .demo-box {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin: 0 auto 0.5rem;
+    }
+
+    .demo-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* 智能表单 */
+    .smart-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .input-validation-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #10b981;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .form-control-advanced:valid ~ .input-validation-icon {
+        opacity: 1;
+    }
+
+    .password-strength {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .strength-bar {
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .strength-text {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        min-width: 60px;
+    }
+
+    /* 响应式预览 */
+    .responsive-demo {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .device-preview {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .device-preview:hover {
+        transform: translateY(-5px);
+    }
+
+    .device-preview.active {
+        transform: translateY(-10px) scale(1.05);
+    }
+
+    .device-frame {
+        width: 100px;
+        height: 120px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .device-screen {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+    }
+
+    .device-screen i {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 主题预览 */
+    .theme-preview {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .theme-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .theme-demo {
+        width: 80px;
+        height: 100px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .dark-theme {
+        background: #1a1a2e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-theme .demo-header {
+        background: #16213e;
+        height: 30px;
+    }
+
+    .dark-theme .demo-content {
+        background: #0f0f23;
+        height: 70px;
+    }
+
+    .light-theme {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    .light-theme .demo-header {
+        background: #f8f9fa;
+        height: 30px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .light-theme .demo-content {
+        background: #ffffff;
+        height: 70px;
+    }
+
+    .theme-option:hover .theme-demo {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 性能指标 */
+    .performance-metrics {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .metric-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .metric-label {
+        min-width: 80px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+    }
+
+    .metric-bar {
+        width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .metric-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #667eea);
+        transition: width 1s ease;
+    }
+
+    .metric-value {
+        min-width: 40px;
+        font-weight: 700;
+        color: white;
+    }
+
+    /* 行动区域 */
+    .action-section {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1024px) {
+        .showcase-grid-container {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .showcase-grid-container {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .showcase-header {
+            padding: 2rem 1rem;
+        }
+
+        .showcase-header h1 {
+            font-size: 2rem;
+        }
+
+        .animation-demo-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .responsive-demo,
+        .theme-preview {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .performance-metrics {
+            gap: 0.75rem;
+        }
+
+        .metric-item {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        .showcase-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .showcase-header p {
+            font-size: 0.9rem;
+        }
+
+        .device-frame {
+            width: 80px;
+            height: 100px;
+        }
+
+        .theme-demo {
+            width: 60px;
+            height: 80px;
+        }
+
+        .animation-demo-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .demo-item {
+            padding: 0.75rem;
+        }
+
+        .demo-box {
+            width: 40px;
+            height: 40px;
+        }
+    }
+</style>
+
+<!-- 高级JavaScript -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化展示页面背景
+    initializeShowcaseBackground();
+
+    // 初始化实时数字动画
+    initializeLiveNumbers();
+
+    // 初始化模态框
+    initializeModal();
+
+    // 功能演示函数
+    window.showFeatureDemo = function(feature) {
+        const modal = new bootstrap.Modal(document.getElementById('featureDemoModal'));
+        const content = document.getElementById('demoContent');
+
+        let demoHTML = '';
+
+        switch(feature) {
+            case 'glass':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">玻璃态设计演示</h6>
+                    <div class="glass-demo-grid">
+                        <div class="glass-demo-item">半透明卡片</div>
+                        <div class="glass-demo-item">模糊背景</div>
+                        <div class="glass-demo-item">光泽效果</div>
+                        <div class="glass-demo-item">现代设计</div>
+                    </div>
+                    <p class="text-white-50">玻璃态设计通过半透明效果和背景模糊，创造出现代感和层次感。</p>
+                `;
+                break;
+            case 'background':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">动态背景系统</h6>
+                    <div class="background-demo">
+                        <canvas id="demoCanvas" width="600" height="300" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;"></canvas>
+                    </div>
+                    <p class="text-white-50 mt-3">动态背景包含粒子系统、浮动几何图形和数据流效果。</p>
+                `;
+                setTimeout(() => initializeDemoCanvas(), 100);
+                break;
+            case 'monitoring':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">实时数据监控</h6>
+                    <div class="monitoring-demo">
+                        <div class="demo-stats">
+                            <div class="demo-stat">
+                                <span class="demo-number" data-target="1234">0</span>
+                                <span>当前在线</span>
+                            </div>
+                            <div class="demo-stat">
+                                <span class="demo-number" data-target="567">0</span>
+                                <span>今日访问</span>
+                            </div>
+                            <div class="demo-stat">
+                                <span class="demo-number" data-target="89">0</span>
+                                <span>系统性能%</span>
+                            </div>
+                        </div>
+                        <canvas id="demoChart" width="600" height="200" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-top: 1rem;"></canvas>
+                    </div>
+                `;
+                setTimeout(() => {
+                    animateDemoNumbers();
+                    initializeDemoChart();
+                }, 100);
+                break;
+            case 'animations':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">高级交互动画</h6>
+                    <div class="animation-showcase">
+                        <div class="animation-examples">
+                            <div class="animation-example" onclick="playAnimation(this, 'bounce')">
+                                <div class="animation-box">弹跳</div>
+                            </div>
+                            <div class="animation-example" onclick="playAnimation(this, 'rotate')">
+                                <div class="animation-box">旋转</div>
+                            </div>
+                            <div class="animation-example" onclick="playAnimation(this, 'slide')">
+                                <div class="animation-box">滑动</div>
+                            </div>
+                            <div class="animation-example" onclick="playAnimation(this, 'pulse')">
+                                <div class="animation-box">脉动</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mt-3">点击上方元素查看不同的动画效果。</p>
+                `;
+                break;
+            case 'responsive':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">响应式设计演示</h6>
+                    <div class="responsive-showcase">
+                        <div class="device-simulator">
+                            <div class="simulator-header">
+                                <button class="device-btn active" onclick="switchDevice('desktop')">桌面</button>
+                                <button class="device-btn" onclick="switchDevice('tablet')">平板</button>
+                                <button class="device-btn" onclick="switchDevice('mobile')">手机</button>
+                            </div>
+                            <div class="simulator-screen desktop-view" id="simulatorScreen">
+                                <div class="mock-website">
+                                    <div class="mock-header">
+                                        <div class="mock-nav">导航栏</div>
+                                    </div>
+                                    <div class="mock-content">
+                                        <div class="mock-sidebar">侧边栏</div>
+                                        <div class="mock-main">
+                                            <h3>桌面版布局</h3>
+                                            <p>完整的功能展示</p>
+                                            <div class="mock-grid">
+                                                <div class="mock-item">项目1</div>
+                                                <div class="mock-item">项目2</div>
+                                                <div class="mock-item">项目3</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'performance':
+                demoHTML = `
+                    <h6 class="text-gradient mb-3">性能优化指标</h6>
+                    <div class="performance-showcase">
+                        <div class="performance-metrics-detail">
+                            <div class="perf-metric">
+                                <div class="perf-label">加载时间</div>
+                                <div class="perf-value"><span class="metric">1.2</span>秒</div>
+                                <div class="perf-bar"><div class="perf-fill" style="width: 85%"></div></div>
+                            </div>
+                            <div class="perf-metric">
+                                <div class="perf-label">首次绘制</div>
+                                <div class="perf-value"><span class="metric">0.8</span>秒</div>
+                                <div class="perf-bar"><div class="perf-fill" style="width: 90%"></div></div>
+                            </div>
+                            <div class="perf-metric">
+                                <div class="perf-label">交互响应</div>
+                                <div class="perf-value"><span class="metric">16</span>ms</div>
+                                <div class="perf-bar"><div class="perf-fill" style="width: 95%"></div></div>
+                            </div>
+                            <div class="perf-metric">
+                                <div class="perf-label">内存占用</div>
+                                <div class="perf-value"><span class="metric">45</span>MB</div>
+                                <div class="perf-bar"><div class="perf-fill" style="width: 70%"></div></div>
+                            </div>
+                        </div>
+                        <p class="text-white-50 mt-3">通过优化代码结构和采用现代Web技术，实现出色的性能表现。</p>
+                    </div>
+                `;
+                break;
+        }
+
+        content.innerHTML = demoHTML;
+        modal.show();
+    };
+
+    // 初始化展示页面背景
+    function initializeShowcaseBackground() {
+        const canvas = document.getElementById('showcaseCanvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 50;
+
+        class ShowcaseParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.color = ['#667eea', '#764ba2', '#f093fb', '#f5576c'][Math.floor(Math.random() * 4)];
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+                if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + Math.floor(this.opacity * 255).toString(16).padStart(2, '0');
+                ctx.fill();
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // 连接临近粒子
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(102, 126, 234, ${0.1 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        particles = Array.from({ length: particleCount }, () => new ShowcaseParticle());
+        animate();
+
+        window.addEventListener('resize', resizeCanvas);
+    }
+
+    // 初始化实时数字动画
+    function initializeLiveNumbers() {
+        document.querySelectorAll('.live-number').forEach(element => {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        });
+    }
+
+    // 初始化模态框
+    function initializeModal() {
+        const modal = document.getElementById('featureDemoModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', () => {
+                console.log('功能演示模态框已打开');
+            });
+        }
+    }
+
+    // 表单处理
+    function handleSmartFormSubmit(event) {
+        event.preventDefault();
+        showNotification({
+            type: 'success',
+            icon: 'check-circle',
+            title: '表单验证成功',
+            message: '智能表单验证演示已完成'
+        });
+    }
+
+    // 密码可见性切换
+    window.togglePasswordVisibility = function(button) {
+        const input = button.previousElementSibling;
+        const icon = button.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+            button.title = '隐藏密码';
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            button.title = '显示密码';
+        }
+    };
+
+    // 主题切换
+    window.toggleShowcaseTheme = function(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+
+        // 添加切换动画
+        const showcaseContainer = document.querySelector('.showcase-container');
+        showcaseContainer.style.animation = 'fadeInOut 0.5s ease-in-out';
+
+        setTimeout(() => {
+            showcaseContainer.style.animation = '';
+        }, 500);
+
+        showNotification({
+            type: 'info',
+            icon: 'adjust',
+            title: '主题切换',
+            message: `已切换到${theme === 'dark' ? '暗色' : '亮色'}主题`
+        });
+    };
+
+    // 设备切换
+    window.switchDevice = function(device, button) {
+        // 更新按钮状态
+        document.querySelectorAll('.device-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // 更新视图
+        const simulatorScreen = document.getElementById('simulatorScreen');
+        if (simulatorScreen) {
+            simulatorScreen.className = `simulator-screen ${device}-view`;
+
+            // 更新内容
+            const mockMain = simulatorScreen.querySelector('.mock-main');
+            if (mockMain) {
+                if (device === 'mobile') {
+                    mockMain.innerHTML = '<h3>手机版布局</h3><div class="mobile-menu">☰</div><div class="mobile-content">单列布局</div>';
+                } else if (device === 'tablet') {
+                    mockMain.innerHTML = '<h3>平板版布局</h3><div class="mock-grid"><div class="mock-item">1</div><div class="mock-item">2</div></div>';
+                } else {
+                    mockMain.innerHTML = '<h3>桌面版布局</h3><div class="mock-grid"><div class="mock-item">1</div><div class="mock-item">2</div><div class="mock-item">3</div></div>';
+                }
+            }
+        }
+    };
+
+    // 动画演示
+    window.animateDemoItem = function(element, animation) {
+        element.style.animation = 'none';
+        setTimeout(() => {
+            switch(animation) {
+                case 'bounce':
+                    element.style.animation = 'bounce 0.6s ease-out';
+                    break;
+                case 'rotate':
+                    element.style.animation = 'rotate 0.6s ease-out';
+                    break;
+                case 'pulse':
+                    element.style.animation = 'pulse 0.6s ease-out';
+                    break;
+                case 'shake':
+                    element.style.animation = 'shake 0.6s ease-out';
+                    break;
+            }
+        }, 10);
+    };
+
+    // 动画演示
+    window.playAnimation = function(element, animation) {
+        // 重置所有动画
+        document.querySelectorAll('.animation-example').forEach(el => {
+            el.style.animation = '';
+        });
+
+        // 应用新动画
+        animateDemoItem(element, animation);
+    };
+
+    // 演示画布
+    function initializeDemoCanvas() {
+        const canvas = document.getElementById('demoCanvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let time = 0;
+
+        function drawDemo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制波形
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
+            ctx.lineWidth = 2;
+
+            for (let x = 0; x < canvas.width; x += 5) {
+                const y = canvas.height / 2 + Math.sin((x + time) * 0.01) * 2) * 50;
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+
+            // 绘制粒子
+            for (let i = 0; i < 5; i++) {
+                const x = (Math.sin(time * 0.001 + i * 2) + 1) * canvas.width / 2 + canvas.width / 4;
+                const y = (Math.cos(time * 0.001 + i * 3) + 1) * canvas.height / 2 + canvas.height / 4;
+                const size = Math.sin(time * 0.001 + i) * 3 + 2;
+
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${(time * 10 + i * 60) % 360}, 70%, 50%, 0.8)`;
+                ctx.fill();
+            }
+
+            time += 1;
+            requestAnimationFrame(drawDemo);
+        }
+
+        drawDemo();
+    }
+
+    // 演示图表
+    function initializeDemoChart() {
+        const canvas = document.getElementById('demoChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let data = Array(50).fill(0).map(() => Math.random() * 100);
+
+        function drawChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 背景渐变
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.1)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制折线图
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
+            ctx.lineWidth = 2;
+
+            data.forEach((value, index) => {
+                const x = (index / (data.length - 1)) * canvas.width;
+                const y = canvas.height - (value / 100) * canvas.height * 0.8;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // 添加数据点
+            data.forEach((value, index) => {
+                const x = (index / (data.length - 1)) * canvas.width;
+                const y = canvas.height - (value / 100) * canvas.height * 0.8;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(102, 126, 234, 1)';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // 更新数据
+            data.shift();
+            data.push(Math.random() * 100);
+        }
+
+        function animateChart() {
+            drawChart();
+            setTimeout(animateChart, 100);
+        }
+
+        animateChart();
+    }
+
+    // 动画演示数字
+    function animateDemoNumbers() {
+        document.querySelectorAll('.demo-number').forEach(element => {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 1500;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        });
+    }
+
+    console.log('🚀 高级UI展示页面已初始化');
+    console.log('✨ 功能演示：玻璃态设计、动态背景、实时监控、高级动画');
+    console.log('🎨 交互体验：智能表单、响应式设计、主题切换');
+    console.log('📊 性能优化：懒加载、动画优化、代码结构');
+});
+</script>
+{% endblock %}
+{% endblock %}

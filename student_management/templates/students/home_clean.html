@@ -1,0 +1,173 @@
+{% extends 'base-minimal.html' %}
+{% load static %}
+
+{% block title %}首页 - 学生管理系统{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">学生管理系统</h1>
+            <p style="color: var(--text-secondary); margin: 0.5rem 0;">
+                {% if user.is_authenticated %}
+                    欢迎回来，{{ user.get_full_name|default:user.username }}！
+                {% else %}
+                    欢迎使用学生管理系统
+                {% endif %}
+            </p>
+        </div>
+        {% if not user.is_authenticated %}
+            <div class="page-actions">
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary">登录</a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-outline">注册</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 主要功能区域 -->
+    {% if user.is_authenticated %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+            <!-- 根据用户角色显示不同的功能卡片 -->
+            {% if user.role == 'admin' %}
+                <div class="card">
+                    <div class="card-header">
+                        管理功能
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            系统管理和用户管理功能
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-primary">
+                                管理面板
+                            </a>
+                            <a href="{% url 'students:student_list' %}" class="btn btn-outline">
+                                学生管理
+                            </a>
+                            <a href="{% url 'accounts:user_list' %}" class="btn btn-outline">
+                                用户管理
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% elif user.role == 'student' %}
+                <div class="card">
+                    <div class="card-header">
+                        学生功能
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            个人信息和学习管理
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="{% url 'accounts:student_dashboard' %}" class="btn btn-primary">
+                                学生面板
+                            </a>
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline">
+                                个人档案
+                            </a>
+                            <a href="{% url 'students:enrollment_list' %}" class="btn btn-outline">
+                                课程管理
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- 通用功能卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    档案管理
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        学生档案查询和管理
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="{% url 'students:student_profile_list' %}" class="btn btn-info">
+                            学生档案列表
+                        </a>
+                        <a href="{% url 'students:department_list' %}" class="btn btn-outline">
+                            院系信息
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- 未登录用户的欢迎页面 -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+            <div class="card">
+                <div class="card-header">
+                    🎓 学生管理
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-secondary); line-height: 1.6;">
+                        完整的学生信息管理系统，包括档案管理、课程注册、成绩管理等核心功能。
+                    </p>
+                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
+                        <li>学生档案管理</li>
+                        <li>课程注册系统</li>
+                        <li>成绩管理</li>
+                        <li>院系信息管理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    👥 用户系统
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-secondary); line-height: 1.6;">
+                        多角色用户管理系统，支持管理员、教师、学生等不同角色的权限控制。
+                    </p>
+                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
+                        <li>角色权限管理</li>
+                        <li>用户认证系统</li>
+                        <li>个人信息管理</li>
+                        <li>安全登录机制</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    📊 数据管理
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-secondary); line-height: 1.6;">
+                        强大的数据管理和统计功能，支持数据导入导出、统计分析等高级功能。
+                    </p>
+                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
+                        <li>数据统计分析</li>
+                        <li>报表生成</li>
+                        <li>数据导入导出</li>
+                        <li>实时数据监控</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速操作按钮 -->
+        <div style="text-align: center; margin: 3rem 0;">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">开始使用</h2>
+            <div class="quick-actions" style="justify-content: center;">
+                <a href="{% url 'accounts:login' %}" class="quick-action-btn">
+                    🔐 登录系统
+                </a>
+                <a href="{% url 'accounts:register' %}" class="quick-action-btn">
+                    ✏️ 立即注册
+                </a>
+                <a href="{% url 'students:student_profile_list' %}" class="quick-action-btn">
+                    👥 查看学生
+                </a>
+                <a href="{% url 'students:department_list' %}" class="quick-action-btn">
+                    🏢 院系信息
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

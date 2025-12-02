@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}学生信息管理系统 - 高级版{% endblock %}</title>
+    <meta name="description" content="专业的学生信息管理系统，提供现代化管理体验">
+    <meta name="keywords" content="学生管理,信息管理,教育系统">
+
+    <!-- 高级字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 高级UI样式 -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/advanced-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modern-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/integrations.css' %}">
+
+    <!-- 自定义样式 -->
+    <style>
+        /* 高级背景动画 */
+        .advanced-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: -3;
+        }
+
+        .particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.7;
+            animation: orbFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.8) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.6) 0%, transparent 70%);
+            top: 50%;
+            right: -150px;
+            animation-delay: 7s;
+        }
+
+        .orb-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(245, 87, 108, 0.5) 0%, transparent 70%);
+            bottom: -200px;
+            left: 30%;
+            animation-delay: 14s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.7;
+            }
+            25% {
+                transform: translate(100px, -50px) scale(1.1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translate(-50px, 100px) scale(0.9);
+                opacity: 0.6;
+            }
+            75% {
+                transform: translate(-100px, -30px) scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        /* 高级页面加载器 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-loader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .loader-logo i {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        .loader-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: ringSpin 1.5s linear infinite;
+        }
+
+        .loader-ring-2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-bottom-color: #764ba2;
+            border-radius: 50%;
+            animation: ringSpin 2s linear infinite reverse;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes ringSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 高级导航栏 */
+        .navbar-advanced {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-advanced.scrolled {
+            background: rgba(26, 26, 46, 0.95);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(30px);
+        }
+
+        /* 高级主要内容区域 */
+        .main-content-advanced {
+            min-height: calc(100vh - 200px);
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        /* 高级页脚 */
+        .footer-advanced {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem 0 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-advanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent);
+            animation: footerShine 3s linear infinite;
+        }
+
+        @keyframes footerShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 高级消息系统 */
+        .message-advanced {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: messageSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-advanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: messageShine 3s linear infinite;
+        }
+
+        @keyframes messageSlideIn {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes messageShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .message-success {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .message-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+
+        .message-danger {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .message-info {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        /* 高级按钮悬停效果 */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-glass:hover::before {
+            left: 100%;
+        }
+
+        .btn-glass:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 动画延迟类 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <!-- 高级背景层 -->
+    <div class="advanced-background"></div>
+
+    <!-- 粒子动画背景 -->
+    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
+    <!-- 渐变球体 -->
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+
+    <!-- 高级页面加载器 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-logo">
+            <div class="loader-ring"></div>
+            <div class="loader-ring-2"></div>
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="loading-advanced">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+        <p class="mt-4 text-white-50">正在加载高级界面...</p>
+    </div>
+
+    <!-- 高级导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-advanced" id="navbarAdvanced">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-advanced" href="{% url 'students:home' %}">
+                <i class="fas fa-graduation-cap me-2"></i>
+                <span>高级学生管理系统</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAdvanced">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNavAdvanced">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'accounts:admin_dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>
+                                    <span>高级控制台</span>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="manageDropdownAdvanced" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cogs me-2"></i>
+                                    <span>数据管理中心</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><a class="dropdown-item" href="{% url 'students:student_profile_list' %}"><i class="fas fa-users me-2"></i>学生档案</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'students:department_list' %}"><i class="fas fa-building me-2"></i>院系管理</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'students:major_list' %}"><i class="fas fa-graduation-cap me-2"></i>专业管理</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'students:course_list' %}"><i class="fas fa-book me-2"></i>课程管理</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'students:enrollment_list' %}"><i class="fas fa-user-plus me-2"></i>选课管理</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'students:enrollment_grade_list' %}"><i class="fas fa-chart-line me-2"></i>成绩管理</a></li>
+                                </ul>
+                            </li>
+                        {% elif user.role == 'student' %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'accounts:student_dashboard' %}">
+                                    <i class="fas fa-user-graduate me-2"></i>
+                                    <span>学生面板</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'students:my_enrollments' %}">
+                                    <i class="fas fa-book me-2"></i>
+                                    <span>我的课程</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdownAdvanced" role="button" data-bs-toggle="dropdown">
+                                <div class="avatar-advanced" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                    {{ user.get_full_name.0|upper|default:user.username.0|upper }}
+                                </div>
+                                <span class="ms-2">{{ user.get_full_name|default:user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>个人资料</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}"><i class="fas fa-edit me-2"></i>编辑资料</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>安全退出</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'accounts:login' %}">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                <span>高级登录</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'accounts:register' %}">
+                                <i class="fas fa-user-plus me-2"></i>
+                                <span>立即注册</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 高级主要内容区域 -->
+    <main class="main-content-advanced container fade-in-up">
+        <!-- 高级消息提示 -->
+        {% if messages %}
+            <div class="messages-advanced mb-4">
+                {% for message in messages %}
+                    <div class="message-advanced message-{{ message.tags|default:'info' }} fade-in-up delay-100">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'error' %}times-circle{% else %}info-circle{% endif %}"></i>
+                        <div class="flex-grow-1">{{ message }}</div>
+                        <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.remove()"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- 页面内容 -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- 高级页脚 -->
+    <footer class="footer-advanced text-white mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 fade-in-up delay-100">
+                    <h5 class="text-gradient mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i>高级学生管理系统
+                    </h5>
+                    <p class="text-white-50">
+                        下一代学生信息管理平台，采用最先进的技术和设计理念，为教育机构提供全面的数字化解决方案。
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-white-50 hover-primary"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-white-50 hover-primary"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white-50 hover-primary"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="#" class="text-white-50 hover-primary"><i class="fab fa-github fa-lg"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 fade-in-up delay-200">
+                    <h5 class="text-gradient mb-3">
+                        <i class="fas fa-rocket me-2"></i>核心功能
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-check me-2"></i>智能学生档案</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-check me-2"></i>AI课程推荐</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-check me-2"></i>实时数据分析</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-check me-2"></i>智能报表生成</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-check me-2"></i>多平台同步</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12 fade-in-up delay-300">
+                    <h5 class="text-gradient mb-3">
+                        <i class="fas fa-headset me-2"></i>技术支持
+                    </h5>
+                    <div class="contact-info">
+                        <p class="mb-3">
+                            <i class="fas fa-envelope me-3 text-primary-custom"></i>
+                            <span class="text-white-50">support@advanced-education.com</span>
+                        </p>
+                        <p class="mb-3">
+                            <i class="fas fa-phone me-3 text-primary-custom"></i>
+                            <span class="text-white-50">+86 400-888-9999</span>
+                        </p>
+                        <p class="mb-3">
+                            <i class="fas fa-map-marker-alt me-3 text-primary-custom"></i>
+                            <span class="text-white-50">北京市朝阳区科技园A座</span>
+                        </p>
+                        <div class="mt-4">
+                            <div class="badge-advanced badge-info-gradient">
+                                <i class="fas fa-shield-alt me-1"></i> 24/7 技术支持
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="text-white-50 mb-0">
+                        © 2024 高级学生管理系统. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-white-50 mb-0">
+                        Built with <i class="fas fa-heart text-danger"></i> by Advanced Education Team
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 主题切换按钮 -->
+    <div class="theme-toggle">
+        <button class="theme-toggle-btn" id="themeToggle" title="切换主题">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 高级UI框架 -->
+    {% load static %}
+    <script src="{% static 'js/advanced-ui.js' %}"></script>
+
+    <!-- 粒子动画脚本 -->
+    <script>
+        class ParticlesBackground {
+            constructor() {
+                this.canvas = document.getElementById('particlesCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.particleCount = 50;
+                this.init();
+                this.animate();
+
+                window.addEventListener('resize', () => this.init());
+            }
+
+            init() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.particles = [];
+
+                for (let i = 0; i < this.particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        size: Math.random() * 3 + 1,
+                        speedX: (Math.random() - 0.5) * 0.5,
+                        speedY: (Math.random() - 0.5) * 0.5,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.particles.forEach(particle => {
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+
+                    if (particle.x > this.canvas.width) particle.x = 0;
+                    if (particle.x < 0) particle.x = this.canvas.width;
+                    if (particle.y > this.canvas.height) particle.y = 0;
+                    if (particle.y < 0) particle.y = this.canvas.height;
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(102, 126, 234, ${particle.opacity})`;
+                    this.ctx.fill();
+                });
+
+                // 连接临近粒子
+                this.particles.forEach((particle, i) => {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const dx = this.particles[j].x - particle.x;
+                        const dy = this.particles[j].y - particle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 150) {
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(particle.x, particle.y);
+                            this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                            this.ctx.strokeStyle = `rgba(102, 126, 234, ${0.1 * (1 - distance / 150)})`;
+                            this.ctx.stroke();
+                        }
+                    }
+                });
+            }
+        }
+
+        // 初始化粒子背景
+        document.addEventListener('DOMContentLoaded', () => {
+            new ParticlesBackground();
+        });
+    </script>
+
+    <!-- 高级交互脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载器控制
+            const pageLoader = document.getElementById('pageLoader');
+
+            // 模拟页面加载完成
+            setTimeout(() => {
+                pageLoader.classList.add('fade-out');
+                setTimeout(() => {
+                    pageLoader.style.display = 'none';
+                }, 500);
+            }, 1500);
+
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbarAdvanced');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // 主题切换功能
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+
+            // 从localStorage读取主题设置
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            html.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+
+                // 添加切换动画
+                themeToggle.style.transform = 'scale(1.2) rotate(360deg)';
+                setTimeout(() => {
+                    themeToggle.style.transform = 'scale(1) rotate(0deg)';
+                }, 300);
+            });
+
+            function updateThemeIcon(theme) {
+                themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+                themeToggle.title = theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题';
+            }
+
+            // 添加平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // 高级按钮点击效果
+            document.querySelectorAll('.btn-advanced, .btn-glass').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple-advanced');
+
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // 卡片悬停音效（可选）
+            document.querySelectorAll('.card-advanced, .glass-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    // 播放悬停音效
+                    this.style.transform = 'translateY(-10px) rotateX(2deg)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    this.style.transform = 'translateY(0) rotateX(0deg)';
+                });
+            });
+
+            // 表单增强
+            document.querySelectorAll('input, textarea, select').forEach(field => {
+                field.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+
+                field.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            // 添加键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd + K 打开搜索
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    // 触发搜索框
+                    const searchInput = document.querySelector('input[type="search"], input[placeholder*="搜索"]');
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                }
+
+                // ESC 关闭模态框
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal.show');
+                    modals.forEach(modal => {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    });
+                }
+            });
+
+            // 高级提示初始化
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    template: '<div class="tooltip tooltip-advanced" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+                });
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

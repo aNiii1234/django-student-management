@@ -11,7 +11,7 @@ from .models import User
 from students.models import StudentProfile, Department, Major
 
 class CustomLoginView(LoginView):
-    template_name = 'accounts/login.html'
+    template_name = 'accounts/login_clean.html'
     redirect_authenticated_user = True
 
     def get_success_url(self):
