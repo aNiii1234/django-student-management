@@ -212,16 +212,28 @@
                 card.classList.add('fade-in');
             });
 
-            // 显示页面加载器
-            window.addEventListener('beforeunload', function() {
-                document.getElementById('pageLoading').classList.add('active');
-            });
-
-            // 隐藏页面加载器
+            // 隐藏页面加载器 - 支持浏览器前进后退
             window.addEventListener('load', function() {
                 setTimeout(function() {
                     document.getElementById('pageLoading').classList.remove('active');
                 }, 300);
+            });
+
+            // 处理浏览器缓存页面的情况（pageshow事件）
+            window.addEventListener('pageshow', function(event) {
+                // 如果页面是从浏览器缓存中恢复的（比如点击后退按钮）
+                if (event.persisted) {
+                    setTimeout(function() {
+                        document.getElementById('pageLoading').classList.remove('active');
+                    }, 100);
+                }
+            });
+
+            // 只在表单提交时显示加载器，不在浏览器导航时显示
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    document.getElementById('pageLoading').classList.add('active');
+                });
             });
 
             // 增强导航栏滚动效果
@@ -253,6 +265,11 @@
                 form.addEventListener('submit', function() {
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn && !submitBtn.disabled) {
+                        // 保存原始按钮文本
+                        if (!submitBtn.getAttribute('data-original-text')) {
+                            submitBtn.setAttribute('data-original-text', submitBtn.innerHTML);
+                        }
+
                         submitBtn.disabled = true;
                         submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>提交中...';
 
