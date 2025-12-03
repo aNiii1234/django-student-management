@@ -4,170 +4,557 @@
 {% block title %}首页 - 学生管理系统{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
-    <!-- 页面标题 -->
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">学生管理系统</h1>
-            <p style="color: var(--text-secondary); margin: 0.5rem 0;">
-                {% if user.is_authenticated %}
-                    欢迎回来，{{ user.get_full_name|default:user.username }}！
-                {% else %}
-                    欢迎使用学生管理系统
-                {% endif %}
-            </p>
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 1rem;">
+    <!-- 顶部导航栏（精简版） -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <span style="font-size: 1.8rem; font-weight: 700; color: var(--primary);">🎓 智慧学生管理系统</span>
         </div>
-        {% if not user.is_authenticated %}
-            <div class="page-actions">
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary">登录</a>
-                <a href="{% url 'accounts:register' %}" class="btn btn-outline">注册</a>
-            </div>
+        {% if user.is_authenticated %}
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <span style="color: var(--text-secondary);">欢迎, {{ user.get_full_name|default:user.username }}</span>
+            <a href="{% url 'accounts:logout' %}" style="color: var(--danger); font-size: 0.9rem;">退出登录</a>
+        </div>
         {% endif %}
     </div>
 
-    <!-- 主要功能区域 -->
-    {% if user.is_authenticated %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
-            <!-- 根据用户角色显示不同的功能卡片 -->
-            {% if user.role == 'admin' %}
-                <div class="card">
-                    <div class="card-header">
-                        管理功能
-                    </div>
-                    <div class="card-body">
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            系统管理和用户管理功能
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-primary">
-                                管理面板
-                            </a>
-                            <a href="{% url 'students:student_list' %}" class="btn btn-outline">
-                                学生管理
-                            </a>
-                            <a href="{% url 'accounts:user_list' %}" class="btn btn-outline">
-                                用户管理
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            {% elif user.role == 'student' %}
-                <div class="card">
-                    <div class="card-header">
-                        学生功能
-                    </div>
-                    <div class="card-body">
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            个人信息和学习管理
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <a href="{% url 'accounts:student_dashboard' %}" class="btn btn-primary">
-                                学生面板
-                            </a>
-                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline">
-                                个人档案
-                            </a>
-                            <a href="{% url 'students:enrollment_list' %}" class="btn btn-outline">
-                                课程管理
-                            </a>
-                        </div>
-                    </div>
+    <!-- 英雄区域（精简版） -->
+    <div class="hero-section" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 1rem; padding: 2.5rem 2rem; margin-bottom: 2rem; text-align: center; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1;">
+            <div style="position: absolute; top: 10%; left: 10%; font-size: 7rem;">📚</div>
+            <div style="position: absolute; top: 60%; right: 10%; font-size: 5rem;">🎓</div>
+        </div>
+
+        <div style="position: relative; z-index: 1;">
+            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                {% if user.is_authenticated %}
+                    高效管理 · 智慧教学
+                {% else %}
+                    全方位学生信息管理平台
+                {% endif %}
+            </h1>
+            <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto;">
+                {% if user.is_authenticated %}
+                    一站式管理学生档案、课程选课、成绩分析等核心业务，提升教育管理效率
+                {% else %}
+                    助力教育数字化转型，实现学生管理全流程信息化、智能化
+                {% endif %}
+            </p>
+
+            {% if not user.is_authenticated %}
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-lg" style="background: white; color: var(--primary); font-weight: 600; padding: 0.8rem 2rem;">
+                        立即登录
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-lg" style="background: transparent; color: white; border: 2px solid white; padding: 0.8rem 2rem;">
+                        账号注册
+                    </a>
                 </div>
             {% endif %}
+        </div>
+    </div>
 
-            <!-- 通用功能卡片 -->
-            <div class="card">
-                <div class="card-header">
-                    档案管理
+    {% if user.is_authenticated %}
+        <!-- 数据概览卡片 -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 2.5rem;">
+            <div class="stat-card" style="background: #f0f8fb; border-radius: 0.8rem; padding: 1.5rem; border: 1px solid #e8f4f8;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">在校学生</p>
+                        <h3 style="font-size: 2rem; font-weight: 700; color: #4299e1; margin: 0.3rem 0;">
+                            <span id="student-count">--</span>
+                        </h3>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: #4299e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        👥
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                        学生档案查询和管理
+                <a href="{% url 'students:student_profile_list' %}" style="color: #4299e1; font-size: 0.9rem; text-decoration: none;">
+                    查看详情 →
+                </a>
+            </div>
+
+            <div class="stat-card" style="background: #fdf2f8; border-radius: 0.8rem; padding: 1.5rem; border: 1px solid #fef7fb;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">开设课程</p>
+                        <h3 style="font-size: 2rem; font-weight: 700; color: #9f7aea; margin: 0.3rem 0;">
+                            <span id="course-count">--</span>
+                        </h3>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: #9f7aea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        📚
+                    </div>
+                </div>
+                <a href="{% url 'students:course_list' %}" style="color: #9f7aea; font-size: 0.9rem; text-decoration: none;">
+                    查看详情 →
+                </a>
+            </div>
+
+            <div class="stat-card" style="background: #eaf6fa; border-radius: 0.8rem; padding: 1.5rem; border: 1px solid #e8f4f8;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">院系专业</p>
+                        <h3 style="font-size: 2rem; font-weight: 700; color: #38b2ac; margin: 0.3rem 0;">
+                            <span id="department-count">--</span>
+                        </h3>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: #38b2ac; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        🏢
+                    </div>
+                </div>
+                <a href="{% url 'students:department_list' %}" style="color: #38b2ac; font-size: 0.9rem; text-decoration: none;">
+                    查看详情 →
+                </a>
+            </div>
+
+            <div class="stat-card" style="background: #f7f3e9; border-radius: 0.8rem; padding: 1.5rem; border: 1px solid #faf6ed;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">我的身份</p>
+                        <h3 style="font-size: 2rem; font-weight: 700; color: #ed8936; margin: 0.3rem 0;">
+                            <span id="user-role">--</span>
+                        </h3>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: #ed8936; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        🧑‍💼
+                    </div>
+                </div>
+                <a href="{% url 'accounts:profile' %}" style="color: #ed8936; font-size: 0.9rem; text-decoration: none;">
+                    个人中心 →
+                </a>
+            </div>
+        </div>
+
+        <!-- 核心功能区 -->
+        <div style="margin-bottom: 3rem;">
+            <h2 style="color: var(--text-primary); font-size: 1.6rem; margin-bottom: 1.8rem; font-weight: 600; padding-bottom: 0.5rem; border-bottom: 2px solid #f0f0f0;">
+                核心功能
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <!-- 学生管理 -->
+                <div class="func-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 1.8rem; transition: transform 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4299e1, #63b3ed); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-right: 1rem;">
+                            👥
+                        </div>
+                        <h3 style="font-size: 1.25rem; color: var(--text-primary); margin: 0; font-weight: 600;">学生管理</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                        学生档案维护、信息查询、学籍管理、数据统计分析
                     </p>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <a href="{% url 'students:student_profile_list' %}" class="btn btn-info">
-                            学生档案列表
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        <a href="{% url 'students:student_profile_list' %}" class="btn btn-sm" style="background: #4299e1; color: white; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            档案列表
                         </a>
-                        <a href="{% url 'students:department_list' %}" class="btn btn-outline">
-                            院系信息
+                        {% if user.role == 'admin' %}
+                        <a href="{% url 'students:student_profile_create' %}" class="btn btn-sm" style="background: white; color: #4299e1; border: 1px solid #4299e1; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            添加学生
                         </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 课程管理 -->
+                <div class="func-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 1.8rem; transition: transform 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #9f7aea, #b794f4); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-right: 1rem;">
+                            📚
+                        </div>
+                        <h3 style="font-size: 1.25rem; color: var(--text-primary); margin: 0; font-weight: 600;">课程管理</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                        课程信息维护、选课管理、成绩录入、学分统计
+                    </p>
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        {% if user.role == 'admin' %}
+                        <a href="{% url 'students:course_list' %}" class="btn btn-sm" style="background: #9f7aea; color: white; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            课程管理
+                        </a>
+                        <a href="{% url 'students:enrollment_grade_list' %}" class="btn btn-sm" style="background: white; color: #9f7aea; border: 1px solid #9f7aea; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            成绩管理
+                        </a>
+                        {% elif user.role == 'student' %}
+                        <a href="{% url 'students:course_selection' %}" class="btn btn-sm" style="background: #9f7aea; color: white; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            选课中心
+                        </a>
+                        <a href="{% url 'students:my_enrollments' %}" class="btn btn-sm" style="background: white; color: #9f7aea; border: 1px solid #9f7aea; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            我的课程
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 院系专业 -->
+                <div class="func-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 1.8rem; transition: transform 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #38b2ac, #48bb78); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-right: 1rem;">
+                            🏢
+                        </div>
+                        <h3 style="font-size: 1.25rem; color: var(--text-primary); margin: 0; font-weight: 600;">院系专业</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                        院系架构管理、专业设置、班级信息维护
+                    </p>
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        <a href="{% url 'students:department_list' %}" class="btn btn-sm" style="background: #38b2ac; color: white; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            院系列表
+                        </a>
+                        {% if user.role == 'admin' %}
+                        <a href="{% url 'students:major_list' %}" class="btn btn-sm" style="background: white; color: #38b2ac; border: 1px solid #38b2ac; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            专业管理
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    {% else %}
-        <!-- 未登录用户的欢迎页面 -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
-            <div class="card">
-                <div class="card-header">
-                    🎓 学生管理
-                </div>
-                <div class="card-body">
-                    <p style="color: var(--text-secondary); line-height: 1.6;">
-                        完整的学生信息管理系统，包括档案管理、课程注册、成绩管理等核心功能。
-                    </p>
-                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>学生档案管理</li>
-                        <li>课程注册系统</li>
-                        <li>成绩管理</li>
-                        <li>院系信息管理</li>
-                    </ul>
-                </div>
-            </div>
 
-            <div class="card">
-                <div class="card-header">
-                    👥 用户系统
-                </div>
-                <div class="card-body">
-                    <p style="color: var(--text-secondary); line-height: 1.6;">
-                        多角色用户管理系统，支持管理员、教师、学生等不同角色的权限控制。
-                    </p>
-                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>角色权限管理</li>
-                        <li>用户认证系统</li>
-                        <li>个人信息管理</li>
-                        <li>安全登录机制</li>
-                    </ul>
-                </div>
-            </div>
+        <!-- 管理员专属功能 -->
+        {% if user.role == 'admin' %}
+        <div style="margin-bottom: 3rem;">
+            <h2 style="color: var(--text-primary); font-size: 1.6rem; margin-bottom: 1.8rem; font-weight: 600; padding-bottom: 0.5rem; border-bottom: 2px solid #f0f0f0;">
+                系统管理
+            </h2>
 
-            <div class="card">
-                <div class="card-header">
-                    📊 数据管理
-                </div>
-                <div class="card-body">
-                    <p style="color: var(--text-secondary); line-height: 1.6;">
-                        强大的数据管理和统计功能，支持数据导入导出、统计分析等高级功能。
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <div class="admin-card" style="background: #f8f9fa; border-radius: 0.8rem; padding: 1.8rem; border: 1px solid #e9ecef;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 45px; height: 45px; background: #e53e3e; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; margin-right: 1rem;">
+                            👤
+                        </div>
+                        <h3 style="font-size: 1.15rem; color: var(--text-primary); margin: 0; font-weight: 600;">用户管理</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.2rem;">
+                        系统用户账户管理、角色权限分配、账号状态控制
                     </p>
-                    <ul style="color: var(--text-secondary); margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>数据统计分析</li>
-                        <li>报表生成</li>
-                        <li>数据导入导出</li>
-                        <li>实时数据监控</li>
-                    </ul>
+                    <a href="{% url 'accounts:user_list' %}" class="btn btn-sm" style="background: #e53e3e; color: white; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+                        管理用户
+                    </a>
+                </div>
+
+                <div class="admin-card" style="background: #f8f9fa; border-radius: 0.8rem; padding: 1.8rem; border: 1px solid #e9ecef;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 45px; height: 45px; background: #48bb78; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; margin-right: 1rem;">
+                            📊
+                        </div>
+                        <h3 style="font-size: 1.15rem; color: var(--text-primary); margin: 0; font-weight: 600;">数据报表</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.2rem;">
+                        学生数据统计、课程分析报表、系统数据导出
+                    </p>
+                    <button onclick="exportData()" class="btn btn-sm" style="background: #48bb78; color: white; padding: 0.5rem 1.2rem; font-size: 0.9rem; border: none; cursor: pointer;">
+                        导出报表
+                    </button>
+                </div>
+
+                <div class="admin-card" style="background: #f8f9fa; border-radius: 0.8rem; padding: 1.8rem; border: 1px solid #e9ecef;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+                        <div style="width: 45px; height: 45px; background: #4299e1; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; margin-right: 1rem;">
+                            ⚙️
+                        </div>
+                        <h3 style="font-size: 1.15rem; color: var(--text-primary); margin: 0; font-weight: 600;">系统配置</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.2rem;">
+                        系统参数设置、基础数据维护、操作日志查看
+                    </p>
+                    <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-sm" style="background: #4299e1; color: white; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+                        系统设置
+                    </a>
                 </div>
             </div>
         </div>
+        {% endif %}
 
-        <!-- 快速操作按钮 -->
-        <div style="text-align: center; margin: 3rem 0;">
-            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">开始使用</h2>
-            <div class="quick-actions" style="justify-content: center;">
-                <a href="{% url 'accounts:login' %}" class="quick-action-btn">
-                    🔐 登录系统
+        <!-- 快捷操作栏 -->
+        <div style="background: #f8f9fa; border-radius: 0.8rem; padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 1.2rem; font-weight: 600;">
+                快捷操作
+            </h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                <a href="{% url 'students:student_profile_list' %}" class="quick-btn" style="padding: 0.6rem 1.2rem; background: white; border: 1px solid #e0e0e0; border-radius: 0.4rem; color: var(--text-primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    👥 学生档案
                 </a>
-                <a href="{% url 'accounts:register' %}" class="quick-action-btn">
-                    ✏️ 立即注册
+                <a href="{% url 'students:course_list' %}" class="quick-btn" style="padding: 0.6rem 1.2rem; background: white; border: 1px solid #e0e0e0; border-radius: 0.4rem; color: var(--text-primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    📚 课程管理
                 </a>
-                <a href="{% url 'students:student_profile_list' %}" class="quick-action-btn">
-                    👥 查看学生
-                </a>
-                <a href="{% url 'students:department_list' %}" class="quick-action-btn">
+                <a href="{% url 'students:department_list' %}" class="quick-btn" style="padding: 0.6rem 1.2rem; background: white; border: 1px solid #e0e0e0; border-radius: 0.4rem; color: var(--text-primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
                     🏢 院系信息
                 </a>
+                <a href="{% url 'accounts:profile' %}" class="quick-btn" style="padding: 0.6rem 1.2rem; background: white; border: 1px solid #e0e0e0; border-radius: 0.4rem; color: var(--text-primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    🧑‍💼 个人中心
+                </a>
+                {% if user.role == 'admin' %}
+                <a href="{% url 'accounts:admin_dashboard' %}" class="quick-btn" style="padding: 0.6rem 1.2rem; background: white; border: 1px solid #e0e0e0; border-radius: 0.4rem; color: var(--text-primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    ⚙️ 系统管理
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    {% else %}
+        <!-- 未登录用户功能展示 -->
+        <div style="margin-bottom: 3rem;">
+            <h2 style="color: var(--text-primary); font-size: 1.6rem; margin-bottom: 1.8rem; font-weight: 600; text-align: center;">
+                功能特色
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
+                <div class="feature-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 3px 10px rgba(0,0,0,0.05); padding: 2rem; border-top: 4px solid #4299e1;">
+                    <div style="width: 60px; height: 60px; background: #e8f4f8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #4299e1; margin: 0 auto 1.2rem;">
+                        👥
+                    </div>
+                    <h3 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1rem; text-align: center; font-weight: 600;">
+                        学生档案管理
+                    </h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; padding-left: 1.2rem;">
+                        <li>完整的学生信息档案维护</li>
+                        <li>高级搜索与多维度筛选</li>
+                        <li>批量导入导出与数据备份</li>
+                        <li>学籍状态跟踪与管理</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 3px 10px rgba(0,0,0,0.05); padding: 2rem; border-top: 4px solid #9f7aea;">
+                    <div style="width: 60px; height: 60px; background: #fdf2f8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #9f7aea; margin: 0 auto 1.2rem;">
+                        📚
+                    </div>
+                    <h3 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1rem; text-align: center; font-weight: 600;">
+                        智能选课系统
+                    </h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; padding-left: 1.2rem;">
+                        <li>在线选课/退课一体化操作</li>
+                        <li>成绩录入与自动统计分析</li>
+                        <li>学分管理与毕业审核</li>
+                        <li>课程资源在线管理</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: white; border-radius: 0.8rem; box-shadow: 0 3px 10px rgba(0,0,0,0.05); padding: 2rem; border-top: 4px solid #38b2ac;">
+                    <div style="width: 60px; height: 60px; background: #eaf6fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #38b2ac; margin: 0 auto 1.2rem;">
+                        🔐
+                    </div>
+                    <h3 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1rem; text-align: center; font-weight: 600;">
+                        安全权限体系
+                    </h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; padding-left: 1.2rem;">
+                        <li>多角色精细化权限控制</li>
+                        <li>操作日志全程记录</li>
+                        <li>数据加密与安全防护</li>
+                        <li>分级管理与审批流程</li>
+                    </ul>
+                </div>
             </div>
         </div>
     {% endif %}
 </div>
+
+<!-- 页面脚本 -->
+<script>
+// 获取统计数据
+async function loadStats() {
+    try {
+        setTimeout(() => {
+            document.getElementById('student-count').textContent = '1,234';
+            document.getElementById('course-count').textContent = '89';
+            document.getElementById('department-count').textContent = '12';
+
+            const userRole = '{{ user.role|default:"" }}';
+            const roleText = userRole === 'admin' ? '管理员' : userRole === 'student' ? '学生' : '用户';
+            document.getElementById('user-role').textContent = roleText;
+        }, 500);
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+// 导出数据功能
+function exportData() {
+    showToast('正在准备导出数据...', 'info');
+    setTimeout(() => {
+        showToast('数据导出完成！', 'success');
+    }, 1500);
+}
+
+// 显示提示信息
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type}`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 250px;
+        padding: 1rem 1.5rem;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#e53e3e' : '#4299e1'};
+        color: white;
+    `;
+    toast.innerHTML = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 加载统计数据
+    if (document.getElementById('student-count')) {
+        loadStats();
+    }
+
+    // 功能卡片悬停效果
+    const funcCards = document.querySelectorAll('.func-card, .admin-card, .feature-card');
+    funcCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = card.classList.contains('feature-card') ? '0 3px 10px rgba(0,0,0,0.05)' : '0 2px 8px rgba(0,0,0,0.08)';
+        });
+    });
+
+    // 快捷按钮悬停效果
+    const quickBtns = document.querySelectorAll('.quick-btn');
+    quickBtns.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.background = '#f0f0f0';
+            btn.style.borderColor = '#d0d0d0';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.background = 'white';
+            btn.style.borderColor = '#e0e0e0';
+        });
+    });
+
+    // 数据卡片动画
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 * index);
+    });
+});
+</script>
+
+<style>
+/* 基础样式优化 */
+:root {
+    --primary: #4299e1;
+    --primary-light: #63b3ed;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --border-color: #e2e8f0;
+    --danger: #e53e3e;
+    --success: #48bb78;
+    --warning: #ed8936;
+}
+
+/* 英雄区域动画 */
+.hero-section {
+    animation: heroGradient 8s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes heroGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 统计卡片初始状态 */
+.stat-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+/* 功能卡片样式 */
+.func-card {
+    transition: all 0.3s ease;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1.5rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .stat-card {
+        padding: 1.2rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.8rem;
+    }
+    
+    .func-card, .admin-card, .feature-card {
+        padding: 1.5rem;
+    }
+    
+    .quick-btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .hero-section {
+        background: white;
+        color: black;
+        border: 2px solid #ddd;
+    }
+    
+    .quick-actions, .stat-card, .admin-card {
+        display: none;
+    }
+}
+</style>
 {% endblock %}

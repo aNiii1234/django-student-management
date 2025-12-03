@@ -110,6 +110,15 @@ class StudentProfile(models.Model):
     def __str__(self):
         return f"{self.student_id} - {self.real_name}"
 
+    @property
+    def age(self):
+        """计算年龄"""
+        from datetime import date
+        if self.birth_date:
+            today = date.today()
+            return today.year - self.birth_date.year - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
+        return None
+
 class Course(models.Model):
     COURSE_TYPE_CHOICES = [
         ('required', '必修课'),
