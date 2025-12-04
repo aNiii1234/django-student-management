@@ -5,18 +5,7 @@
 
 {% block content %}
 <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 1rem;">
-    <!-- 顶部导航栏（精简版） -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <span style="font-size: 1.8rem; font-weight: 700; color: var(--primary);">🎓 智慧学生管理系统</span>
-        </div>
-        {% if user.is_authenticated %}
-        <div style="display: flex; align-items: center; gap: 1.5rem;">
-            <span style="color: var(--text-secondary);">欢迎, {{ user.get_full_name|default:user.username }}</span>
-            <a href="{% url 'accounts:logout' %}" style="color: var(--danger); font-size: 0.9rem;">退出登录</a>
-        </div>
-        {% endif %}
-    </div>
+    <!-- 已删除顶部导航栏区域 -->
 
     <!-- 英雄区域（精简版） -->
     <div class="hero-section" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 1rem; padding: 2.5rem 2rem; margin-bottom: 2rem; text-align: center; position: relative; overflow: hidden;">

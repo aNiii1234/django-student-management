@@ -2,128 +2,1015 @@
 {% block title %}注册 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow">
-            <div class="card-header bg-success text-white text-center">
-                <h4><i class="fas fa-user-plus"></i> 用户注册</h4>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
+<style>
+/* 统一基础样式 - 与login_clean.html保持一致 */
+:root {
+    --primary-color: #667eea;
+    --primary-light: #764ba2;
+    --secondary-color: #f093fb;
+    --accent-color: #4facfe;
+    --text-color: #2d3748;
+    --text-light: #718096;
+    --bg-color: #f7fafc;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-large: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">用户名 *</label>
-                            <input type="text" class="form-control" id="{{ form.username.id_for_label }}"
-                                   name="{{ form.username.name }}" required>
-                            {% if form.username.errors %}
-                                <div class="text-danger">
-                                    {{ form.username.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
+/* 页面背景样式 - 增强版 */
+.auth-background {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
 
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">邮箱 *</label>
-                            <input type="email" class="form-control" id="{{ form.email.id_for_label }}"
-                                   name="{{ form.email.name }}" required>
-                            {% if form.email.errors %}
-                                <div class="text-danger">
-                                    {{ form.email.errors.0 }}
-                                </div>
-                            {% endif %}
+/* 动态渐变背景 */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 背景装饰元素 */
+.bg-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 20s infinite ease-in-out;
+}
+
+.bg-shape:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 8s;
+}
+
+.bg-shape:nth-child(2) {
+    width: 120px;
+    height: 120px;
+    top: 60%;
+    right: 10%;
+    animation-delay: 2s;
+    animation-duration: 10s;
+}
+
+.bg-shape:nth-child(3) {
+    width: 60px;
+    height: 60px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+    animation-duration: 12s;
+}
+
+.bg-shape:nth-child(4) {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    right: 30%;
+    animation-delay: 6s;
+    animation-duration: 9s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.1;
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px) rotate(90deg);
+        opacity: 0.2;
+    }
+    50% {
+        transform: translateY(10px) translateX(-10px) rotate(180deg);
+        opacity: 0.15;
+    }
+    75% {
+        transform: translateY(-10px) translateX(20px) rotate(270deg);
+        opacity: 0.25;
+    }
+}
+
+/* 注册卡片样式 - 玻璃态效果 */
+.auth-card {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: var(--shadow-large);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.8s;
+}
+
+.auth-card:hover::before {
+    left: 100%;
+}
+
+.auth-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* 头部样式 - 增强版 */
+.auth-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    background-size: 200% 200%;
+    animation: headerGradient 8s ease infinite;
+    color: var(--white);
+    text-align: center;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes headerGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.auth-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.auth-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: slideLine 3s ease-in-out infinite;
+}
+
+@keyframes slideLine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.auth-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: iconFloat 4s ease-in-out infinite;
+    background: rgba(255, 255, 255, 0.2);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+/* 表单内容区 */
+.card-body {
+    padding: 3rem 2rem 2rem;
+}
+
+/* 表单样式 - 现代化设计 */
+.auth-input {
+    border: 2px solid transparent;
+    border-radius: 12px;
+    height: 52px;
+    font-size: 1rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #e2e8f0, #cbd5e0) border-box;
+    padding: 0 1rem;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+}
+
+.auth-input:hover {
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, var(--primary-color), var(--primary-light)) border-box;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.auth-input:focus {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, var(--primary-color), var(--secondary-color)) border-box;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), var(--shadow-medium);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+/* 输入框组样式 */
+.input-group-custom {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.auth-input:focus ~ .input-icon {
+    color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* 浮动标签效果 */
+.floating-label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background: white;
+    padding: 0 0.5rem;
+    z-index: 3;
+}
+
+.auth-input:focus ~ .floating-label,
+.auth-input:not(:placeholder-shown) ~ .floating-label {
+    top: 0;
+    left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* 密码强度指示器 */
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak { background: #f56565; width: 33%; }
+.strength-medium { background: #ed8936; width: 66%; }
+.strength-strong { background: #48bb78; width: 100%; }
+
+.auth-label {
+    color: var(--text-light);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* 按钮样式 - 增强版 */
+.auth-button {
+    height: 54px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    background-size: 200% 200%;
+    border: none;
+    color: var(--white);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    animation: buttonGradient 3s ease infinite;
+}
+
+@keyframes buttonGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.auth-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.auth-button:hover::before {
+    left: 100%;
+}
+
+.auth-button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+    color: var(--white);
+}
+
+.auth-button:active {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+}
+
+/* 加载状态按钮 */
+.auth-button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    transform: none !important;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.6; }
+}
+
+/* 链接样式 */
+.auth-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+/* 分割线样式 */
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #eee;
+}
+
+.divider span {
+    background: var(--white);
+    padding: 0 1rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* 动画效果 */
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .auth-header {
+        padding: 1.5rem;
+    }
+
+    .auth-icon {
+        font-size: 2rem;
+    }
+
+    .auth-card {
+        margin: 0 1rem;
+    }
+    
+    .card-body {
+        padding: 2.5rem 1.5rem 1.5rem;
+    }
+}
+
+/* 复选框美化 */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+}
+
+/* 星号必填标记 */
+.auth-label span.required {
+    color: #dc3545;
+}
+</style>
+
+<div class="auth-background">
+    <!-- 背景装饰元素 -->
+    <div class="bg-decoration">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="auth-card fade-in-up">
+                    <!-- 头部 -->
+                    <div class="auth-header">
+                        <div class="auth-icon">
+                            <i class="fas fa-user-plus"></i>
                         </div>
+                        <h3 class="mb-2">用户注册</h3>
+                        <p class="mb-0 opacity-90">加入学生信息管理系统</p>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.first_name.id_for_label }}" class="form-label">姓 *</label>
-                            <input type="text" class="form-control" id="{{ form.first_name.id_for_label }}"
-                                   name="{{ form.first_name.name }}" required>
-                            {% if form.first_name.errors %}
-                                <div class="text-danger">
-                                    {{ form.first_name.errors.0 }}
+                    <!-- 表单内容 -->
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                            {% endif %}
-                        </div>
+                            {% endfor %}
+                        {% endif %}
 
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.last_name.id_for_label }}" class="form-label">名 *</label>
-                            <input type="text" class="form-control" id="{{ form.last_name.id_for_label }}"
-                                   name="{{ form.last_name.name }}" required>
-                            {% if form.last_name.errors %}
-                                <div class="text-danger">
-                                    {{ form.last_name.errors.0 }}
+                        <form method="post" id="registerForm">
+                            {% csrf_token %}
+
+                            <!-- 用户名和邮箱 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group-custom">
+                                        <input type="text" class="form-control auth-input" id="{{ form.username.id_for_label }}"
+                                               name="{{ form.username.name }}" placeholder=" " required>
+                                        <i class="fas fa-user input-icon"></i>
+                                        <label for="{{ form.username.id_for_label }}" class="floating-label">用户名 *</label>
+                                        {% if form.username.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.username.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endif %}
-                        </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <input type="email" class="form-control auth-input" id="{{ form.email.id_for_label }}"
+                                               name="{{ form.email.name }}" placeholder=" " required>
+                                        <i class="fas fa-envelope input-icon"></i>
+                                        <label for="{{ form.email.id_for_label }}" class="floating-label">邮箱 *</label>
+                                        {% if form.email.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.email.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 姓名和手机号 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group-custom">
+                                        <input type="text" class="form-control auth-input" id="{{ form.first_name.id_for_label }}"
+                                               name="{{ form.first_name.name }}" placeholder=" " required>
+                                        <i class="fas fa-user input-icon"></i>
+                                        <label for="{{ form.first_name.id_for_label }}" class="floating-label">姓氏 *</label>
+                                        {% if form.first_name.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.first_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <input type="text" class="form-control auth-input" id="{{ form.last_name.id_for_label }}"
+                                               name="{{ form.last_name.name }}" placeholder=" " required>
+                                        <i class="fas fa-user input-icon"></i>
+                                        <label for="{{ form.last_name.id_for_label }}" class="floating-label">名字 *</label>
+                                        {% if form.last_name.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.last_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 角色和手机号 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group-custom">
+                                        <select class="form-control auth-input" id="{{ form.role.id_for_label }}"
+                                                name="{{ form.role.name }}" required>
+                                            <option value="">请选择角色</option>
+                                            {% for value, label in form.role.field.choices %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <i class="fas fa-user-tag input-icon"></i>
+                                        {% if form.role.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.role.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <input type="text" class="form-control auth-input" id="{{ form.phone.id_for_label }}"
+                                               name="{{ form.phone.name }}" placeholder=" ">
+                                        <i class="fas fa-phone input-icon"></i>
+                                        <label for="{{ form.phone.id_for_label }}" class="floating-label">手机号</label>
+                                        {% if form.phone.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.phone.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 密码和确认密码 -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="input-group-custom">
+                                        <input type="password" class="form-control auth-input" id="{{ form.password1.id_for_label }}"
+                                               name="{{ form.password1.name }}" placeholder=" " required>
+                                        <i class="fas fa-lock input-icon"></i>
+                                        <label for="{{ form.password1.id_for_label }}" class="floating-label">密码 *</label>
+                                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                                            <div class="password-strength-bar"></div>
+                                        </div>
+                                        {% if form.password1.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.password1.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <input type="password" class="form-control auth-input" id="{{ form.password2.id_for_label }}"
+                                               name="{{ form.password2.name }}" placeholder=" " required>
+                                        <i class="fas fa-lock input-icon"></i>
+                                        <label for="{{ form.password2.id_for_label }}" class="floating-label">确认密码 *</label>
+                                        {% if form.password2.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.password2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 注册按钮 -->
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn auth-button" id="registerBtn">
+                                    <i class="fas fa-user-plus me-2"></i>
+                                    立即注册
+                                </button>
+                            </div>
+
+                            <!-- 分割线 -->
+                            <div class="divider">
+                                <span>或</span>
+                            </div>
+
+                            <!-- 登录链接 -->
+                            <div class="text-center">
+                                <p class="mb-0">
+                                    已有账号？
+                                    <a href="{% url 'accounts:login' %}" class="auth-link">
+                                        立即登录
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.phone.id_for_label }}" class="form-label">手机号</label>
-                            <input type="text" class="form-control" id="{{ form.phone.id_for_label }}"
-                                   name="{{ form.phone.name }}">
-                            {% if form.phone.errors %}
-                                <div class="text-danger">
-                                    {{ form.phone.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.role.id_for_label }}" class="form-label">角色 *</label>
-                            <select class="form-control" id="{{ form.role.id_for_label }}"
-                                    name="{{ form.role.name }}" required>
-                                <option value="">请选择角色</option>
-                                {% for value, label in form.role.field.choices %}
-                                    <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            {% if form.role.errors %}
-                                <div class="text-danger">
-                                    {{ form.role.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.password1.id_for_label }}" class="form-label">密码 *</label>
-                            <input type="password" class="form-control" id="{{ form.password1.id_for_label }}"
-                                   name="{{ form.password1.name }}" required>
-                            {% if form.password1.errors %}
-                                <div class="text-danger">
-                                    {{ form.password1.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.password2.id_for_label }}" class="form-label">确认密码 *</label>
-                            <input type="password" class="form-control" id="{{ form.password2.id_for_label }}"
-                                   name="{{ form.password2.name }}" required>
-                            {% if form.password2.errors %}
-                                <div class="text-danger">
-                                    {{ form.password2.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-user-plus"></i> 注册
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">已有账号？ <a href="{% url 'accounts:login' %}">立即登录</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// 页面加载完成后的初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 表单提交处理
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            // 表单验证
+            const requiredFields = [
+                { id: '{{ form.username.id_for_label }}', name: '用户名' },
+                { id: '{{ form.email.id_for_label }}', name: '邮箱' },
+                { id: '{{ form.first_name.id_for_label }}', name: '姓氏' },
+                { id: '{{ form.last_name.id_for_label }}', name: '名字' },
+                { id: '{{ form.role.id_for_label }}', name: '角色' },
+                { id: '{{ form.password1.id_for_label }}', name: '密码' },
+                { id: '{{ form.password2.id_for_label }}', name: '确认密码' }
+            ];
+
+            let isValid = true;
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showError(element, `请输入${field.name}`);
+                    isValid = false;
+                }
+            });
+
+            // 密码匹配检查
+            const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+            const password2 = document.getElementById('{{ form.password2.id_for_label }}');
+            if (password1.value !== password2.value) {
+                showError(password2, '两次输入的密码不一致');
+                isValid = false;
+            }
+
+            // 密码强度检查
+            if (!isPasswordStrong(password1.value)) {
+                showError(password1, '密码至少8位，包含字母和数字');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                return;
+            }
+
+            // 显示加载状态
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>正在注册...';
+
+            // 添加提交动画
+            registerForm.style.transform = 'scale(0.98)';
+            registerForm.style.opacity = '0.7';
+        });
+    }
+
+    // 输入框交互效果
+    const inputs = document.querySelectorAll('.auth-input');
+    inputs.forEach(input => {
+        // 输入时的实时反馈
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.parentElement.style.transform = 'scale(1.01)';
+                setTimeout(() => {
+                    this.parentElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 密码强度实时检测
+            if (this.id === '{{ form.password1.id_for_label }}') {
+                checkPasswordStrength(this.value);
+            }
+
+            // 实时密码匹配检查
+            if (this.id === '{{ form.password2.id_for_label }}') {
+                const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+                checkPasswordMatch(this, password1);
+            }
+        });
+
+        // 焦点效果增强
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+            playFocusSound();
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // 自动隐藏消息提示
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach((alert, index) => {
+        setTimeout(() => {
+            alert.style.transition = 'all 0.3s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                alert.remove();
+            }, 300);
+        }, 5000 + (index * 1000));
+    });
+
+    // 添加键盘快捷键支持
+    document.addEventListener('keydown', function(e) {
+        // Enter键提交表单
+        if (e.key === 'Enter' && !e.shiftKey) {
+            const activeElement = document.activeElement;
+            if (activeElement.tagName !== 'BUTTON' && !activeElement.type === 'submit') {
+                registerForm.dispatchEvent(new Event('submit'));
+                e.preventDefault();
+            }
+        }
+
+        // Ctrl/Cmd + L 登录页面快捷键
+        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+            e.preventDefault();
+            window.location.href = '{% url "accounts:login" %}';
+        }
+    });
+
+    // 添加页面可见性变化处理
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '💤 等待返回 - 学生管理系统';
+        } else {
+            document.title = '注册 - 学生信息管理系统';
+        }
+    });
+
+    // 添加实时邮箱格式验证
+    const emailInput = document.getElementById('{{ form.email.id_for_label }}');
+    emailInput.addEventListener('blur', function() {
+        if (this.value && !isValidEmail(this.value)) {
+            showError(this, '请输入有效的邮箱地址');
+        }
+    });
+
+    // 添加手机号格式验证
+    const phoneInput = document.getElementById('{{ form.phone.id_for_label }}');
+    phoneInput.addEventListener('blur', function() {
+        if (this.value && !isValidPhone(this.value)) {
+            showError(this, '请输入有效的手机号码');
+        }
+    });
+
+    // 初始化加载进度条
+    addLoadingProgress();
+});
+
+// 密码强度检测
+function checkPasswordStrength(password) {
+    const strengthBar = document.querySelector('.password-strength-bar');
+    const strengthContainer = document.getElementById('passwordStrength');
+
+    if (!password) {
+        strengthContainer.style.display = 'none';
+        return;
+    }
+
+    strengthContainer.style.display = 'block';
+
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^a-zA-Z\d]/.test(password)) strength++;
+
+    strengthBar.className = 'password-strength-bar';
+    if (strength <= 2) {
+        strengthBar.classList.add('strength-weak');
+    } else if (strength <= 4) {
+        strengthBar.classList.add('strength-medium');
+    } else {
+        strengthBar.classList.add('strength-strong');
+    }
+}
+
+// 密码匹配检查
+function checkPasswordMatch(confirmPasswordInput, passwordInput) {
+    if (confirmPasswordInput.value && passwordInput.value) {
+        if (confirmPasswordInput.value !== passwordInput.value) {
+            confirmPasswordInput.style.borderColor = '#f56565';
+            confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f56565, #fc8181) border-box';
+        } else {
+            confirmPasswordInput.style.borderColor = '#48bb78';
+            confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #48bb78, #68d391) border-box';
+        }
+    }
+}
+
+// 密码强度验证
+function isPasswordStrong(password) {
+    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+}
+
+// 邮箱格式验证
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// 手机号格式验证
+function isValidPhone(phone) {
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    return phoneRegex.test(phone);
+}
+
+// 显示错误信息
+function showError(input, message) {
+    // 移除已存在的错误
+    const existingError = input.parentElement.querySelector('.error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+
+    // 创建错误元素
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message text-danger small mt-2';
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+    errorDiv.style.animation = 'slideInDown 0.3s ease-out';
+
+    input.parentElement.appendChild(errorDiv);
+    input.parentElement.style.animation = 'shake 0.5s ease-in-out';
+
+    // 输入框抖动效果
+    setTimeout(() => {
+        input.parentElement.style.animation = '';
+    }, 500);
+
+    // 自动清除错误
+    setTimeout(() => {
+        errorDiv.style.opacity = '0';
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
+            }
+        }, 300);
+    }, 5000);
+}
+
+// 播放焦点音效（可选）
+function playFocusSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        // 静默处理音频错误
+    }
+}
+
+// 添加加载进度条
+function addLoadingProgress() {
+    const progressBar = document.createElement('div');
+    progressBar.id = 'loadingProgress';
+    progressBar.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        z-index: 9999;
+        transition: width 0.3s ease;
+        display: none;
+    `;
+    document.body.appendChild(progressBar);
+
+    // 页面加载进度
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 30;
+        if (progress > 90) progress = 90;
+        progressBar.style.width = progress + '%';
+    }, 100);
+
+    window.addEventListener('load', () => {
+        clearInterval(interval);
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+            progressBar.style.display = 'none';
+        }, 500);
+    });
+}
+
+// 抖动动画
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}
