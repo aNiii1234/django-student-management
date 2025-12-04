@@ -1,472 +1,325 @@
-{% extends 'base-minimal.html' %}
-{% load static %}
-
-{% block title %}学生档案管理 - 学生管理系统{% endblock %}
+{% extends 'base.html' %}
+{% block title %}学生档案管理 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 1rem;">
-    <!-- 页面头部 -->
-    <div class="page-header d-flex-between" style="margin: 2rem 0; padding-bottom: 1rem; border-bottom: 2px solid var(--border-color);">
-        <div>
-            <h1 class="page-title" style="margin-bottom: 0.5rem;">
-                <span style="color: var(--primary);">👥</span> 学生档案管理
-            </h1>
-            <p style="color: var(--text-secondary); margin: 0;">
-                管理所有学生的基本信息和档案资料
-            </p>
-        </div>
-        <div class="page-actions">
-            {% if user.role == 'admin' %}
-                <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
-                    <span>➕</span> 添加学生档案
-                </a>
-                <button onclick="exportStudentData()" class="btn btn-outline">
-                    <span>📊</span> 导出数据
-                </button>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- 统计信息面板 -->
-    {% if user.role == 'admin' %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="card card-enhanced" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; text-align: center;">
-            <div style="padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
-                    {{ total_students }}
-                </div>
-                <div style="opacity: 0.9;">总学生数</div>
-            </div>
-        </div>
-        <div class="card card-enhanced" style="background: linear-gradient(135deg, var(--success), #34d399); color: white; text-align: center;">
-            <div style="padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
-                    {{ enrolled_students }}
-                </div>
-                <div style="opacity: 0.9;">在读学生</div>
-            </div>
-        </div>
-        <div class="card card-enhanced" style="background: linear-gradient(135deg, var(--warning), #fbbf24); color: white; text-align: center;">
-            <div style="padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
-                    {{ total_departments }}
-                </div>
-                <div style="opacity: 0.9;">院系数目</div>
-            </div>
-        </div>
-        <div class="card card-enhanced" style="background: linear-gradient(135deg, var(--info), #60a5fa); color: white; text-align: center;">
-            <div style="padding: 1.5rem;">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
-                    {{ total_majors }}
-                </div>
-                <div style="opacity: 0.9;">专业数目</div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- 搜索和筛选区域 -->
-    <div class="card" style="margin-bottom: 2rem;">
-        <div class="card-header">
-            <span>🔍 搜索与筛选</span>
-        </div>
-        <div class="card-body">
-            <form method="get" id="searchForm">
-                <div style="display: grid; grid-template-columns: 1fr 200px 150px 120px auto; gap: 1rem; align-items: end;">
-                    <div>
-                        <label class="form-label">搜索学生</label>
-                        <div class="search-box">
-                            <input type="text" name="search" class="form-control" placeholder="输入姓名、学号或班级..." value="{{ request.GET.search }}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="form-label">院系</label>
-                        <select name="department" class="form-control">
-                            <option value="">全部院系</option>
-                            {% for dept in departments %}
-                                <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ dept.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">学籍状态</label>
-                        <select name="status" class="form-control">
-                            <option value="">全部状态</option>
-                            <option value="enrolled" {% if request.GET.status == 'enrolled' %}selected{% endif %}>在读</option>
-                            <option value="graduated" {% if request.GET.status == 'graduated' %}selected{% endif %}>毕业</option>
-                            <option value="suspended" {% if request.GET.status == 'suspended' %}selected{% endif %}>休学</option>
-                            <option value="dropped" {% if request.GET.status == 'dropped' %}selected{% endif %}>退学</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">性别</label>
-                        <select name="gender" class="form-control">
-                            <option value="">全部</option>
-                            <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>男</option>
-                            <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>女</option>
-                        </select>
-                    </div>
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">
-                            🔍 搜索
-                        </button>
-                        <a href="{% url 'students:student_profile_list' %}" class="btn btn-outline">
-                            ↻ 重置
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 快速操作按钮 -->
-    {% if user.role == 'admin' %}
-    <div class="quick-actions" style="margin-bottom: 2rem;">
-        <a href="{% url 'students:department_list' %}" class="quick-action-btn">
-            🏢 管理院系
-        </a>
-        <a href="{% url 'students:major_list' %}" class="quick-action-btn">
-            📚 管理专业
-        </a>
-        <a href="{% url 'students:course_list' %}" class="quick-action-btn">
-            📖 管理课程
-        </a>
-        <a href="{% url 'students:enrollment_grade_list' %}" class="quick-action-btn">
-            📊 成绩管理
-        </a>
-        <button onclick="printStudentList()" class="quick-action-btn">
-            🖨️ 打印列表
-        </button>
-    </div>
-    {% endif %}
-
-    <!-- 学生列表 -->
-    {% if students %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.5rem;">
-            {% for student in students %}
-                <div class="card card-enhanced student-card" data-student-id="{{ student.id }}">
-                    <div style="padding: 1.5rem;">
-                        <!-- 学生头部信息 -->
-                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                            <div class="student-avatar" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; margin-right: 1rem; color: white; font-size: 1.8rem; font-weight: 600; box-shadow: var(--shadow-lg);">
-                                {% if student.user.get_full_name %}
-                                    {{ student.user.get_full_name.0|upper }}
-                                {% else %}
-                                    {{ student.user.username.0|upper }}
-                                {% endif %}
-                            </div>
-                            <div style="flex: 1;">
-                                <h3 style="margin: 0; color: var(--text-primary); font-size: 1.25rem; font-weight: 600;">
-                                    {{ student.real_name|default:student.user.username }}
-                                </h3>
-                                <p style="margin: 0.25rem 0; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;">
-                                    🆔 {{ student.student_id|default:'未设置学号' }}
-                                </p>
-                                <div style="margin-top: 0.5rem;">
-                                    {% if student.enrollment_status %}
-                                        <span class="status-badge
-                                            {% if student.enrollment_status == 'enrolled' %}status-active{% elif student.enrollment_status == 'graduated' %}status-success{% else %}status-inactive{% endif %}">
-                                            {% if student.enrollment_status == 'enrolled' %}在读
-                                            {% elif student.enrollment_status == 'graduated' %}毕业
-                                            {% elif student.enrollment_status == 'suspended' %}休学
-                                            {% elif student.enrollment_status == 'dropped' %}退学
-                                            {% else %}{{ student.enrollment_status }}{% endif %}
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 学生详细信息 -->
-                        <div style="background: var(--bg-secondary); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                            <div style="display: grid; gap: 0.75rem; color: var(--text-secondary); font-size: 0.9rem;">
-                                {% if student.department %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">🏢</span>
-                                        <span>{{ student.department.name }}</span>
-                                    </div>
-                                {% endif %}
-                                {% if student.major %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">📚</span>
-                                        <span>{{ student.major.name }}</span>
-                                    </div>
-                                {% endif %}
-                                {% if student.class_name %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">👥</span>
-                                        <span>{{ student.class_name }}</span>
-                                    </div>
-                                {% endif %}
-                                {% if student.gender %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">👤</span>
-                                        <span>{% if student.gender == 'M' %}男{% elif student.gender == 'F' %}女{% else %}其他{% endif %}</span>
-                                    </div>
-                                {% endif %}
-                                {% if student.birth_date %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">🎂</span>
-                                        <span>{{ student.birth_date }} ({{ student.age }}岁)</span>
-                                    </div>
-                                {% endif %}
-                                <div class="d-flex-center">
-                                    <span style="margin-right: 0.5rem; font-size: 1rem;">📧</span>
-                                    <span style="word-break: break-all;">{{ student.user.email|default:'未设置邮箱' }}</span>
-                                </div>
-                                {% if student.phone %}
-                                    <div class="d-flex-center">
-                                        <span style="margin-right: 0.5rem; font-size: 1rem;">📱</span>
-                                        <span>{{ student.phone }}</span>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 操作按钮 -->
-                        <div class="table-card-actions" style="display: flex; gap: 0.5rem; justify-content: space-between;">
-                            <div style="display: flex; gap: 0.5rem;">
-                                {% if user.role == 'admin' %}
-                                    <a href="{% url 'students:student_profile_update' student.id %}" class="btn btn-sm btn-outline" title="编辑学生信息">
-                                        ✏️ 编辑
-                                    </a>
-                                    <a href="{% url 'students:student_profile_delete' student.id %}" class="btn btn-sm btn-danger" title="删除学生档案">
-                                        🗑️ 删除
-                                    </a>
-                                {% endif %}
-                            </div>
-                            <div style="display: flex; gap: 0.5rem;">
-                                {% if user.role == 'admin' %}
-                                    <button onclick="viewStudentDetails({{ student.id }})" class="btn btn-sm btn-info" title="查看详细信息">
-                                        👁️ 详情
-                                    </button>
-                                {% endif %}
-                                <button onclick="copyStudentInfo({{ student.id }})" class="btn btn-sm btn-outline" title="复制基本信息">
-                                    📋 复制
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- 分页 -->
-        {% if is_paginated %}
-        <div class="pagination" style="margin-top: 2rem;">
-            {% if page_obj.has_previous %}
-                <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}" class="page-link">首页</a>
-                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}" class="page-link">上一页</a>
-            {% endif %}
-
-            <span class="page-link active">
-                第 {{ page_obj.number }} 页 / 共 {{ page_obj.paginator.num_pages }} 页 (总计 {{ page_obj.paginator.count }} 条记录)
-            </span>
-
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}" class="page-link">下一页</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}" class="page-link">末页</a>
-            {% endif %}
-        </div>
-        {% endif %}
-    {% else %}
-        <!-- 空状态 -->
-        <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
-            <h3 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.5rem;">
-                {% if request.GET.search or request.GET.department or request.GET.status or request.GET.gender %}
-                    没有找到符合条件的学生档案
-                {% else %}
-                    系统中还没有学生档案
-                {% endif %}
-            </h3>
-            <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6;">
-                {% if request.GET.search or request.GET.department or request.GET.status or request.GET.gender %}
-                    根据您的搜索条件，没有找到相关的学生信息。请尝试调整筛选条件。
-                {% else %}
-                    开始添加学生档案，以便管理学生信息和进行学籍管理。
-                {% endif %}
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-users"></i> 学生档案管理</h2>
+            <div>
                 {% if user.role == 'admin' %}
-                    <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary btn-lg">
-                        ➕ 添加第一个学生档案
+                    <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 添加学生档案
+                    </a>
+                    <button onclick="exportStudentData()" class="btn btn-secondary ml-2">
+                        <i class="fas fa-download"></i> 导出数据
+                    </button>
+                {% endif %}
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                        <i class="fas fa-arrow-left"></i> 返回管理员面板
                     </a>
                 {% endif %}
-                <a href="{% url 'students:department_list' %}" class="btn btn-outline btn-lg">
-                    🏢 管理院系信息
-                </a>
             </div>
         </div>
-    {% endif %}
+        <hr>
+    </div>
+</div>
+
+<!-- 统计信息面板 -->
+{% if user.role == 'admin' %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="text-primary">{{ total_students|default:0 }}</h4>
+                <p class="mb-0">总学生数</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="text-success">{{ enrolled_students|default:0 }}</h4>
+                <p class="mb-0">在读学生</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="text-info">{{ total_departments|default:0 }}</h4>
+                <p class="mb-0">院系数目</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="text-warning">{{ total_majors|default:0 }}</h4>
+                <p class="mb-0">专业数目</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 搜索和筛选区域 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-search"></i> 搜索与筛选</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" id="searchForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">搜索学生</label>
+                            <input type="text" name="search" class="form-control" placeholder="输入姓名、学号或班级..." value="{{ request.GET.search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">院系</label>
+                            <select name="department" class="form-select">
+                                <option value="">全部院系</option>
+                                {% for dept in departments %}
+                                    <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ dept.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">学籍状态</label>
+                            <select name="status" class="form-select">
+                                <option value="">全部状态</option>
+                                <option value="enrolled" {% if request.GET.status == 'enrolled' %}selected{% endif %}>在读</option>
+                                <option value="graduated" {% if request.GET.status == 'graduated' %}selected{% endif %}>毕业</option>
+                                <option value="suspended" {% if request.GET.status == 'suspended' %}selected{% endif %}>休学</option>
+                                <option value="dropped" {% if request.GET.status == 'dropped' %}selected{% endif %}>退学</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">性别</label>
+                            <select name="gender" class="form-select">
+                                <option value="">全部</option>
+                                <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>男</option>
+                                <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>女</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="btn-group w-100">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> 搜索
+                                </button>
+                                <a href="{% url 'students:student_profile_list' %}" class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> 重置
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速操作按钮 -->
+{% if user.role == 'admin' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'students:department_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-university"></i> 管理院系
+                    </a>
+                    <a href="{% url 'students:major_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-graduation-cap"></i> 管理专业
+                    </a>
+                    <a href="{% url 'students:course_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-book"></i> 管理课程
+                    </a>
+                    <a href="{% url 'students:enrollment_grade_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-line"></i> 成绩管理
+                    </a>
+                    <button onclick="printStudentList()" class="btn btn-outline-secondary">
+                        <i class="fas fa-print"></i> 打印列表
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 学生列表 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> 学生档案列表</h5>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>头像</th>
+                                    <th>姓名</th>
+                                    <th>学号</th>
+                                    <th>院系</th>
+                                    <th>专业</th>
+                                    <th>班级</th>
+                                    <th>状态</th>
+                                    <th>邮箱</th>
+                                    <th>手机号</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            {% if student.real_name %}
+                                                {{ student.real_name.0|upper }}
+                                            {% else %}
+                                                {{ student.user.username.0|upper }}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ student.real_name|default:student.user.username }}</strong>
+                                    </td>
+                                    <td>{{ student.student_id|default:'未设置学号' }}</td>
+                                    <td>{{ student.department.name|default:'--' }}</td>
+                                    <td>{{ student.major.name|default:'--' }}</td>
+                                    <td>{{ student.class_name|default:'--' }}</td>
+                                    <td>
+                                        {% if student.enrollment_status == 'enrolled' %}
+                                            <span class="badge bg-success">在读</span>
+                                        {% elif student.enrollment_status == 'graduated' %}
+                                            <span class="badge bg-primary">毕业</span>
+                                        {% elif student.enrollment_status == 'suspended' %}
+                                            <span class="badge bg-warning">休学</span>
+                                        {% elif student.enrollment_status == 'dropped_out' %}
+                                            <span class="badge bg-danger">退学</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ student.get_enrollment_status_display|default:'--' }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ student.user.email|default:'--' }}</td>
+                                    <td>{{ student.phone|default:'--' }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            {% if user.role == 'admin' %}
+                                                <a href="{% url 'students:student_profile_update' student.id %}" class="btn btn-outline-primary" title="编辑学生信息">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'students:student_profile_delete' student.id %}" class="btn btn-outline-danger" title="删除学生档案" onclick="return confirm('确定要删除这个学生档案吗？')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            {% endif %}
+                                            <button onclick="copyStudentInfo({{ student.id }})" class="btn btn-outline-secondary" title="复制基本信息">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    {% if is_paginated %}
+                    <nav aria-label="学生档案分页">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">首页</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">上一页</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    第 {{ page_obj.number }} 页 / 共 {{ page_obj.paginator.num_pages }} 页
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">下一页</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">末页</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-user-graduate fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">
+                            {% if request.GET.search or request.GET.department or request.GET.status or request.GET.gender %}
+                                没有找到符合条件的学生档案
+                            {% else %}
+                                系统中还没有学生档案
+                            {% endif %}
+                        </h4>
+                        <p class="text-muted">
+                            {% if request.GET.search or request.GET.department or request.GET.status or request.GET.gender %}
+                                根据您的搜索条件，没有找到相关的学生信息。请尝试调整筛选条件。
+                            {% else %}
+                                开始添加学生档案，以便管理学生信息和进行学籍管理。
+                            {% endif %}
+                        </p>
+                        <div class="mt-4">
+                            {% if user.role == 'admin' %}
+                                <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary me-2">
+                                    <i class="fas fa-plus"></i> 添加第一个学生档案
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'students:department_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-university"></i> 管理院系信息
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- JavaScript 功能 -->
 <script>
 // 复制学生信息
 function copyStudentInfo(studentId) {
-    const card = document.querySelector(`[data-student-id="${studentId}"]`);
-    const name = card.querySelector('h3').textContent.trim();
-    const studentIdText = card.querySelector('.d-flex-center span').textContent;
-
-    const info = `学生姓名: ${name}\n学号: ${studentIdText}`;
-
-    navigator.clipboard.writeText(info).then(() => {
-        showToast('学生信息已复制到剪贴板', 'success');
-    }).catch(() => {
-        showToast('复制失败，请手动复制', 'error');
-    });
+    // 由于现在是表格格式，这个功能暂时禁用
+    alert('复制功能暂时不可用，请手动复制信息');
 }
 
 // 查看学生详情
 function viewStudentDetails(studentId) {
-    // 这里可以实现弹窗或跳转到详情页面
-    showToast('学生详情功能正在开发中', 'info');
+    alert('学生详情功能正在开发中');
 }
 
 // 导出学生数据
 function exportStudentData() {
-    const currentUrl = new URL(window.location);
-    currentUrl.pathname = currentUrl.pathname.replace('/students/', '/api/export/students/');
-
-    // 创建隐藏的链接来下载文件
-    const link = document.createElement('a');
-    link.href = currentUrl.toString();
-    link.download = '学生档案数据.xlsx';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    showToast('正在导出学生数据...', 'info');
+    alert('导出功能正在开发中');
 }
 
 // 打印学生列表
 function printStudentList() {
     window.print();
-    showToast('正在准备打印...', 'info');
 }
-
-// 显示提示信息
-function showToast(message, type = 'info') {
-    // 创建提示元素
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type}`;
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 250px;
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.3s ease;
-    `;
-    toast.innerHTML = message;
-
-    document.body.appendChild(toast);
-
-    // 显示动画
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(0)';
-    }, 100);
-
-    // 3秒后自动消失
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// 页面加载完成后的初始化
-document.addEventListener('DOMContentLoaded', function() {
-    // 为搜索表单添加实时搜索功能（可选）
-    const searchInput = document.querySelector('input[name="search"]');
-    let searchTimeout;
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                // 可以在这里实现实时搜索，但由于是Django，建议保持表单提交方式
-            }, 500);
-        });
-    }
-});
-
-// 响应式处理
-window.addEventListener('resize', function() {
-    // 可以根据窗口大小调整布局
-});
 </script>
 
-<style>
-/* 打印样式 */
-@media print {
-    .page-actions, .quick-actions, .table-card-actions {
-        display: none !important;
-    }
-
-    .student-card {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-}
-
-/* 悬停效果增强 */
-.student-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.student-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-/* 头像动画 */
-.student-avatar {
-    transition: all 0.3s ease;
-}
-
-.student-card:hover .student-avatar {
-    transform: scale(1.05);
-}
-
-/* 按钮悬停效果增强 */
-.btn-enhanced:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* 加载动画 */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.student-card {
-    animation: fadeInUp 0.5s ease-out;
-}
-
-/* 延迟动画 */
-.student-card:nth-child(1) { animation-delay: 0.05s; }
-.student-card:nth-child(2) { animation-delay: 0.1s; }
-.student-card:nth-child(3) { animation-delay: 0.15s; }
-.student-card:nth-child(4) { animation-delay: 0.2s; }
-.student-card:nth-child(5) { animation-delay: 0.25s; }
-.student-card:nth-child(6) { animation-delay: 0.3s; }
-</style>
 {% endblock %}

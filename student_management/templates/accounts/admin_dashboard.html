@@ -119,9 +119,39 @@
 <div class="row">
     <div class="col-md-6 mb-3">
         <div class="list-group">
+            <h6 class="list-group-item active"><i class="fas fa-users"></i> 用户管理</h6>
+            <a href="{% url 'accounts:user_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-users text-primary"></i> 所有用户
+                <small class="text-muted">查看和管理系统所有用户 ({{ total_users }})</small>
+                <span class="badge bg-primary float-end">{{ total_users }}</span>
+            </a>
+            <a href="{% url 'accounts:user_list' %}?type=students" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-graduate text-success"></i> 学生用户
+                <small class="text-muted">查看和管理学生用户 ({{ total_students }})</small>
+                <span class="badge bg-success float-end">{{ total_students }}</span>
+            </a>
+            <a href="{% url 'accounts:user_list' %}?type=teachers" class="list-group-item list-group-item-action">
+                <i class="fas fa-chalkboard-teacher text-info"></i> 教师用户
+                <small class="text-muted">查看和管理教师用户 ({{ total_teachers }})</small>
+                <span class="badge bg-info float-end">{{ total_teachers }}</span>
+            </a>
+            <a href="{% url 'accounts:pending_student_profiles' %}" class="list-group-item list-group-item-action {% if students_without_profiles_count > 0 %}list-group-item-warning{% endif %}">
+                <i class="fas fa-exclamation-triangle {% if students_without_profiles_count > 0 %}text-warning{% else %}text-secondary{% endif %}"></i> 待处理学生档案
+                <small class="text-muted">为无档案学生创建档案 ({{ students_without_profiles_count }})</small>
+                {% if students_without_profiles_count > 0 %}
+                <span class="badge bg-warning float-end">{{ students_without_profiles_count }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="list-group">
+            <h6 class="list-group-item active"><i class="fas fa-cogs"></i> 系统管理</h6>
             <a href="{% url 'students:student_profile_list' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-users text-primary"></i> 学生管理
-                <small class="text-muted">管理学生档案和信息</small>
+                <i class="fas fa-id-card text-primary"></i> 学生档案管理
+                <small class="text-muted">管理学生档案和信息 ({{ total_student_profiles }})</small>
+                <span class="badge bg-primary float-end">{{ total_student_profiles }}</span>
             </a>
             <a href="{% url 'students:department_list' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-university text-success"></i> 院系管理
@@ -131,26 +161,76 @@
                 <i class="fas fa-book-open text-info"></i> 专业管理
                 <small class="text-muted">管理专业信息</small>
             </a>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-3">
-        <div class="list-group">
             <a href="{% url 'students:course_list' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-book text-warning"></i> 课程管理
                 <small class="text-muted">管理课程信息</small>
             </a>
-            <a href="{% url 'students:enrollment_list' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-clipboard-list text-danger"></i> 选课管理
-                <small class="text-muted">管理选课记录</small>
-            </a>
-            <a href="{% url 'students:enrollment_grade_list' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-chart-bar text-secondary"></i> 成绩管理
-                <small class="text-muted">管理学生成绩</small>
-            </a>
         </div>
     </div>
 </div>
+
+<!-- 添加最近注册用户详细信息区域 -->
+{% if recent_users %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-clock"></i> 最近注册的新用户</h5>
+                <a href="{% url 'accounts:user_list' %}" class="btn btn-sm btn-outline-primary">查看全部用户</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>姓名</th>
+                                <th>邮箱</th>
+                                <th>角色</th>
+                                <th>注册时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users|slice:":5" %}
+                            <tr>
+                                <td><strong>{{ user.username }}</strong></td>
+                                <td>{{ user.get_full_name|default:"未设置" }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="badge {% if user.role == 'admin' %}bg-danger{% elif user.role == 'student' %}bg-success{% else %}bg-info{% endif %}">
+                                        {{ user.get_role_display }}
+                                    </span>
+                                </td>
+                                <td>{{ user.created_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if user.role == 'student' %}
+                                        {% if not user.studentprofile_set.exists %}
+                                            <a href="{% url 'accounts:quick_create_student_profile' user.id %}" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-user-plus"></i> 创建档案
+                                            </a>
+                                        {% else %}
+                                            <span class="text-success"><i class="fas fa-check"></i> 已有档案</span>
+                                        {% endif %}
+                                    {% endif %}
+                                    <a href="{% url 'accounts:edit_user' user.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">最近没有新用户注册</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- 待处理学生档案快速链接 -->
 {% if students_without_profiles_count > 0 %}

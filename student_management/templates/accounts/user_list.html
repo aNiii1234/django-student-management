@@ -2,18 +2,27 @@
 {% block title %}{{ title }} - 学生信息管理系统{% endblock %}
 
 {% block content %}
+
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2><i class="fas fa-users"></i> {{ title }}</h2>
             <div>
                 <div class="btn-group" role="group">
-                    <a href="{% url 'accounts:user_list' %}?type=all" class="btn {% if user_type == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">所有用户</a>
-                    <a href="{% url 'accounts:user_list' %}?type=students" class="btn {% if user_type == 'students' %}btn-success{% else %}btn-outline-success{% endif %}">学生</a>
-                    <a href="{% url 'accounts:user_list' %}?type=teachers" class="btn {% if user_type == 'teachers' %}btn-info{% else %}btn-outline-info{% endif %}">教师</a>
-                    <a href="{% url 'accounts:user_list' %}?type=admins" class="btn {% if user_type == 'admins' %}btn-warning{% else %}btn-outline-warning{% endif %}">管理员</a>
+                    <a href="{% url 'accounts:user_list' %}?type=all" class="btn {% if user_type == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        <i class="fas fa-users"></i> 所有用户
+                    </a>
+                    <a href="{% url 'accounts:user_list' %}?type=students" class="btn {% if user_type == 'students' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        <i class="fas fa-user-graduate"></i> 学生
+                    </a>
+                    <a href="{% url 'accounts:user_list' %}?type=teachers" class="btn {% if user_type == 'teachers' %}btn-info{% else %}btn-outline-info{% endif %}">
+                        <i class="fas fa-chalkboard-teacher"></i> 教师
+                    </a>
+                    <a href="{% url 'accounts:user_list' %}?type=admins" class="btn {% if user_type == 'admins' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                        <i class="fas fa-user-shield"></i> 管理员
+                    </a>
                 </div>
-                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ms-2">
                     <i class="fas fa-arrow-left"></i> 返回管理员面板
                 </a>
             </div>
@@ -66,11 +75,17 @@
                                 <td>{{ user.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
                                     {% if user.role == 'student' %}
-                                        <a href="#" class="btn btn-sm btn-outline-primary" title="查看学生档案">
-                                            <i class="fas fa-id-card"></i>
-                                        </a>
+                                        {% if user.studentprofile_set.exists %}
+                                            <a href="#" class="btn btn-sm btn-outline-primary" title="查看学生档案">
+                                                <i class="fas fa-id-card"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'accounts:quick_create_student_profile' user.id %}" class="btn btn-sm btn-outline-warning" title="创建学生档案">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                        {% endif %}
                                     {% endif %}
-                                    <a href="#" class="btn btn-sm btn-outline-secondary" title="编辑用户">
+                                    <a href="{% url 'accounts:edit_user' user.id %}" class="btn btn-sm btn-outline-secondary" title="编辑用户">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </td>

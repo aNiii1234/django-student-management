@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}
+        编辑专业 - 学生信息管理系统
+    {% else %}
+        添加专业 - 学生信息管理系统
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>
+                {% if object %}
+                    <i class="fas fa-edit"></i> 编辑专业
+                {% else %}
+                    <i class="fas fa-plus"></i> 添加专业
+                {% endif %}
+            </h2>
+            <div>
+                <a href="{% url 'students:major_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> 返回专业列表
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    {% if object %}
+                        <i class="fas fa-edit"></i> 编辑专业信息
+                    {% else %}
+                        <i class="fas fa-plus"></i> 添加新专业
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.code.id_for_label }}" class="form-label">
+                                专业代码 <span class="text-danger">*</span>
+                            </label>
+                            {{ form.code }}
+                            {% if form.code.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.code.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">
+                                专业名称 <span class="text-danger">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.department.id_for_label }}" class="form-label">
+                                所属院系 <span class="text-danger">*</span>
+                            </label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.department.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.duration.id_for_label }}" class="form-label">
+                                学制（年） <span class="text-danger">*</span>
+                            </label>
+                            {{ form.duration }}
+                            {% if form.duration.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.duration.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            专业描述
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.description.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            可选：请输入专业的详细描述信息
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="{% url 'students:major_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> 取消
+                            </a>
+                        </div>
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-redo"></i> 重置
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                {% if object %}
+                                    <i class="fas fa-save"></i> 保存更改
+                                {% else %}
+                                    <i class="fas fa-plus"></i> 添加专业
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 表单字段样式 */
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+    background-color: rgba(13, 110, 253, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* 按钮悬停效果 */
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.15s ease-in-out;
+}
+
+/* 必填标记 */
+.text-danger {
+    font-weight: bold;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 为表单字段添加焦点效果
+    const formFields = document.querySelectorAll('.form-control, .form-select');
+    formFields.forEach(field => {
+        field.addEventListener('focus', function() {
+            this.parentElement.classList.add('form-group-focused');
+        });
+
+        field.addEventListener('blur', function() {
+            this.parentElement.classList.remove('form-group-focused');
+        });
+    });
+
+    // 表单提交验证
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const code = document.getElementById('{{ form.code.id_for_label }}');
+        const name = document.getElementById('{{ form.name.id_for_label }}');
+        const department = document.getElementById('{{ form.department.id_for_label }}');
+        const duration = document.getElementById('{{ form.duration.id_for_label }}');
+
+        // 基本验证
+        if (!code.value.trim()) {
+            alert('请输入专业代码');
+            code.focus();
+            e.preventDefault();
+            return;
+        }
+
+        if (!name.value.trim()) {
+            alert('请输入专业名称');
+            name.focus();
+            e.preventDefault();
+            return;
+        }
+
+        if (!department.value) {
+            alert('请选择所属院系');
+            department.focus();
+            e.preventDefault();
+            return;
+        }
+
+        if (!duration.value || duration.value < 1) {
+            alert('请输入有效的学制（至少1年）');
+            duration.focus();
+            e.preventDefault();
+            return;
+        }
+    });
+
+    // 重置按钮功能
+    const resetBtn = document.querySelector('button[type="reset"]');
+    resetBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('确定要重置所有表单字段吗？')) {
+            form.reset();
+            // 清除错误提示
+            const errorDivs = document.querySelectorAll('.text-danger');
+            errorDivs.forEach(div => {
+                div.style.display = 'none';
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

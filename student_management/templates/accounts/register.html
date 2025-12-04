@@ -3,27 +3,30 @@
 
 {% block content %}
 <style>
-/* 统一基础样式 - 与login_clean.html保持一致 */
+/* 统一基础样式 - 与学生管理系统保持一致 */
 :root {
-    --primary-color: #667eea;
-    --primary-light: #764ba2;
-    --secondary-color: #f093fb;
-    --accent-color: #4facfe;
+    --primary-color: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-light: #3b82f6;
+    --secondary-color: #64748b;
+    --accent-color: #0ea5e9;
     --text-color: #2d3748;
     --text-light: #718096;
-    --bg-color: #f7fafc;
+    --bg-color: #f8fafc;
     --white: #ffffff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
     --glass-bg: rgba(255, 255, 255, 0.1);
     --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.08);
     --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
     --shadow-large: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-/* 页面背景样式 - 增强版 */
+/* 页面背景样式 - 与管理系统保持一致 */
 .auth-background {
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -270,23 +273,6 @@
     margin-bottom: 1.5rem;
 }
 
-.input-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.auth-input:focus ~ .input-icon {
-    color: var(--primary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
 /* 浮动标签效果 */
 .floating-label {
     position: absolute;
@@ -522,7 +508,6 @@
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
-                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
@@ -538,11 +523,9 @@
                                     <div class="input-group-custom">
                                         <input type="text" class="form-control auth-input" id="{{ form.username.id_for_label }}"
                                                name="{{ form.username.name }}" placeholder=" " required>
-                                        <i class="fas fa-user input-icon"></i>
                                         <label for="{{ form.username.id_for_label }}" class="floating-label">用户名 *</label>
                                         {% if form.username.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.username.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -553,11 +536,9 @@
                                     <div class="input-group-custom">
                                         <input type="email" class="form-control auth-input" id="{{ form.email.id_for_label }}"
                                                name="{{ form.email.name }}" placeholder=" " required>
-                                        <i class="fas fa-envelope input-icon"></i>
                                         <label for="{{ form.email.id_for_label }}" class="floating-label">邮箱 *</label>
                                         {% if form.email.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.email.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -571,11 +552,9 @@
                                     <div class="input-group-custom">
                                         <input type="text" class="form-control auth-input" id="{{ form.first_name.id_for_label }}"
                                                name="{{ form.first_name.name }}" placeholder=" " required>
-                                        <i class="fas fa-user input-icon"></i>
                                         <label for="{{ form.first_name.id_for_label }}" class="floating-label">姓氏 *</label>
                                         {% if form.first_name.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.first_name.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -586,11 +565,9 @@
                                     <div class="input-group-custom">
                                         <input type="text" class="form-control auth-input" id="{{ form.last_name.id_for_label }}"
                                                name="{{ form.last_name.name }}" placeholder=" " required>
-                                        <i class="fas fa-user input-icon"></i>
                                         <label for="{{ form.last_name.id_for_label }}" class="floating-label">名字 *</label>
                                         {% if form.last_name.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.last_name.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -609,10 +586,8 @@
                                                 <option value="{{ value }}">{{ label }}</option>
                                             {% endfor %}
                                         </select>
-                                        <i class="fas fa-user-tag input-icon"></i>
                                         {% if form.role.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.role.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -623,11 +598,9 @@
                                     <div class="input-group-custom">
                                         <input type="text" class="form-control auth-input" id="{{ form.phone.id_for_label }}"
                                                name="{{ form.phone.name }}" placeholder=" ">
-                                        <i class="fas fa-phone input-icon"></i>
                                         <label for="{{ form.phone.id_for_label }}" class="floating-label">手机号</label>
                                         {% if form.phone.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.phone.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -641,14 +614,12 @@
                                     <div class="input-group-custom">
                                         <input type="password" class="form-control auth-input" id="{{ form.password1.id_for_label }}"
                                                name="{{ form.password1.name }}" placeholder=" " required>
-                                        <i class="fas fa-lock input-icon"></i>
                                         <label for="{{ form.password1.id_for_label }}" class="floating-label">密码 *</label>
                                         <div class="password-strength" id="passwordStrength" style="display: none;">
                                             <div class="password-strength-bar"></div>
                                         </div>
                                         {% if form.password1.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.password1.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -659,11 +630,9 @@
                                     <div class="input-group-custom">
                                         <input type="password" class="form-control auth-input" id="{{ form.password2.id_for_label }}"
                                                name="{{ form.password2.name }}" placeholder=" " required>
-                                        <i class="fas fa-lock input-icon"></i>
                                         <label for="{{ form.password2.id_for_label }}" class="floating-label">确认密码 *</label>
                                         {% if form.password2.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
                                                 {{ form.password2.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -674,7 +643,6 @@
                             <!-- 注册按钮 -->
                             <div class="d-grid mb-4">
                                 <button type="submit" class="btn auth-button" id="registerBtn">
-                                    <i class="fas fa-user-plus me-2"></i>
                                     立即注册
                                 </button>
                             </div>
@@ -751,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 显示加载状态
             registerBtn.disabled = true;
-            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>正在注册...';
+            registerBtn.innerHTML = '正在注册...';
 
             // 添加提交动画
             registerForm.style.transform = 'scale(0.98)';
@@ -924,7 +892,7 @@ function showError(input, message) {
     // 创建错误元素
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message text-danger small mt-2';
-    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+    errorDiv.textContent = message;
     errorDiv.style.animation = 'slideInDown 0.3s ease-out';
 
     input.parentElement.appendChild(errorDiv);
