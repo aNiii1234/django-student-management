@@ -3,27 +3,30 @@
 
 {% block content %}
 <style>
-/* 统一基础样式 */
+/* 统一基础样式 - 与学生管理系统保持一致 */
 :root {
-    --primary-color: #667eea;
-    --primary-light: #764ba2;
-    --secondary-color: #f093fb;
-    --accent-color: #4facfe;
+    --primary-color: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-light: #3b82f6;
+    --secondary-color: #64748b;
+    --accent-color: #0ea5e9;
     --text-color: #2d3748;
     --text-light: #718096;
-    --bg-color: #f7fafc;
+    --bg-color: #f8fafc;
     --white: #ffffff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
     --glass-bg: rgba(255, 255, 255, 0.1);
     --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.08);
     --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
     --shadow-large: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-/* 页面背景样式 - 增强版 */
+/* 页面背景样式 - 与管理系统保持一致 */
 .auth-background {
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -224,11 +227,6 @@
     }
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-}
-
 /* 表单内容区 */
 .card-body {
     padding: 3rem 2rem 2rem;
@@ -243,7 +241,7 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: linear-gradient(white, white) padding-box,
                 linear-gradient(135deg, #e2e8f0, #cbd5e0) border-box;
-    padding: 0 1rem 0 3rem;
+    padding: 0 1rem;
     box-shadow: var(--shadow-soft);
     position: relative;
 }
@@ -270,27 +268,10 @@
     margin-bottom: 1.5rem;
 }
 
-.input-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.auth-input:focus ~ .input-icon {
-    color: var(--primary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
 /* 浮动标签效果 */
 .floating-label {
     position: absolute;
-    left: 3rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-light);
@@ -299,12 +280,13 @@
     transition: all 0.3s ease;
     background: white;
     padding: 0 0.5rem;
+    z-index: 3;
 }
 
 .auth-input:focus ~ .floating-label,
 .auth-input:not(:placeholder-shown) ~ .floating-label {
     top: 0;
-    left: 2.5rem;
+    left: 0.5rem;
     font-size: 0.8rem;
     color: var(--primary-color);
     font-weight: 600;
@@ -384,28 +366,6 @@
     50% { opacity: 0.6; }
 }
 
-/* 密码切换按钮增强 */
-.password-toggle-btn {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(102, 126, 234, 0.1);
-    border: 1px solid rgba(102, 126, 234, 0.2);
-    border-radius: 8px;
-    color: var(--text-light);
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 3;
-}
-
-.password-toggle-btn:hover {
-    background: rgba(102, 126, 234, 0.2);
-    color: var(--primary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
 /* 链接样式 */
 .auth-link {
     color: var(--primary-color);
@@ -474,7 +434,7 @@
     .auth-card {
         margin: 0 1rem;
     }
-    
+
     .card-body {
         padding: 2.5rem 1.5rem 1.5rem;
     }
@@ -501,6 +461,36 @@
 .position-relative .btn:hover {
     color: var(--primary-color);
 }
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .auth-header {
+        padding: 1.5rem;
+    }
+
+    .auth-icon {
+        font-size: 2rem;
+    }
+
+    .auth-card {
+        margin: 0 1rem;
+    }
+
+    .card-body {
+        padding: 2.5rem 1.5rem 1.5rem;
+    }
+}
+
+/* 复选框美化 */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+}
 </style>
 
 <div class="auth-background">
@@ -514,12 +504,12 @@
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7 col-sm-9">
+            <div class="col-lg-6 col-md-8 col-sm-10">
                 <div class="auth-card fade-in-up">
                     <!-- 头部 -->
                     <div class="auth-header">
                         <div class="auth-icon">
-                            <i class="fas fa-graduation-cap"></i>
+                            <i class="fas fa-user-circle"></i>
                         </div>
                         <h3 class="mb-2">欢迎登录</h3>
                         <p class="mb-0 opacity-90">学生信息管理系统</p>
@@ -541,32 +531,35 @@
                             {% csrf_token %}
 
                             <!-- 用户名 -->
-                            <div class="input-group-custom">
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="auth-label">
+                                    <i class="fas fa-user me-2"></i>用户名
+                                </label>
                                 <input type="text" class="form-control auth-input" id="{{ form.username.id_for_label }}"
-                                       name="{{ form.username.name }}" placeholder=" " required
+                                       name="{{ form.username.name }}" placeholder="请输入用户名" required
                                        value="{{ form.username.value|default:'' }}">
-                                <i class="fas fa-user input-icon"></i>
-                                <label for="{{ form.username.id_for_label }}" class="floating-label">用户名</label>
                                 {% if form.username.errors %}
-                                    <div class="text-danger small mt-2">
-                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                    <div class="text-danger small mt-1">
                                         {{ form.username.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
 
                             <!-- 密码 -->
-                            <div class="input-group-custom mb-4">
-                                <input type="password" class="form-control auth-input" id="{{ form.password.id_for_label }}"
-                                       name="{{ form.password.name }}" placeholder=" " required>
-                                <i class="fas fa-lock input-icon"></i>
-                                <label for="{{ form.password.id_for_label }}" class="floating-label">密码</label>
-                                <button type="button" class="password-toggle-btn" onclick="togglePassword()">
-                                    <i class="fas fa-eye" id="passwordToggle"></i>
-                                </button>
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="auth-label">
+                                    <i class="fas fa-lock me-2"></i>密码
+                                </label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control auth-input" id="{{ form.password.id_for_label }}"
+                                           name="{{ form.password.name }}" placeholder="请输入密码" required>
+                                    <button type="button" class="btn position-absolute end-0 top-50 translate-middle-y border-0"
+                                            onclick="togglePassword()">
+                                        <i class="fas fa-eye" id="passwordToggle"></i>
+                                    </button>
+                                </div>
                                 {% if form.password.errors %}
-                                    <div class="text-danger small mt-2">
-                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                    <div class="text-danger small mt-1">
                                         {{ form.password.errors.0 }}
                                     </div>
                                 {% endif %}
@@ -620,275 +613,31 @@
 </div>
 
 <script>
-// 密码显示/隐藏切换
 function togglePassword() {
     const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
     const passwordToggle = document.getElementById('passwordToggle');
-    const toggleBtn = passwordToggle.parentElement;
 
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         passwordToggle.classList.remove('fa-eye');
         passwordToggle.classList.add('fa-eye-slash');
-        toggleBtn.style.background = 'rgba(76, 175, 80, 0.1)';
-        toggleBtn.style.borderColor = 'rgba(76, 175, 80, 0.3)';
-        toggleBtn.style.color = '#4caf50';
     } else {
         passwordInput.type = 'password';
         passwordToggle.classList.remove('fa-eye-slash');
         passwordToggle.classList.add('fa-eye');
-        toggleBtn.style.background = 'rgba(102, 126, 234, 0.1)';
-        toggleBtn.style.borderColor = 'rgba(102, 126, 234, 0.2)';
-        toggleBtn.style.color = 'var(--text-light)';
     }
 }
 
-// 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
-    // 表单提交处理
+    // 表单提交时显示加载状态
     const loginForm = document.getElementById('loginForm');
     const loginBtn = document.getElementById('loginBtn');
 
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            // 表单验证
-            const username = document.getElementById('{{ form.username.id_for_label }}');
-            const password = document.getElementById('{{ form.password.id_for_label }}');
-
-            if (!username.value.trim()) {
-                showError(username, '请输入用户名');
-                e.preventDefault();
-                return;
-            }
-
-            if (!password.value.trim()) {
-                showError(password, '请输入密码');
-                e.preventDefault();
-                return;
-            }
-
-            // 显示加载状态
+        loginForm.addEventListener('submit', function() {
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>正在登录...';
-
-            // 添加提交动画
-            loginForm.style.transform = 'scale(0.98)';
-            loginForm.style.opacity = '0.7';
+            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>登录中...';
         });
-    }
-
-    // 输入框交互效果
-    const inputs = document.querySelectorAll('.auth-input');
-    inputs.forEach(input => {
-        // 输入时的实时反馈
-        input.addEventListener('input', function() {
-            if (this.value.trim()) {
-                this.parentElement.style.transform = 'scale(1.02)';
-                setTimeout(() => {
-                    this.parentElement.style.transform = 'scale(1)';
-                }, 200);
-            }
-        });
-
-        // 焦点效果增强
-        input.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'translateY(-2px)';
-            // 添加焦点音效（可选）
-            playFocusSound();
-        });
-
-        input.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'translateY(0)';
-        });
-    });
-
-    // 自动隐藏消息提示
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach((alert, index) => {
-        setTimeout(() => {
-            alert.style.transition = 'all 0.3s ease';
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateX(-20px)';
-            setTimeout(() => {
-                alert.remove();
-            }, 300);
-        }, 5000 + (index * 1000)); // 错开消失时间
-    });
-
-    // 添加键盘快捷键支持
-    document.addEventListener('keydown', function(e) {
-        // Enter键提交表单
-        if (e.key === 'Enter' && !e.shiftKey) {
-            const activeElement = document.activeElement;
-            if (activeElement.tagName !== 'BUTTON' && !activeElement.type === 'submit') {
-                loginForm.dispatchEvent(new Event('submit'));
-                e.preventDefault();
-            }
-        }
-
-        // Ctrl/Cmd + R 注册页面快捷键
-        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-            e.preventDefault();
-            window.location.href = '{% url "accounts:register" %}';
-        }
-    });
-
-    // 添加页面可见性变化处理
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            document.title = '💤 等待返回 - 学生管理系统';
-        } else {
-            document.title = '登录 - 学生信息管理系统';
-        }
-    });
-
-    // 初始化工具提示
-    initTooltips();
-
-    // 添加加载进度条
-    addLoadingProgress();
-});
-
-// 显示错误信息
-function showError(input, message) {
-    // 移除已存在的错误
-    const existingError = input.parentElement.querySelector('.error-message');
-    if (existingError) {
-        existingError.remove();
-    }
-
-    // 创建错误元素
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-danger small mt-2';
-    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
-    errorDiv.style.animation = 'slideInDown 0.3s ease-out';
-
-    input.parentElement.appendChild(errorDiv);
-    input.parentElement.style.animation = 'shake 0.5s ease-in-out';
-
-    // 输入框抖动效果
-    setTimeout(() => {
-        input.parentElement.style.animation = '';
-    }, 500);
-
-    // 自动清除错误
-    setTimeout(() => {
-        errorDiv.style.opacity = '0';
-        setTimeout(() => {
-            if (errorDiv.parentNode) {
-                errorDiv.remove();
-            }
-        }, 300);
-    }, 5000);
-}
-
-// 抖动动画
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-`;
-document.head.appendChild(style);
-
-// 播放焦点音效（可选）
-function playFocusSound() {
-    // 创建简单的音效
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
-}
-
-// 初始化工具提示
-function initTooltips() {
-    const tooltips = [
-        { element: '#rememberMe', text: '保持登录状态7天' },
-        { element: '#forgotPassword', text: '点击重置密码' }
-    ];
-
-    tooltips.forEach(({ element, text }) => {
-        const el = document.querySelector(element);
-        if (el) {
-            el.title = text;
-            el.setAttribute('data-bs-toggle', 'tooltip');
-        }
-    });
-}
-
-// 添加加载进度条
-function addLoadingProgress() {
-    const progressBar = document.createElement('div');
-    progressBar.id = 'loadingProgress';
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        z-index: 9999;
-        transition: width 0.3s ease;
-        display: none;
-    `;
-    document.body.appendChild(progressBar);
-
-    // 页面加载进度
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 30;
-        if (progress > 90) progress = 90;
-        progressBar.style.width = progress + '%';
-    }, 100);
-
-    window.addEventListener('load', () => {
-        clearInterval(interval);
-        progressBar.style.width = '100%';
-        setTimeout(() => {
-            progressBar.style.display = 'none';
-        }, 500);
-    });
-}
-
-// 页面性能监控
-window.addEventListener('load', function() {
-    const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-    console.log(`页面加载时间: ${loadTime}ms`);
-
-    // 如果加载时间过长，显示提示
-    if (loadTime > 3000) {
-        const notification = document.createElement('div');
-        notification.className = 'position-fixed top-0 end-0 p-3';
-        notification.style.zIndex = '9999';
-        notification.innerHTML = `
-            <div class="toast show" role="alert">
-                <div class="toast-header">
-                    <i class="fas fa-info-circle text-primary me-2"></i>
-                    <strong class="me-auto">性能提示</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body">
-                    网络较慢，建议检查连接或刷新页面
-                </div>
-            </div>
-        `;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
     }
 });
 </script>

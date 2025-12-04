@@ -10,16 +10,20 @@ class StudentProfileForm(forms.ModelForm):
         self.fields['political_status'].empty_label = "请选择政治面貌"
         self.fields['enrollment_status'].empty_label = "请选择学籍状态"
 
-        # 如果是编辑模式且有已选择的院系，则过滤专业选项
-        if self.instance and self.instance.pk and self.instance.department:
-            self.fields['major'].queryset = Major.objects.filter(department=self.instance.department)
-        else:
-            self.fields['major'].queryset = Major.objects.none()
-            self.fields['major'].disabled = True
+        # 显示所有专业，不分院系
+        self.fields['major'].queryset = Major.objects.all().order_by('department__name', 'name')
+
+        # 为专业字段添加院系信息到选项中
+        major_choices = [('', '请选择专业')]
+        for major in self.fields['major'].queryset:
+            major_choices.append((major.id, f'{major.name} ({major.department.name})'))
+        self.fields['major'].choices = major_choices
 
         # 为所有字段添加Bootstrap样式
-        for field in self.fields.values():
-            if field.widget.__class__.__name__ not in ['Select', 'Textarea', 'DateInput']:
+        for field_name, field in self.fields.items():
+            if field.widget.__class__.__name__ == 'Select':
+                field.widget.attrs.update({'class': 'form-select'})
+            elif field.widget.__class__.__name__ not in ['CheckboxInput', 'RadioSelect']:
                 field.widget.attrs.update({'class': 'form-control'})
 
     class Meta:
@@ -92,11 +96,26 @@ class DepartmentForm(forms.ModelForm):
         }
 
 class MajorForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 为所有字段添加Bootstrap样式
+        for field_name, field in self.fields.items():
+            if field.widget.__class__.__name__ not in ['CheckboxInput', 'RadioSelect']:
+                field.widget.attrs.update({'class': 'form-control'})
+
+            # 为Select字段特殊处理
+            if field.widget.__class__.__name__ == 'Select':
+                field.widget.attrs.update({'class': 'form-select'})
+
     class Meta:
         model = Major
         fields = ['department', 'name', 'code', 'duration', 'description']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 3}),
+            'department': forms.Select(attrs={'class': 'form-select'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '请输入专业名称'}),
+            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '请输入专业代码'}),
+            'duration': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '请输入学制年限', 'min': 1, 'max': 10}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': '请输入专业描述（可选）'}),
         }
         labels = {
             'department': '所属院系',

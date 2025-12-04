@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from .forms import CustomUserCreationForm
 from .models import User
 from students.models import StudentProfile, Department, Major
+from django import forms
 
 class CustomLoginView(LoginView):
     template_name = 'accounts/login_clean.html'
@@ -190,10 +191,25 @@ def user_list(request):
         users = User.objects.all()
         title = '所有用户'
 
+    # 计算统计信息
+    total_users = User.objects.count()
+    total_students = User.objects.filter(role='student').count()
+    total_teachers = User.objects.filter(role='teacher').count()
+    total_admins = User.objects.filter(role='admin').count()
+
+    # 为模板添加角色过滤函数
+    def filter_role(user_list, role):
+        return [user for user in user_list if user.role == role]
+
     context = {
         'users': users,
         'title': title,
         'user_type': user_type,
+        'total_users': total_users,
+        'total_students': total_students,
+        'total_teachers': total_teachers,
+        'total_admins': total_admins,
+        'filter_role': filter_role,
     }
     return render(request, 'accounts/user_list.html', context)
 
@@ -282,3 +298,41 @@ def quick_create_student_profile(request, user_id):
         'departments': departments,
     }
     return render(request, 'accounts/quick_create_student_profile.html', context)
+
+@login_required
+def edit_user(request, user_id):
+    if request.user.role != 'admin':
+        messages.error(request, '您没有权限访问此页面！')
+        return redirect('home')
+
+    user_to_edit = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        # 获取表单数据
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone = request.POST.get('phone')
+        role = request.POST.get('role')
+
+        # 验证用户名是否唯一
+        if User.objects.exclude(id=user_id).filter(username=username).exists():
+            messages.error(request, '用户名已存在！')
+        else:
+            # 更新用户信息
+            user_to_edit.username = username
+            user_to_edit.email = email
+            user_to_edit.first_name = first_name
+            user_to_edit.last_name = last_name
+            user_to_edit.phone = phone
+            user_to_edit.role = role
+            user_to_edit.save()
+
+            messages.success(request, f'用户 {user_to_edit.username} 的信息已更新！')
+            return redirect('accounts:user_list')
+
+    context = {
+        'user_to_edit': user_to_edit,
+    }
+    return render(request, 'accounts/edit_user.html', context)

@@ -1,74 +1,74 @@
-{% extends 'base-minimal.html' %}
-{% load static %}
-
-{% block title %}院系列表 - 学生管理系统{% endblock %}
+{% extends 'base.html' %}
+{% block title %}院系管理 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
-    <!-- 页面标题 -->
-    <div class="page-header">
-        <h1 class="page-title">院系信息</h1>
-        {% if user.role == 'admin' %}
-            <div class="page-actions">
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-university"></i> 院系管理</h2>
+            <div>
                 <a href="{% url 'students:department_create' %}" class="btn btn-primary">
-                    添加院系
+                    <i class="fas fa-plus"></i> 添加院系
+                </a>
+                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left"></i> 返回管理员面板
                 </a>
             </div>
-        {% endif %}
+        </div>
+        <hr>
     </div>
+</div>
 
-    <!-- 院系列表 -->
-    {% if departments %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-            {% for department in departments %}
-                <div class="card">
-                    <div style="padding: 1.5rem;">
-                        <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">
-                            🏢 {{ department.name }}
-                        </h3>
-
-                        {% if department.description %}
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
-                                {{ department.description|truncatewords:20 }}
-                            </p>
-                        {% endif %}
-
-                        <!-- 统计信息 -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                            <span style="color: var(--text-muted); font-size: 0.9rem;">
-                                学生数: {{ department.studentprofile_set.count }}
-                            </span>
-                            <span style="color: var(--text-muted); font-size: 0.9rem;">
-                                专业数: {{ department.major_set.count }}
-                            </span>
-                        </div>
-
-                        <!-- 操作按钮 -->
-                        {% if user.role == 'admin' %}
-                            <div class="table-card-actions">
-                                <a href="{% url 'students:department_update' department.id %}" class="btn btn-sm btn-outline">
-                                    编辑
-                                </a>
-                                <a href="{% url 'students:department_delete' department.id %}" class="btn btn-sm btn-danger">
-                                    删除
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> 院系列表</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>院系代码</th>
+                                <th>院系名称</th>
+                                <th>负责人</th>
+                                <th>联系电话</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for department in departments %}
+                            <tr>
+                                <td><strong>{{ department.code }}</strong></td>
+                                <td>{{ department.name }}</td>
+                                <td>{{ department.head_name|default:"未设置" }}</td>
+                                <td>{{ department.phone|default:"未设置" }}</td>
+                                <td>{{ department.description|default:"暂无描述"|truncatewords:10 }}</td>
+                                <td>{{ department.created_at|date:"Y-m-d" }}</td>
+                                <td>
+                                    <a href="{% url 'students:department_update' department.pk %}" class="btn btn-sm btn-outline-primary" title="编辑院系">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'students:department_delete' department.pk %}" class="btn btn-sm btn-outline-danger" title="删除院系" onclick="return confirm('确定要删除这个院系吗？')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> 暂无院系数据
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-    {% else %}
-        <!-- 空状态 -->
-        <div class="empty-state">
-            <h3>没有院系信息</h3>
-            <p>系统中还没有添加任何院系。</p>
-            {% if user.role == 'admin' %}
-                <a href="{% url 'students:department_create' %}" class="btn btn-primary">
-                    添加第一个院系
-                </a>
-            {% endif %}
-        </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}
