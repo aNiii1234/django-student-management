@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import views_api
 
 app_name = 'students'
 
@@ -45,4 +46,9 @@ urlpatterns = [
     path('my-enrollments/', views.my_enrollments, name='my_enrollments'),
     path('course-selection/', views.course_selection, name='course_selection'),
     path('course-selection/submit/', views.course_selection_submit, name='course_selection_submit'),
+
+    # API 端点
+    path('api/student-status/', views_api.api_student_status, name='api_student_status'),
+    path('api/course-updates/', views_api.api_course_updates, name='api_course_updates'),
+    path('api/enrollment-changes/', views_api.api_enrollment_changes, name='api_enrollment_changes'),
 ]

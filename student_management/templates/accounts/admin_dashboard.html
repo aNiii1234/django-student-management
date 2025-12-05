@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}管理员面板 - 学生信息管理系统{% endblock %}
 
 {% block content %}
@@ -259,8 +260,42 @@
                 <p class="mb-1"><strong>邮箱：</strong> {{ user.email }}</p>
                 <p class="mb-1"><strong>登录时间：</strong> {% now 'Y-m-d H:i:s' %}</p>
                 <p class="mb-0"><strong>系统版本：</strong> 学生信息管理系统 v1.0</p>
+                <p class="mb-0 mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-sync"></i> 实时同步已启用
+                        <span id="last-sync-time" class="ms-1">--:--:--</span>
+                        <button id="manual-refresh" class="btn btn-sm btn-outline-secondary ms-2">
+                            <i class="fas fa-sync"></i> 手动刷新
+                        </button>
+                    </small>
+                </p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 实时同步JavaScript -->
+<script src="/static/js/realtime_sync.js"></script>
+<script>
+// 为统计数据添加ID以便JavaScript更新
+document.addEventListener('DOMContentLoaded', function() {
+    // 为统计卡片添加ID
+    const totalUsersEl = document.querySelector('.card-body h2');
+    const totalStudentsEl = totalUsersEl ? totalUsersEl.parentElement.parentElement.querySelector('.col-md-4:nth-child(2) .card-body h2') : null;
+
+    // 更新现有统计元素的ID
+    const statsElements = document.querySelectorAll('.card-body h2');
+    if (statsElements.length >= 3) {
+        statsElements[0].id = 'total-users';
+        statsElements[1].id = 'total-students';
+        statsElements[2].id = 'total-student-profiles';
+    }
+
+    // 为待处理档案数量添加ID
+    const pendingBadge = document.querySelector('.badge.bg-warning');
+    if (pendingBadge) {
+        pendingBadge.id = 'pending-profiles-badge';
+    }
+});
+</script>
 {% endblock %}
