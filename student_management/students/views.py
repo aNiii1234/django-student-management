@@ -23,11 +23,16 @@ class StudentOrAdminMixin(UserPassesTestMixin):
 
 # 主页视图（公开访问）
 def home(request):
+    # 如果用户已登录，直接渲染对应的仪表板，避免重定向
     if request.user.is_authenticated:
         if request.user.role == 'admin':
-            return redirect('accounts:admin_dashboard')
+            # 导入并直接调用admin_dashboard视图
+            from accounts.views import admin_dashboard
+            return admin_dashboard(request)
         elif request.user.role == 'student':
-            return redirect('accounts:student_dashboard')
+            # 导入并直接调用student_dashboard视图
+            from accounts.views import student_dashboard
+            return student_dashboard(request)
         else:
             return render(request, 'students/home_clean.html')
     else:
@@ -38,6 +43,9 @@ class DepartmentListView(ListView):
     model = Department
     template_name = 'students/department_list_clean.html'
     context_object_name = 'departments'
+
+    def get_queryset(self):
+        return Department.objects.all().order_by('name')  # 添加排序，避免无序查询
 
 class DepartmentCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = Department

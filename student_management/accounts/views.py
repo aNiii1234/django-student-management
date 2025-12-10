@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
+from django.views.decorators.cache import cache_page
+from django.db.models import Count, Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import CustomUserCreationForm
 from .models import User
 from students.models import StudentProfile, Department, Major
@@ -117,35 +120,42 @@ def edit_profile(request):
     return render(request, 'accounts/edit_profile.html', context)
 
 @login_required
+@cache_page(60)  # 缓存1分钟
 def admin_dashboard(request):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
         return redirect('home')
 
-    # 统计数据
-    total_users = User.objects.count()
-    total_students = User.objects.filter(role='student').count()
-    total_teachers = User.objects.filter(role='teacher').count()
+    # 优化：使用单个查询获取所有统计数据
+    stats = User.objects.aggregate(
+        total_users=Count('id'),
+        total_students=Count('id', filter=Q(role='student')),
+        total_teachers=Count('id', filter=Q(role='teacher'))
+    )
     total_student_profiles = StudentProfile.objects.count()
 
-    # 找出没有学生档案的学生用户
-    students_without_profiles = User.objects.filter(role='student').exclude(
+    # 优化：限制查询数量
+    students_without_profiles = User.objects.filter(
+        role='student'
+    ).exclude(
         id__in=StudentProfile.objects.values_list('user_id', flat=True)
-    ).order_by('-created_at')
+    ).order_by('-created_at')[:5]  # 只取前5个
 
-    # 找出最近3天内注册的新用户
+    # 优化：减少查询时间范围和数量
     from django.utils import timezone
     from datetime import timedelta
-    three_days_ago = timezone.now() - timedelta(days=3)
-    recent_users = User.objects.filter(created_at__gte=three_days_ago).order_by('-created_at')
+    one_day_ago = timezone.now() - timedelta(days=1)  # 改为1天
+    recent_users = User.objects.filter(
+        created_at__gte=one_day_ago
+    ).order_by('-created_at')[:5]  # 只取前5个
 
     context = {
-        'total_users': total_users,
-        'total_students': total_students,
-        'total_teachers': total_teachers,
+        'total_users': stats['total_users'],
+        'total_students': stats['total_students'],
+        'total_teachers': stats['total_teachers'],
         'total_student_profiles': total_student_profiles,
         'students_without_profiles': students_without_profiles,
-        'students_without_profiles_count': students_without_profiles.count(),
+        'students_without_profiles_count': len(students_without_profiles),
         'recent_users': recent_users,
     }
     return render(request, 'accounts/admin_dashboard.html', context)
@@ -176,20 +186,49 @@ def user_list(request):
         return redirect('home')
 
     user_type = request.GET.get('type', 'all')
+    search_query = request.GET.get('search', '')
     title = '所有用户'
 
+    # 基础查询集
+    users = User.objects.all()
+
+    # 按用户类型过滤
     if user_type == 'students':
-        users = User.objects.filter(role='student')
+        users = users.filter(role='student')
         title = '学生用户'
     elif user_type == 'teachers':
-        users = User.objects.filter(role='teacher')
+        users = users.filter(role='teacher')
         title = '教师用户'
     elif user_type == 'admins':
-        users = User.objects.filter(role='admin')
+        users = users.filter(role='admin')
         title = '管理员用户'
     else:
-        users = User.objects.all()
         title = '所有用户'
+
+    # 搜索功能
+    if search_query:
+        users = users.filter(
+            Q(username__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone__icontains=search_query)
+        )
+        title = f'搜索结果: "{search_query}"'
+
+    # 排序：按注册时间倒序
+    users = users.order_by('-created_at')
+
+    # 分页功能
+    paginator = Paginator(users, 10)  # 每页显示10条记录
+    page = request.GET.get('page', 1)
+
+    try:
+        users_page = paginator.page(page)
+    except PageNotAnInteger:
+        users_page = paginator.page(1)
+    except EmptyPage:
+        users_page = paginator.page(paginator.num_pages)
 
     # 计算统计信息
     total_users = User.objects.count()
@@ -202,14 +241,16 @@ def user_list(request):
         return [user for user in user_list if user.role == role]
 
     context = {
-        'users': users,
+        'users': users_page,
         'title': title,
         'user_type': user_type,
+        'search_query': search_query,
         'total_users': total_users,
         'total_students': total_students,
         'total_teachers': total_teachers,
         'total_admins': total_admins,
         'filter_role': filter_role,
+        'is_paginated': paginator.num_pages > 1,
     }
     return render(request, 'accounts/user_list.html', context)
 
@@ -336,3 +377,32 @@ def edit_user(request, user_id):
         'user_to_edit': user_to_edit,
     }
     return render(request, 'accounts/edit_user.html', context)
+
+@login_required
+def delete_user(request, user_id):
+    if request.user.role != 'admin':
+        messages.error(request, '您没有权限删除用户！')
+        return redirect('home')
+
+    user_to_delete = get_object_or_404(User, id=user_id)
+
+    # 防止删除自己
+    if user_to_delete == request.user:
+        messages.error(request, '不能删除自己的账户！')
+        return redirect('accounts:user_list')
+
+    # 防止删除超级管理员
+    if user_to_delete.is_superuser:
+        messages.error(request, '不能删除超级管理员账户！')
+        return redirect('accounts:user_list')
+
+    if request.method == 'POST':
+        username = user_to_delete.username
+        user_to_delete.delete()
+        messages.success(request, f'用户 {username} 已被成功删除！')
+        return redirect('accounts:user_list')
+
+    context = {
+        'user_to_delete': user_to_delete,
+    }
+    return render(request, 'accounts/delete_user.html', context)

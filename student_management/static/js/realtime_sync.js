@@ -1,15 +1,10 @@
-// 实时数据同步功能
+// 实时数据同步功能 - 已禁用以提升性能
 class RealtimeSync {
     constructor(options = {}) {
-        this.pollInterval = options.pollInterval || 30000; // 30秒轮询一次
-        this.maxRetries = options.maxRetries || 3;
-        this.currentRetry = 0;
-        this.isPolling = false;
-        this.lastUpdate = new Date();
-        this.endpoints = options.endpoints || {};
-        this.callbacks = options.callbacks || {};
-
-        this.init();
+        // 禁用实时同步，大幅提升页面性能
+        this.enabled = false;
+        console.log('Real-time sync disabled for better performance');
+        return;
     }
 
     init() {
