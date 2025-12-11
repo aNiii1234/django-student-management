@@ -491,6 +491,60 @@
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
 }
+
+/* 自定义错误消息样式 */
+.custom-alert {
+    border-radius: 12px;
+    border-width: 2px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* 错误消息红色主题 */
+.custom-alert[style*="background-color: #fee2e2"] {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+    border-color: #dc2626 !important;
+    color: #991b1b !important;
+}
+
+.custom-alert[style*="background-color: #fee2e2"] .btn-close {
+    filter: brightness(0) saturate(100%) invert(23%) sepia(87%) saturate(2572%) hue-rotate(356deg) brightness(96%) contrast(88%);
+}
+
+/* 成功消息绿色主题 */
+.custom-alert[style*="background-color: #dcfce7"] {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+    border-color: #16a34a !important;
+    color: #14532d !important;
+}
+
+.custom-alert[style*="background-color: #dcfce7"] .btn-close {
+    filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+/* 信息消息蓝色主题 */
+.custom-alert[style*="background-color: #dbeafe"] {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    border-color: #2563eb !important;
+    color: #1e3a8a !important;
+}
+
+.custom-alert[style*="background-color: #dbeafe"] .btn-close {
+    filter: brightness(0) saturate(100%) invert(29%) sepia(94%) saturate(1588%) hue-rotate(215deg) brightness(89%) contrast(96%);
+}
+
+/* 动画效果 */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 </style>
 
 <div class="auth-background">
@@ -519,7 +573,8 @@
                     <div class="card-body">
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3 custom-alert" role="alert"
+                                     style="{% if message.tags == 'error' %}background-color: #fee2e2; border-color: #dc2626; color: #991b1b;{% elif message.tags == 'success' %}background-color: #dcfce7; border-color: #16a34a; color: #14532d;{% else %}background-color: #dbeafe; border-color: #2563eb; color: #1e3a8a;{% endif %}">
                                     <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>

@@ -1,0 +1,96 @@
+{% extends 'base_minimal.html' %}
+{% load static %}
+{% block title %}管理员面板 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1>管理员面板</h1>
+</div>
+
+<!-- 统计数据 -->
+<div class="row" style="margin-bottom: 2rem;">
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_users }}</div>
+            <div class="stats-label">总用户数</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_students }}</div>
+            <div class="stats-label">学生</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_teachers }}</div>
+            <div class="stats-label">教师</div>
+        </div>
+    </div>
+</div>
+
+<!-- 待处理提醒 -->
+{% if students_without_profiles_count > 0 %}
+<div class="alert alert-warning">
+    <strong>待处理的学生档案：</strong>
+    {{ students_without_profiles_count }} 位学生需要创建档案
+    <a href="{% url 'accounts:pending_student_profiles' %}" class="btn btn-warning btn-sm" style="margin-left: 1rem;">立即处理</a>
+</div>
+{% endif %}
+
+<!-- 快速操作 -->
+<div class="row" style="margin-bottom: 2rem;">
+    <div class="col-12">
+        <h2>快速操作</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <a href="{% url 'accounts:user_list' %}" class="clickable-card" style="display: block; background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-decoration: none; color: inherit; margin-bottom: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">用户管理</div>
+            <div style="color: #6b7280; font-size: 0.875rem;">管理所有用户账户</div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'accounts:student_profile_list_admin' %}" class="clickable-card" style="display: block; background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-decoration: none; color: inherit; margin-bottom: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📚</div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">学生档案</div>
+            <div style="color: #6b7280; font-size: 0.875rem;">查看和管理学生信息</div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'students:department_list' %}" class="clickable-card" style="display: block; background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-decoration: none; color: inherit; margin-bottom: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏫</div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">院系专业</div>
+            <div style="color: #6b7280; font-size: 0.875rem;">管理部门和专业设置</div>
+        </a>
+    </div>
+</div>
+
+<!-- 最近注册用户 -->
+{% if recent_users %}
+<div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 1rem;">最近注册用户</h2>
+    <div class="row">
+        {% for user in recent_users %}
+        <div class="col-md-4" style="margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; padding: 0.75rem; background: #f9fafb; border-radius: 6px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem;">
+                    {{ user.username.0|upper }}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500;">{{ user.get_full_name|default:user.username }}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">
+                        <span class="badge" style="background: #e5e7eb; color: #374151; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.75rem;">{{ user.get_role_display }}</span>
+                        <span style="margin-left: 0.5rem;">{{ user.created_at|date:"m-d H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
