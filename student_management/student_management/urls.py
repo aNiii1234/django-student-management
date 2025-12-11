@@ -20,7 +20,7 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('students.urls')),  # 主页由students app处理
     path('accounts/', include('accounts.urls')),
-    path('students/', include('students.urls')),
+    path('', include('students.urls')),  # 主页由students app处理
+    # 移除重复的students URL，避免命名空间冲突
 ]

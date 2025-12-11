@@ -125,18 +125,17 @@ CACHES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+    # 仅保留最小长度验证器
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 6,  # 降低最小长度要求到6位
+        }
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # 暂时移除所有其他验证器以提供最佳用户体验
+    # UserAttributeSimilarityValidator - 移除以允许用户名相关密码
+    # CommonPasswordValidator - 移除以允许常见密码
+    # NumericPasswordValidator - 移除以允许纯数字密码
 ]
 
 

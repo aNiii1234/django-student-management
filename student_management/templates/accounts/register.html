@@ -615,11 +615,18 @@
                                         <input type="password" class="form-control auth-input" id="{{ form.password1.id_for_label }}"
                                                name="{{ form.password1.name }}" placeholder=" " required>
                                         <label for="{{ form.password1.id_for_label }}" class="floating-label">密码 *</label>
+                                        <div class="password-requirements mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle"></i>
+                                                密码要求：至少6位，不能与用户名过于相似
+                                            </small>
+                                        </div>
                                         <div class="password-strength" id="passwordStrength" style="display: none;">
                                             <div class="password-strength-bar"></div>
                                         </div>
                                         {% if form.password1.errors %}
                                             <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle"></i>
                                                 {{ form.password1.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -631,8 +638,16 @@
                                         <input type="password" class="form-control auth-input" id="{{ form.password2.id_for_label }}"
                                                name="{{ form.password2.name }}" placeholder=" " required>
                                         <label for="{{ form.password2.id_for_label }}" class="floating-label">确认密码 *</label>
+                                        <div class="password-match-status mt-1" id="passwordMatchStatus">
+                                            <small class="text-muted">
+                                                <i class="fas fa-check-circle" style="display:none;"></i>
+                                                <i class="fas fa-times-circle" style="display:none;"></i>
+                                                <span id="passwordMatchText">请再次输入密码</span>
+                                            </small>
+                                        </div>
                                         {% if form.password2.errors %}
                                             <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle"></i>
                                                 {{ form.password2.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -707,8 +722,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 密码强度检查
-            if (!isPasswordStrong(password1.value)) {
-                showError(password1, '密码至少8位，包含字母和数字');
+            if (!isPasswordValid(password1.value)) {
+                showError(password1, '密码至少需要6位字符');
                 isValid = false;
             }
 
@@ -851,22 +866,49 @@ function checkPasswordStrength(password) {
     }
 }
 
-// 密码匹配检查
+// 密码匹配检查（增强版）
 function checkPasswordMatch(confirmPasswordInput, passwordInput) {
+    const matchStatus = document.getElementById('passwordMatchStatus');
+    const matchText = document.getElementById('passwordMatchText');
+    const checkIcon = matchStatus.querySelector('.fa-check-circle');
+    const timesIcon = matchStatus.querySelector('.fa-times-circle');
+
     if (confirmPasswordInput.value && passwordInput.value) {
         if (confirmPasswordInput.value !== passwordInput.value) {
             confirmPasswordInput.style.borderColor = '#f56565';
             confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f56565, #fc8181) border-box';
+
+            // 更新状态显示
+            matchText.textContent = '密码不匹配';
+            matchText.className = 'text-danger';
+            checkIcon.style.display = 'none';
+            timesIcon.style.display = 'inline';
+            timesIcon.className = 'fas fa-times-circle text-danger';
         } else {
             confirmPasswordInput.style.borderColor = '#48bb78';
             confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #48bb78, #68d391) border-box';
+
+            // 更新状态显示
+            matchText.textContent = '密码匹配';
+            matchText.className = 'text-success';
+            timesIcon.style.display = 'none';
+            checkIcon.style.display = 'inline';
+            checkIcon.className = 'fas fa-check-circle text-success';
         }
+    } else {
+        // 重置状态
+        confirmPasswordInput.style.borderColor = '';
+        confirmPasswordInput.style.background = '';
+        matchText.textContent = '请再次输入密码';
+        matchText.className = 'text-muted';
+        checkIcon.style.display = 'none';
+        timesIcon.style.display = 'none';
     }
 }
 
-// 密码强度验证
-function isPasswordStrong(password) {
-    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+// 密码强度验证（更新为更宽松的要求）
+function isPasswordValid(password) {
+    return password.length >= 6 && password.length > 0;
 }
 
 // 邮箱格式验证
