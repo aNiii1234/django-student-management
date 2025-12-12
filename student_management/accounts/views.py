@@ -333,6 +333,8 @@ def quick_create_student_profile(request, user_id):
             )
 
             messages.success(request, f'成功为 {user.get_full_name() or user.username} 创建学生档案！')
+            # 提供添加选课的快捷链接
+            messages.info(request, f'您可以为该学生<a href="/students/enrollment/add/?student_id={student_profile.id}" class="alert-link">添加选课记录</a>以录入成绩。')
             return redirect('accounts:pending_student_profiles')
         except Exception as e:
             messages.error(request, f'创建学生档案时出错：{str(e)}')

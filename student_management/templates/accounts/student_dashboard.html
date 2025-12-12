@@ -178,7 +178,21 @@
                             <div class="empty-state">
                                 <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
                                 <h4 class="text-muted mb-3">暂无选课记录</h4>
-                                <p class="text-muted mb-4">您还没有选择任何课程，赶快去选课吧！</p>
+                                <p class="text-muted mb-4">
+                                    {% if student_profile %}
+                                        您还没有选择任何课程。选课记录和成绩由管理员添加，请耐心等待。
+                                    {% else %}
+                                        请先完善您的学生档案，然后等待管理员为您添加选课记录。
+                                    {% endif %}
+                                </p>
+                                {% if not student_profile %}
+                                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary me-2">
+                                        <i class="fas fa-edit me-2"></i>完善档案
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'students:course_selection' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-search me-2"></i>查看可选课程
+                                </a>
                             </div>
                         </div>
                     {% endif %}

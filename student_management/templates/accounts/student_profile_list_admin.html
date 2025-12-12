@@ -80,7 +80,13 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <a href="{% url 'students:student_profile_update' student.pk %}" class="btn btn-sm btn-outline-primary" title="编辑档案">
+                                    <a href="{% url 'students:enrollment_create' %}?student_id={{ student.pk }}" class="btn btn-sm btn-outline-success me-1" title="添加选课">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <a href="{% url 'students:enrollment_list' %}?student_id={{ student.pk }}" class="btn btn-sm btn-outline-info me-1" title="查看选课">
+                                        <i class="fas fa-list"></i>
+                                    </a>
+                                    <a href="{% url 'students:student_profile_update' student.pk %}" class="btn btn-sm btn-outline-primary me-1" title="编辑档案">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a href="{% url 'students:student_profile_delete' student.pk %}" class="btn btn-sm btn-outline-danger" title="删除档案" onclick="return confirm('确定要删除这份学生档案吗？')">
