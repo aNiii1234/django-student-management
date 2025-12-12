@@ -106,25 +106,8 @@ def edit_profile(request):
             student_profile.emergency_contact = request.POST.get('emergency_contact', student_profile.emergency_contact)
             student_profile.emergency_phone = request.POST.get('emergency_phone', student_profile.emergency_phone)
 
-            # 更新院系和专业信息
-            department_id = request.POST.get('department')
-            major_id = request.POST.get('major')
-
-            if department_id:
-                try:
-                    student_profile.department = Department.objects.get(id=department_id)
-                except Department.DoesNotExist:
-                    student_profile.department = None
-            else:
-                student_profile.department = None
-
-            if major_id:
-                try:
-                    student_profile.major = Major.objects.get(id=major_id)
-                except Major.DoesNotExist:
-                    student_profile.major = None
-            else:
-                student_profile.major = None
+            # 注意：院系和专业信息由管理员设置，学生无法自行修改
+            # 移除了学生修改department和major的逻辑
 
             student_profile.save()
 
