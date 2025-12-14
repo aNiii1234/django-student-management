@@ -132,8 +132,7 @@ def admin_dashboard(request):
     # 优化：使用单个查询获取所有统计数据
     stats = User.objects.aggregate(
         total_users=Count('id'),
-        total_students=Count('id', filter=Q(role='student')),
-        total_teachers=Count('id', filter=Q(role='teacher'))
+        total_students=Count('id', filter=Q(role='student'))
     )
     total_student_profiles = StudentProfile.objects.count()
 
@@ -155,7 +154,6 @@ def admin_dashboard(request):
     context = {
         'total_users': stats['total_users'],
         'total_students': stats['total_students'],
-        'total_teachers': stats['total_teachers'],
         'total_student_profiles': total_student_profiles,
         'students_without_profiles': students_without_profiles,
         'students_without_profiles_count': len(students_without_profiles),
@@ -263,9 +261,6 @@ def user_list(request):
     if user_type == 'students':
         users = users.filter(role='student')
         title = '学生用户'
-    elif user_type == 'teachers':
-        users = users.filter(role='teacher')
-        title = '教师用户'
     elif user_type == 'admins':
         users = users.filter(role='admin')
         title = '管理员用户'
@@ -300,7 +295,6 @@ def user_list(request):
     # 计算统计信息
     total_users = User.objects.count()
     total_students = User.objects.filter(role='student').count()
-    total_teachers = User.objects.filter(role='teacher').count()
     total_admins = User.objects.filter(role='admin').count()
 
     # 为模板添加角色过滤函数
@@ -314,7 +308,6 @@ def user_list(request):
         'search_query': search_query,
         'total_users': total_users,
         'total_students': total_students,
-        'total_teachers': total_teachers,
         'total_admins': total_admins,
         'filter_role': filter_role,
         'is_paginated': paginator.num_pages > 1,

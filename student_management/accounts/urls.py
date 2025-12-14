@@ -17,6 +17,7 @@ urlpatterns = [
     # 用户管理相关URL
     path('users/', views.user_list, name='user_list'),
     path('edit_user/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('student_profiles/', views.student_profile_list_admin, name='student_profile_list_admin'),
     path('pending_student_profiles/', views.pending_student_profiles, name='pending_student_profiles'),
     path('quick_create_profile/<int:user_id>/', views.quick_create_student_profile, name='quick_create_student_profile'),

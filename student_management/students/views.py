@@ -331,23 +331,40 @@ def course_selection(request):
     try:
         student_profile = StudentProfile.objects.get(user=request.user)
 
-        # 获取学生已选择的课程
+        # 获取当前学年和学期
+        from django.utils import timezone
+        current_year = timezone.now().year
+        current_month = timezone.now().month
+
+        # 根据当前月份确定当前学年（假设9月为学年开始）
+        if current_month <= 8:
+            current_academic_year = f"{current_year-1}-{current_year}"
+        else:
+            current_academic_year = f"{current_year}-{current_year+1}"
+
+        # 根据当前月份确定当前学期
+        if current_month >= 2 and current_month <= 7:
+            current_semester = "春季学期"
+        else:
+            current_semester = "秋季学期"
+
+        # 获取当前学期的已选课程
         enrolled_courses = Enrollment.objects.filter(
-            student=student_profile
+            student=student_profile,
+            academic_year=current_academic_year,
+            semester=current_semester
         ).values_list('course_id', flat=True)
 
-        # 获取所有可选课程（排除已选的）
+        # 获取所有可选课程（排除当前学期已选的）
         available_courses = Course.objects.exclude(
             id__in=enrolled_courses
         ).order_by('course_type', 'name')
 
-        # 创建选课表单实例，用于获取学期和学年选项
-        enrollment_form = EnrollmentForm()
-
         context = {
             'available_courses': available_courses,
             'student_profile': student_profile,
-            'form': enrollment_form
+            'current_academic_year': current_academic_year,
+            'current_semester': current_semester
         }
 
         return render(request, 'students/course_selection.html', context)
@@ -369,11 +386,26 @@ def course_selection_submit(request):
     try:
         student_profile = StudentProfile.objects.get(user=request.user)
         course_id = request.POST.get('course')
-        semester = request.POST.get('semester')
-        academic_year = request.POST.get('academic_year')
 
-        if not all([course_id, semester, academic_year]):
-            messages.error(request, '请填写完整的选课信息！')
+        # 自动设置当前学年和学期
+        from django.utils import timezone
+        current_year = timezone.now().year
+        current_month = timezone.now().month
+
+        # 根据当前月份确定当前学年（假设9月为学年开始）
+        if current_month <= 8:
+            academic_year = f"{current_year-1}-{current_year}"
+        else:
+            academic_year = f"{current_year}-{current_year+1}"
+
+        # 根据当前月份确定当前学期
+        if current_month >= 2 and current_month <= 7:
+            semester = "春季学期"
+        else:
+            semester = "秋季学期"
+
+        if not course_id:
+            messages.error(request, '请选择课程！')
             return redirect('students:course_selection')
 
         # 获取课程

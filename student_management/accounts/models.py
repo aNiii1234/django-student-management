@@ -7,7 +7,6 @@ class User(AbstractUser):
     ROLE_CHOICES = [
         ('admin', '管理员'),
         ('student', '学生'),
-        ('teacher', '教师'),
     ]
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student', verbose_name='角色')
