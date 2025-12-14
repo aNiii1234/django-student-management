@@ -5,6 +5,11 @@
 <div class="row">
     <div class="col-12">
         <h3><i class="fas fa-book"></i> 选择课程</h3>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>当前学期：</strong>{{ current_semester }} {{ current_academic_year }}学年
+            <br><small class="text-muted">学期由管理员统一管理，系统自动为您设置当前学期的课程选择。</small>
+        </div>
         <hr>
     </div>
 </div>
@@ -26,6 +31,8 @@
                                     <th>课程类型</th>
                                     <th>学分</th>
                                     <th>学时</th>
+                                    <th>学习学期</th>
+                                    <th>学习学年</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -46,6 +53,12 @@
                                         </td>
                                         <td>{{ course.credits }}</td>
                                         <td>{{ course.hours }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ current_semester }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ current_academic_year }}</span>
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-sm"
                                                     data-bs-toggle="modal"
@@ -138,28 +151,23 @@
                         <div class="col-md-4"><strong>课程代码：</strong></div>
                         <div class="col-md-8" id="modalCourseCode"></div>
                     </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4"><strong>学习学期：</strong></div>
+                        <div class="col-md-8">
+                            <span class="badge bg-secondary">{{ current_semester }}</span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4"><strong>学习学年：</strong></div>
+                        <div class="col-md-8">
+                            <span class="badge bg-info">{{ current_academic_year }}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="{{ form.semester.id_for_label }}" class="form-label">{{ form.semester.label }}</label>
-                    {{ form.semester }}
-                    {% if form.semester.errors %}
-                        <div class="text-danger">
-                            {{ form.semester.errors.0 }}
-                        </div>
-                    {% endif %}
-                    <small class="form-text text-muted">请根据您的学年进度选择对应的学期</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="{{ form.academic_year.id_for_label }}" class="form-label">{{ form.academic_year.label }}</label>
-                    {{ form.academic_year }}
-                    {% if form.academic_year.errors %}
-                        <div class="text-danger">
-                            {{ form.academic_year.errors.0 }}
-                        </div>
-                    {% endif %}
-                    <small class="form-text text-muted">选择课程开设的学年</small>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>温馨提示：</strong>学期和学年由系统自动设置为当前学期，无需手动选择。
                 </div>
             </div>
             <div class="modal-footer">
@@ -196,28 +204,14 @@ function selectCourse(courseId, courseName, courseCode) {
 }
 
 function submitEnrollment() {
-    const semester = document.getElementById('{{ form.semester.id_for_label }}').value;
-    const academicYear = document.getElementById('{{ form.academic_year.id_for_label }}').value;
-
-    if (!semester) {
-        alert('请选择学期！');
-        return;
-    }
-
-    if (!academicYear) {
-        alert('请选择学年！');
-        return;
-    }
-
+    // 学期和学年由系统自动设置，无需验证
     if (!selectedCourseId) {
-        alert('请先选择课程！');
+        alert('请选择课程！');
         return;
     }
 
     // 设置表单数据
     document.getElementById('selectedCourse').value = selectedCourseId;
-    document.getElementById('submittedSemester').value = semester;
-    document.getElementById('submittedAcademicYear').value = academicYear;
 
     // 提交表单
     const form = document.getElementById('enrollmentForm');
@@ -225,43 +219,5 @@ function submitEnrollment() {
     form.submit();
 }
 
-// 设置当前学年和推荐学期
-document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // getMonth() 返回 0-11
-
-    // 设置学年默认值
-    const academicYearSelect = document.getElementById('{{ form.academic_year.id_for_label }}');
-    if (academicYearSelect) {
-        const academicYear = `${currentYear}-${currentYear + 1}`;
-        // 查找匹配的学年选项并设置为默认
-        for (let i = 0; i < academicYearSelect.options.length; i++) {
-            if (academicYearSelect.options[i].value === academicYear) {
-                academicYearSelect.options[i].selected = true;
-                break;
-            }
-        }
-    }
-
-    // 根据月份推荐学期
-    const semesterSelect = document.getElementById('{{ form.semester.id_for_label }}');
-    if (semesterSelect) {
-        let recommendedSemester = '';
-        if (currentMonth >= 3 && currentMonth <= 8) {
-            recommendedSemester = '第2学期';
-        } else {
-            recommendedSemester = '第1学期';
-        }
-
-        // 为推荐学期添加标记
-        for (let i = 0; i < semesterSelect.options.length; i++) {
-            const option = semesterSelect.options[i];
-            if (option.value === recommendedSemester) {
-                option.textContent += ' (推荐)';
-            }
-        }
-    }
-});
 </script>
 {% endblock %}
