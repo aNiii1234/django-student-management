@@ -69,7 +69,6 @@
                             <label for="role" class="form-label">角色 *</label>
                             <select class="form-control" id="role" name="role" required>
                                 <option value="student" {% if user_to_edit.role == 'student' %}selected{% endif %}>学生</option>
-                                <option value="teacher" {% if user_to_edit.role == 'teacher' %}selected{% endif %}>教师</option>
                                 <option value="admin" {% if user_to_edit.role == 'admin' %}selected{% endif %}>管理员</option>
                             </select>
                         </div>
@@ -120,8 +119,6 @@
                         <td>
                             {% if user_to_edit.role == 'admin' %}
                                 <span class="badge bg-danger">管理员</span>
-                            {% elif user_to_edit.role == 'teacher' %}
-                                <span class="badge bg-info">教师</span>
                             {% elif user_to_edit.role == 'student' %}
                                 <span class="badge bg-success">学生</span>
                             {% endif %}

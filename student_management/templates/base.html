@@ -73,19 +73,6 @@
                                     <i class="fas fa-tachometer-alt"></i> 管理员面板
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-cogs"></i> 数据管理
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'students:student_profile_list' %}">学生管理</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'students:department_list' %}">院系管理</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'students:major_list' %}">专业管理</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'students:course_list' %}">课程管理</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'students:enrollment_list' %}">选课管理</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'students:enrollment_grade_list' %}">成绩管理</a></li>
-                                </ul>
-                            </li>
                         {% elif user.role == 'student' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'accounts:student_dashboard' %}">
