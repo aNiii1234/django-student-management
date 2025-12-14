@@ -199,6 +199,11 @@ function submitEnrollment() {
     const semester = document.getElementById('{{ form.semester.id_for_label }}').value;
     const academicYear = document.getElementById('{{ form.academic_year.id_for_label }}').value;
 
+    if (!selectedCourseId) {
+        alert('请先选择课程！');
+        return;
+    }
+
     if (!semester) {
         alert('请选择学期！');
         return;
@@ -206,11 +211,6 @@ function submitEnrollment() {
 
     if (!academicYear) {
         alert('请选择学年！');
-        return;
-    }
-
-    if (!selectedCourseId) {
-        alert('请先选择课程！');
         return;
     }
 
