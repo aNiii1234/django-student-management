@@ -27,6 +27,26 @@ class CustomLoginView(LoginView):
         else:
             return reverse_lazy('students:home')
 
+    def form_invalid(self, form):
+        # 获取表单数据
+        username = form.cleaned_data.get('username', '')
+        password = form.cleaned_data.get('password', '')
+
+        # 检查用户名是否存在
+        if username:
+            try:
+                user = User.objects.get(username=username)
+                # 用户名存在，检查密码是否错误
+                messages.error(self.request, '密码错误，请重新输入密码！')
+            except User.DoesNotExist:
+                # 用户名不存在
+                messages.error(self.request, '用户名不存在，请检查用户名或注册新账号！')
+        else:
+            # 用户名为空
+            messages.error(self.request, '请输入用户名和密码！')
+
+        return super().form_invalid(form)
+
 class SignUpView(CreateView):
     model = User
     form_class = CustomUserCreationForm
@@ -86,25 +106,8 @@ def edit_profile(request):
             student_profile.emergency_contact = request.POST.get('emergency_contact', student_profile.emergency_contact)
             student_profile.emergency_phone = request.POST.get('emergency_phone', student_profile.emergency_phone)
 
-            # 更新院系和专业信息
-            department_id = request.POST.get('department')
-            major_id = request.POST.get('major')
-
-            if department_id:
-                try:
-                    student_profile.department = Department.objects.get(id=department_id)
-                except Department.DoesNotExist:
-                    student_profile.department = None
-            else:
-                student_profile.department = None
-
-            if major_id:
-                try:
-                    student_profile.major = Major.objects.get(id=major_id)
-                except Major.DoesNotExist:
-                    student_profile.major = None
-            else:
-                student_profile.major = None
+            # 注意：院系和专业信息由管理员设置，学生无法自行修改
+            # 移除了学生修改department和major的逻辑
 
             student_profile.save()
 
@@ -169,13 +172,77 @@ def student_dashboard(request):
     try:
         student_profile = StudentProfile.objects.get(user=request.user)
         enrollments = student_profile.enrollment_set.all().order_by('-academic_year', '-semester')
+
+        # 计算平均成绩
+        average_grade = None
+        average_score = None
+        graded_enrollments = enrollments.exclude(grade__isnull=True).exclude(grade='')
+
+        # 统计有成绩的课程数
+        total_graded_courses = graded_enrollments.count()
+
+        if graded_enrollments.exists():
+            # 计算等级制的平均GPA
+            grade_points = {'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0}
+            total_points = 0
+            total_scores = 0
+            score_count = 0
+
+            for enrollment in graded_enrollments:
+                # 等级成绩计算GPA
+                if enrollment.grade in grade_points:
+                    total_points += grade_points[enrollment.grade]
+
+                # 分数成绩计算平均分
+                if enrollment.score is not None:
+                    total_scores += float(enrollment.score)
+                    score_count += 1
+
+            # 计算平均GPA并转换为等级
+            if total_graded_courses > 0:
+                average_gpa = total_points / total_graded_courses
+                if average_gpa >= 3.7:
+                    average_grade = 'A'
+                elif average_gpa >= 2.7:
+                    average_grade = 'B'
+                elif average_gpa >= 1.7:
+                    average_grade = 'C'
+                elif average_gpa >= 1.0:
+                    average_grade = 'D'
+                else:
+                    average_grade = 'F'
+
+            # 计算平均分
+            if score_count > 0:
+                average_score = round(total_scores / score_count, 1)
+
+        # 计算当前学期课程数
+        from django.utils import timezone
+        current_year = timezone.now().year
+        current_month = timezone.now().month
+        current_semester = '第2学期' if current_month >= 9 or current_month <= 2 else '第1学期'
+        current_academic_year = f"{current_year-1}-{current_year}" if current_month <= 8 else f"{current_year}-{current_year+1}"
+
+        current_semester_courses = enrollments.filter(
+            semester=current_semester,
+            academic_year=current_academic_year
+        ).count()
+
     except StudentProfile.DoesNotExist:
         student_profile = None
         enrollments = []
+        average_grade = None
+        average_score = None
+        total_graded_courses = 0
+        current_semester_courses = 0
 
     context = {
         'student_profile': student_profile,
         'enrollments': enrollments,
+        'average_grade': average_grade,
+        'average_score': average_score,
+        'total_graded_courses': total_graded_courses,
+        'current_semester_courses': current_semester_courses,
     }
     return render(request, 'accounts/student_dashboard.html', context)
 
@@ -330,6 +397,8 @@ def quick_create_student_profile(request, user_id):
             )
 
             messages.success(request, f'成功为 {user.get_full_name() or user.username} 创建学生档案！')
+            # 提供添加选课的快捷链接
+            messages.info(request, f'您可以为该学生<a href="/students/enrollment/add/?student_id={student_profile.id}" class="alert-link">添加选课记录</a>以录入成绩。')
             return redirect('accounts:pending_student_profiles')
         except Exception as e:
             messages.error(request, f'创建学生档案时出错：{str(e)}')

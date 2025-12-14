@@ -2,141 +2,480 @@
 {% block title %}学生面板 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h3><i class="fas fa-user-graduate"></i> 学生面板</h3>
-        <hr>
-    </div>
-</div>
-
-{% if student_profile %}
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card text-center bg-primary text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-user"></i> 基本信息</h5>
-                <p class="card-text">
-                    <strong>姓名:</strong> {{ student_profile.real_name }}<br>
-                    <strong>学号:</strong> {{ student_profile.student_id }}<br>
-                    <strong>性别:</strong> {{ student_profile.get_gender_display }}
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="card text-center bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-book"></i> 选课统计</h5>
-                <p class="card-text">
-                    <h2>{{ enrollments.count }}</h2>
-                    <p>已选课程</p>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="fas fa-chart-line"></i> 我的选课记录</h5>
-            </div>
-            <div class="card-body">
-                {% if enrollments %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>课程名称</th>
-                                    <th>课程代码</th>
-                                    <th>专业</th>
-                                    <th>学期</th>
-                                    <th>学年</th>
-                                    <th>成绩</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for enrollment in enrollments %}
-                                    <tr>
-                                        <td>{{ enrollment.course.name }}</td>
-                                        <td>{{ enrollment.course.code }}</td>
-                                        <td>{{ enrollment.major.name }}</td>
-                                        <td>{{ enrollment.semester }}</td>
-                                        <td>{{ enrollment.academic_year }}</td>
-                                        <td>
-                                            {% if enrollment.grade %}
-                                                <span class="badge {% if enrollment.grade == 'A' %}bg-success{% elif enrollment.grade == 'B' %}bg-info{% elif enrollment.grade == 'C' %}bg-warning{% elif enrollment.grade == 'D' %}bg-secondary{% else %}bg-danger{% endif %}">
-                                                    {{ enrollment.get_grade_display }}
-                                                </span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">未评定</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+<div class="container-fluid">
+    <!-- 欢迎头部分 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-header">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle me-3">
+                        <i class="fas fa-user-graduate"></i>
                     </div>
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">暂无选课记录</h4>
-                        <p class="text-muted">您还没有选择任何课程</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% else %}
-<div class="row">
-    <div class="col-12">
-        <div class="alert alert-warning">
-            <h5><i class="fas fa-exclamation-triangle"></i> 信息不完整</h5>
-            <p>您的学生档案尚未完善，请联系管理员为您创建学生档案。</p>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="fas fa-cogs"></i> 快速操作</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary btn-block">
-                            <i class="fas fa-user"></i> 个人资料
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'students:my_enrollments' %}" class="btn btn-outline-info btn-block">
-                            <i class="fas fa-book"></i> 我的课程
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'students:course_selection' %}" class="btn btn-outline-success btn-block">
-                            <i class="fas fa-plus-circle"></i> 选择课程
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-warning btn-block">
-                            <i class="fas fa-edit"></i> 编辑资料
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger btn-block">
-                            <i class="fas fa-sign-out-alt"></i> 退出登录
-                        </a>
+                    <div>
+                        <h3 class="mb-1">欢迎回来，{{ student_profile.real_name|default:"同学" }}！</h3>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {% if student_profile %}
+    <!-- 统计卡片部分 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                已选课程</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ enrollments.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                平均成绩</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if average_grade %}
+                                    <span class="grade-badge grade-{{ average_grade|lower }}">
+                                        {{ average_grade }}
+                                    </span>
+                                    {% if average_score %}
+                                        <small class="text-muted">({{ average_score }}分)</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">暂无成绩</span>
+                                {% endif %}
+                            </div>
+                            {% if average_grade %}
+                                <div class="text-xs text-muted">
+                                    {% if average_grade == 'A' %}优秀{% endif %}
+                                    {% if average_grade == 'B' %}良好{% endif %}
+                                    {% if average_grade == 'C' %}中等{% endif %}
+                                    {% if average_grade == 'D' %}及格{% endif %}
+                                    {% if average_grade == 'F' %}不及格{% endif %}
+                                    {% if total_graded_courses %}
+                                        · {{ total_graded_courses }}门课程
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                本学期课程</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ current_semester_courses|default:"0" }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                个人信息</div>
+                            <div class="mb-0 font-weight-bold text-gray-800">
+                                <div>{{ student_profile.get_gender_display }}</div>
+                                <div class="small text-muted">
+                                    {% if student_profile.age %}{{ student_profile.age }}岁{% endif %}
+                                    {% if student_profile.department %} · {{ student_profile.department.name }}{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 课程表格部分 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-clipboard-list mr-2"></i>  我的选课记录
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="btn btn-primary btn-sm" href="{% url 'students:course_selection' %}">
+                            <i class="fas fa-plus mr-1"></i> 添加课程
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if enrollments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">课程名称</th>
+                                        <th scope="col">课程代码</th>
+                                        <th scope="col">专业</th>
+                                        <th scope="col">学期</th>
+                                        <th scope="col">学年</th>
+                                        <th scope="col">状态</th>
+                                        <th scope="col">成绩</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in enrollments %}
+                                        <tr class="course-row" onclick="window.location='#'" style="cursor: pointer;">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="course-icon mr-3">
+                                                        <i class="fas fa-book text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>{{ enrollment.course.name }}</strong>
+                                                        <div class="text-muted small">  {{ enrollment.course.teacher_name|default:"教师未分配" }} </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">{{ enrollment.course.code }}</span>
+                                            </td>
+                                            <td class="text-dark">{{ enrollment.major.name }}</td>
+                                            <td>
+                                                <span class="text-dark">{{ enrollment.semester }}</span>
+                                            </td>
+                                            <td class="text-dark">{{ enrollment.academic_year }}</td>
+                                            <td>
+                                                {% if enrollment.grade %}
+                                                    <span class="status-btn status-completed">已结束</span>
+                                                {% else %}
+                                                    <span class="status-btn status-ongoing">进行中</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if enrollment.grade %}
+                                                    <div class="grade-badge grade-{{ enrollment.grade|lower }}">
+                                                        {{ enrollment.get_grade_display }}
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-dark small">未公布</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
+                                <h4 class="text-muted mb-3">暂无选课记录</h4>
+                                <p class="text-muted mb-4">
+                                    {% if student_profile %}
+                                        您还没有选择任何课程。选课记录和成绩由管理员添加，请耐心等待。
+                                    {% else %}
+                                        请先完善您的学生档案，然后等待管理员为您添加选课记录。
+                                    {% endif %}
+                                </p>
+                                {% if not student_profile %}
+                                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary me-2">
+                                        <i class="fas fa-edit me-2"></i>完善档案
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'students:course_selection' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-search me-2"></i>查看可选课程
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- 无学生档案提示 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash fa-4x text-warning mb-4"></i>
+                        <h4 class="text-warning mb-3">学生档案不完整</h4>
+                        <p class="text-muted mb-4">您的学生档案尚未完善，无法使用选课功能。</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-warning">
+                                <i class="fas fa-edit mr-2"></i>完善资料
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-home mr-2"></i>返回首页
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 快速操作部分 -->
+    {% if student_profile %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-bolt mr-2"></i> 快速操作
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row quick-actions">
+                        <div class="col-lg mb-3">
+                            <a href="{% url 'students:course_selection' %}" class="quick-action-card">
+                                <div class="action-icon bg-gradient-primary">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <h6>选择课程</h6>
+                                <p class="text-muted small">浏览并选择新学期课程</p>
+                            </a>
+                        </div>
+                        <div class="col-lg mb-3">
+                            <a href="{% url 'students:my_enrollments' %}" class="quick-action-card">
+                                <div class="action-icon bg-gradient-info">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <h6>我的课程</h6>
+                                <p class="text-muted small">查看所有已选课程详情</p>
+                            </a>
+                        </div>
+                        <div class="col-lg mb-3">
+                            <a href="{% url 'accounts:profile' %}" class="quick-action-card">
+                                <div class="action-icon bg-gradient-success">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h6>个人资料</h6>
+                                <p class="text-muted small">查看和管理个人信息</p>
+                            </a>
+                        </div>
+                        <div class="col-lg mb-3">
+                            <a href="{% url 'accounts:edit_profile' %}" class="quick-action-card">
+                                <div class="action-icon bg-gradient-warning">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <h6>编辑资料</h6>
+                                <p class="text-muted small">更新个人信息</p>
+                            </a>
+                        </div>
+                        <div class="col-lg mb-3">
+                            <a href="{% url 'accounts:logout' %}" class="quick-action-card">
+                                <div class="action-icon bg-gradient-danger">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </div>
+                                <h6>退出登录</h6>
+                                <p class="text-muted small">安全退出系统</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+    /* 自定义样式 */
+    .welcome-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
+    
+    .avatar-circle {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+    }
+    
+    .stat-card {
+        border-radius: 10px;
+        transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .course-row:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .course-icon {
+        width: 40px;
+        height: 40px;
+        background: #e3f2fd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2196f3;
+    }
+    
+    .grade-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .grade-a { background-color: #d4edda; color: #155724; }
+    .grade-b { background-color: #d1ecf1; color: #0c5460; }
+    .grade-c { background-color: #fff3cd; color: #856404; }
+    .grade-d { background-color: #f8d7da; color: #721c24; }
+    .grade-f { background-color: #dc3545; color: white; }
+    
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .quick-action-card {
+        display: block;
+        text-align: center;
+        padding: 1.5rem 1rem;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+    }
+    
+    .quick-action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-color: #4e73df;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: white;
+        font-size: 24px;
+    }
+    
+    .empty-state {
+        padding: 2rem;
+    }
+    
+    .table thead th {
+        border-top: none;
+        border-bottom: 2px solid #e3e6f0;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-header {
+            padding: 1.5rem;
+        }
+        
+        .avatar-circle {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+        }
+        
+        .quick-action-card {
+            padding: 1rem 0.5rem;
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+    }
+    
+    .status-btn {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        border-radius: 8px; /* 按钮圆角 */
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        min-width: 80px;
+        border: none;
+        cursor: default; /* 无功能，所以去掉指针样式 */
+        transition: all 0.2s ease;
+    }
+
+    /* 进行中 - 绿色按钮 */
+    .status-ongoing {
+        background-color: #28a745; /* 纯绿色，更像按钮 */
+        color: white;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+    }
+    .status-ongoing:hover {
+        background-color: #218838; /*  hover加深 */
+        box-shadow: 0 3px 6px rgba(40, 167, 69, 0.3);
+    }
+
+    /* 已结束 - 页面主题蓝色按钮（对应你的页面渐变主题色） */
+    .status-completed {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 与欢迎头相同的主题渐变 */
+        color: white;
+        box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+    }
+    .status-completed:hover {
+        opacity: 0.9; /* hover透明度变化 */
+        box-shadow: 0 3px 6px rgba(102, 126, 234, 0.3);
+    }
+</style>
 {% endblock %}

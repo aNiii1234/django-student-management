@@ -3,205 +3,50 @@
 
 {% block content %}
 <style>
-/* 统一基础样式 - 与学生管理系统保持一致 */
+/* 简化版样式 - 保持美观但提升性能 */
 :root {
-    --primary-color: #2563eb;
-    --primary-dark: #1e40af;
-    --primary-light: #3b82f6;
-    --secondary-color: #64748b;
-    --accent-color: #0ea5e9;
+    --primary-color: #667eea;
+    --primary-dark: #764ba2;
     --text-color: #2d3748;
     --text-light: #718096;
-    --bg-color: #f8fafc;
     --white: #ffffff;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --info-color: #06b6d4;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --shadow-soft: 0 2px 15px rgba(0, 0, 0, 0.08);
     --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
-    --shadow-large: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-/* 页面背景样式 - 与管理系统保持一致 */
+/* 页面背景样式 - 简化版 */
 .auth-background {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     padding: 2rem 0;
-    position: relative;
-    overflow: hidden;
 }
 
-/* 动态渐变背景 */
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* 背景装饰元素 */
-.bg-decoration {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-}
-
-.bg-shape {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    animation: float 20s infinite ease-in-out;
-}
-
-.bg-shape:nth-child(1) {
-    width: 80px;
-    height: 80px;
-    top: 20%;
-    left: 10%;
-    animation-delay: 0s;
-    animation-duration: 8s;
-}
-
-.bg-shape:nth-child(2) {
-    width: 120px;
-    height: 120px;
-    top: 60%;
-    right: 10%;
-    animation-delay: 2s;
-    animation-duration: 10s;
-}
-
-.bg-shape:nth-child(3) {
-    width: 60px;
-    height: 60px;
-    bottom: 20%;
-    left: 20%;
-    animation-delay: 4s;
-    animation-duration: 12s;
-}
-
-.bg-shape:nth-child(4) {
-    width: 100px;
-    height: 100px;
-    top: 10%;
-    right: 30%;
-    animation-delay: 6s;
-    animation-duration: 9s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) translateX(0px) rotate(0deg);
-        opacity: 0.1;
-    }
-    25% {
-        transform: translateY(-20px) translateX(10px) rotate(90deg);
-        opacity: 0.2;
-    }
-    50% {
-        transform: translateY(10px) translateX(-10px) rotate(180deg);
-        opacity: 0.15;
-    }
-    75% {
-        transform: translateY(-10px) translateX(20px) rotate(270deg);
-        opacity: 0.25;
-    }
-}
-
-/* 注册卡片样式 - 玻璃态效果 */
+/* 注册卡片样式 - 简化版 */
 .auth-card {
-    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    box-shadow: var(--shadow-large);
+    box-shadow: var(--shadow-medium);
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-}
-
-.auth-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.8s;
-}
-
-.auth-card:hover::before {
-    left: 100%;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
 }
 
 .auth-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3);
-    border-color: rgba(102, 126, 234, 0.3);
+    transform: translateY(-5px);
 }
 
-/* 头部样式 - 增强版 */
+/* 头部样式 - 简化版 */
 .auth-header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
-    background-size: 200% 200%;
-    animation: headerGradient 8s ease infinite;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: var(--white);
     text-align: center;
     padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-}
-
-@keyframes headerGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.auth-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: shimmer 6s linear infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.auth-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-    animation: slideLine 3s ease-in-out infinite;
-}
-
-@keyframes slideLine {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
+    border-radius: 20px 20px 0 0;
 }
 
 .auth-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
-    animation: iconFloat 4s ease-in-out infinite;
     background: rgba(255, 255, 255, 0.2);
     width: 80px;
     height: 80px;
@@ -209,22 +54,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-}
-
-@keyframes iconFloat {
-    0%, 100% {
-        transform: translateY(0px) scale(1);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-    50% {
-        transform: translateY(-10px) scale(1.05);
-        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
-    }
+    margin: 0 auto 1rem;
 }
 
 @keyframes float {
@@ -237,33 +67,20 @@
     padding: 3rem 2rem 2rem;
 }
 
-/* 表单样式 - 现代化设计 */
+/* 表单样式 - 简化版 */
 .auth-input {
-    border: 2px solid transparent;
+    border: 2px solid #e2e8f0;
     border-radius: 12px;
     height: 52px;
     font-size: 1rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #e2e8f0, #cbd5e0) border-box;
+    transition: all 0.3s ease;
     padding: 0 1rem;
-    box-shadow: var(--shadow-soft);
-    position: relative;
-}
-
-.auth-input:hover {
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, var(--primary-color), var(--primary-light)) border-box;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .auth-input:focus {
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, var(--primary-color), var(--secondary-color)) border-box;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), var(--shadow-medium);
-    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     outline: none;
 }
 
@@ -273,49 +90,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* 浮动标签效果 */
-.floating-label {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-    font-size: 1rem;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    background: white;
-    padding: 0 0.5rem;
-    z-index: 3;
-}
-
-.auth-input:focus ~ .floating-label,
-.auth-input:not(:placeholder-shown) ~ .floating-label {
-    top: 0;
-    left: 0.5rem;
-    font-size: 0.8rem;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-/* 密码强度指示器 */
-.password-strength {
-    height: 4px;
-    border-radius: 2px;
-    margin-top: 0.5rem;
-    background: #e2e8f0;
-    overflow: hidden;
-}
-
-.password-strength-bar {
-    height: 100%;
-    transition: all 0.3s ease;
-    border-radius: 2px;
-}
-
-.strength-weak { background: #f56565; width: 33%; }
-.strength-medium { background: #ed8936; width: 66%; }
-.strength-strong { background: #48bb78; width: 100%; }
-
 .auth-label {
     color: var(--text-light);
     font-weight: 500;
@@ -323,71 +97,30 @@
     display: block;
 }
 
-/* 按钮样式 - 增强版 */
+/* 按钮样式 - 简化版 */
 .auth-button {
     height: 54px;
     border-radius: 12px;
     font-weight: 600;
     font-size: 1.1rem;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
-    background-size: 200% 200%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
     color: var(--white);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-medium);
-    animation: buttonGradient 3s ease infinite;
-}
-
-@keyframes buttonGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.auth-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.6s ease;
-}
-
-.auth-button:hover::before {
-    left: 100%;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .auth-button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     color: var(--white);
 }
 
-.auth-button:active {
-    transform: translateY(-1px) scale(1.01);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
-}
-
-/* 加载状态按钮 */
 .auth-button:disabled {
-    opacity: 0.8;
+    opacity: 0.6;
     cursor: not-allowed;
-    transform: none !important;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.8; }
-    50% { opacity: 0.6; }
+    transform: none;
 }
 
 /* 链接样式 */
@@ -482,14 +215,6 @@
 </style>
 
 <div class="auth-background">
-    <!-- 背景装饰元素 -->
-    <div class="bg-decoration">
-        <div class="bg-shape"></div>
-        <div class="bg-shape"></div>
-        <div class="bg-shape"></div>
-        <div class="bg-shape"></div>
-    </div>
-
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-8 col-sm-10">
@@ -521,9 +246,9 @@
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.username.id_for_label }}" class="auth-label">用户名 *</label>
                                         <input type="text" class="form-control auth-input" id="{{ form.username.id_for_label }}"
-                                               name="{{ form.username.name }}" placeholder=" " required>
-                                        <label for="{{ form.username.id_for_label }}" class="floating-label">用户名 *</label>
+                                               name="{{ form.username.name }}" placeholder="请输入用户名" required>
                                         {% if form.username.errors %}
                                             <div class="text-danger small mt-2">
                                                 {{ form.username.errors.0 }}
@@ -534,9 +259,9 @@
 
                                 <div class="col-md-6">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.email.id_for_label }}" class="auth-label">邮箱 *</label>
                                         <input type="email" class="form-control auth-input" id="{{ form.email.id_for_label }}"
-                                               name="{{ form.email.name }}" placeholder=" " required>
-                                        <label for="{{ form.email.id_for_label }}" class="floating-label">邮箱 *</label>
+                                               name="{{ form.email.name }}" placeholder="请输入邮箱" required>
                                         {% if form.email.errors %}
                                             <div class="text-danger small mt-2">
                                                 {{ form.email.errors.0 }}
@@ -546,13 +271,13 @@
                                 </div>
                             </div>
 
-                            <!-- 姓名和手机号 -->
+                            <!-- 姓名和角色 -->
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.first_name.id_for_label }}" class="auth-label">姓名 *</label>
                                         <input type="text" class="form-control auth-input" id="{{ form.first_name.id_for_label }}"
-                                               name="{{ form.first_name.name }}" placeholder=" " required>
-                                        <label for="{{ form.first_name.id_for_label }}" class="floating-label">姓氏 *</label>
+                                               name="{{ form.first_name.name }}" placeholder="请输入姓名" required>
                                         {% if form.first_name.errors %}
                                             <div class="text-danger small mt-2">
                                                 {{ form.first_name.errors.0 }}
@@ -563,22 +288,7 @@
 
                                 <div class="col-md-6">
                                     <div class="input-group-custom">
-                                        <input type="text" class="form-control auth-input" id="{{ form.last_name.id_for_label }}"
-                                               name="{{ form.last_name.name }}" placeholder=" " required>
-                                        <label for="{{ form.last_name.id_for_label }}" class="floating-label">名字 *</label>
-                                        {% if form.last_name.errors %}
-                                            <div class="text-danger small mt-2">
-                                                {{ form.last_name.errors.0 }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 角色和手机号 -->
-                            <div class="row mb-3">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <div class="input-group-custom">
+                                        <label for="{{ form.role.id_for_label }}" class="auth-label">角色 *</label>
                                         <select class="form-control auth-input" id="{{ form.role.id_for_label }}"
                                                 name="{{ form.role.name }}" required>
                                             <option value="">请选择角色</option>
@@ -593,12 +303,15 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                            </div>
 
+                            <!-- 手机号 -->
+                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.phone.id_for_label }}" class="auth-label">手机号</label>
                                         <input type="text" class="form-control auth-input" id="{{ form.phone.id_for_label }}"
-                                               name="{{ form.phone.name }}" placeholder=" ">
-                                        <label for="{{ form.phone.id_for_label }}" class="floating-label">手机号</label>
+                                               name="{{ form.phone.name }}" placeholder="请输入手机号">
                                         {% if form.phone.errors %}
                                             <div class="text-danger small mt-2">
                                                 {{ form.phone.errors.0 }}
@@ -612,21 +325,12 @@
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.password1.id_for_label }}" class="auth-label">密码 *</label>
                                         <input type="password" class="form-control auth-input" id="{{ form.password1.id_for_label }}"
-                                               name="{{ form.password1.name }}" placeholder=" " required>
-                                        <label for="{{ form.password1.id_for_label }}" class="floating-label">密码 *</label>
-                                        <div class="password-requirements mt-2">
-                                            <small class="text-muted">
-                                                <i class="fas fa-info-circle"></i>
-                                                密码要求：至少6位，不能与用户名过于相似
-                                            </small>
-                                        </div>
-                                        <div class="password-strength" id="passwordStrength" style="display: none;">
-                                            <div class="password-strength-bar"></div>
-                                        </div>
+                                               name="{{ form.password1.name }}" placeholder="请输入密码" required>
+                                        <small class="text-muted">密码要求：至少6位字符</small>
                                         {% if form.password1.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle"></i>
                                                 {{ form.password1.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -635,19 +339,11 @@
 
                                 <div class="col-md-6">
                                     <div class="input-group-custom">
+                                        <label for="{{ form.password2.id_for_label }}" class="auth-label">确认密码 *</label>
                                         <input type="password" class="form-control auth-input" id="{{ form.password2.id_for_label }}"
-                                               name="{{ form.password2.name }}" placeholder=" " required>
-                                        <label for="{{ form.password2.id_for_label }}" class="floating-label">确认密码 *</label>
-                                        <div class="password-match-status mt-1" id="passwordMatchStatus">
-                                            <small class="text-muted">
-                                                <i class="fas fa-check-circle" style="display:none;"></i>
-                                                <i class="fas fa-times-circle" style="display:none;"></i>
-                                                <span id="passwordMatchText">请再次输入密码</span>
-                                            </small>
-                                        </div>
+                                               name="{{ form.password2.name }}" placeholder="请再次输入密码" required>
                                         {% if form.password2.errors %}
                                             <div class="text-danger small mt-2">
-                                                <i class="fas fa-exclamation-circle"></i>
                                                 {{ form.password2.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -685,340 +381,206 @@
 </div>
 
 <script>
-// 页面加载完成后的初始化
+// 注册表单验证增强版
 document.addEventListener('DOMContentLoaded', function() {
-    // 表单提交处理
     const registerForm = document.getElementById('registerForm');
     const registerBtn = document.getElementById('registerBtn');
 
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            // 表单验证
-            const requiredFields = [
-                { id: '{{ form.username.id_for_label }}', name: '用户名' },
-                { id: '{{ form.email.id_for_label }}', name: '邮箱' },
-                { id: '{{ form.first_name.id_for_label }}', name: '姓氏' },
-                { id: '{{ form.last_name.id_for_label }}', name: '名字' },
-                { id: '{{ form.role.id_for_label }}', name: '角色' },
-                { id: '{{ form.password1.id_for_label }}', name: '密码' },
-                { id: '{{ form.password2.id_for_label }}', name: '确认密码' }
-            ];
+    // 错误弹窗函数
+    function showErrorAlert(title, message) {
+        // 创建弹窗容器
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        `;
 
-            let isValid = true;
-            requiredFields.forEach(field => {
-                const element = document.getElementById(field.id);
-                if (!element.value.trim()) {
-                    showError(element, `请输入${field.name}`);
-                    isValid = false;
-                }
-            });
+        // 创建弹窗内容
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        `;
 
-            // 密码匹配检查
-            const password1 = document.getElementById('{{ form.password1.id_for_label }}');
-            const password2 = document.getElementById('{{ form.password2.id_for_label }}');
-            if (password1.value !== password2.value) {
-                showError(password2, '两次输入的密码不一致');
-                isValid = false;
+        modalContent.innerHTML = `
+            <div style="text-align: center;">
+                <div style="width: 60px; height: 60px; background: #fee; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 24px;"></i>
+                </div>
+                <h4 style="color: #dc3545; margin-bottom: 1rem;">${title}</h4>
+                <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">${message}</p>
+                <button onclick="this.closest('.error-modal').remove()" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 0.75rem 2rem;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    我知道了
+                </button>
+            </div>
+        `;
+
+        modalOverlay.className = 'error-modal';
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+
+        // 点击背景关闭
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                modalOverlay.remove();
             }
-
-            // 密码强度检查
-            if (!isPasswordValid(password1.value)) {
-                showError(password1, '密码至少需要6位字符');
-                isValid = false;
-            }
-
-            if (!isValid) {
-                e.preventDefault();
-                return;
-            }
-
-            // 显示加载状态
-            registerBtn.disabled = true;
-            registerBtn.innerHTML = '正在注册...';
-
-            // 添加提交动画
-            registerForm.style.transform = 'scale(0.98)';
-            registerForm.style.opacity = '0.7';
         });
     }
 
-    // 输入框交互效果
-    const inputs = document.querySelectorAll('.auth-input');
-    inputs.forEach(input => {
-        // 输入时的实时反馈
-        input.addEventListener('input', function() {
-            if (this.value.trim()) {
-                this.parentElement.style.transform = 'scale(1.01)';
-                setTimeout(() => {
-                    this.parentElement.style.transform = 'scale(1)';
-                }, 200);
+    // 表单验证函数
+    function validateForm() {
+        const errors = [];
+
+        // 获取表单字段
+        const username = document.getElementById('{{ form.username.id_for_label }}');
+        const email = document.getElementById('{{ form.email.id_for_label }}');
+        const firstName = document.getElementById('{{ form.first_name.id_for_label }}');
+        const role = document.getElementById('{{ form.role.id_for_label }}');
+        const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2 = document.getElementById('{{ form.password2.id_for_label }}');
+
+        // 验证用户名
+        if (!username.value.trim()) {
+            errors.push('请输入用户名');
+        } else if (username.value.trim().length < 3) {
+            errors.push('用户名至少需要3个字符');
+        }
+
+        // 验证邮箱
+        if (!email.value.trim()) {
+            errors.push('请输入邮箱地址');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+            errors.push('请输入有效的邮箱地址');
+        }
+
+        // 验证姓名
+        if (!firstName.value.trim()) {
+            errors.push('请输入姓名');
+        }
+
+        // 验证角色
+        if (!role.value) {
+            errors.push('请选择用户角色');
+        }
+
+        // 验证密码
+        if (!password1.value) {
+            errors.push('请输入密码');
+        } else if (password1.value.length < 6) {
+            errors.push('密码至少需要6个字符');
+        }
+
+        // 验证密码确认
+        if (!password2.value) {
+            errors.push('请确认密码');
+        } else if (password1.value !== password2.value) {
+            errors.push('两次输入的密码不一致');
+        }
+
+        return errors;
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            // 禁用按钮并显示加载状态
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>正在注册...';
+
+            // 表单验证
+            const errors = validateForm();
+
+            if (errors.length > 0) {
+                // 阻止表单提交
+                e.preventDefault();
+
+                // 恢复按钮状态
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '立即注册';
+
+                // 显示错误弹窗
+                const errorMessage = errors.map((error, index) => `${index + 1}. ${error}`).join('<br>');
+                showErrorAlert('注册信息有误', errorMessage);
+
+                return;
             }
 
-            // 密码强度实时检测
-            if (this.id === '{{ form.password1.id_for_label }}') {
-                checkPasswordStrength(this.value);
+            // 验证通过，继续提交（按钮保持加载状态）
+            console.log('表单验证通过，正在提交...');
+        });
+    }
+
+    // 实时密码匹配检查
+    const password2Input = document.getElementById('{{ form.password2.id_for_label }}');
+    const password1Input = document.getElementById('{{ form.password1.id_for_label }}');
+
+    if (password2Input && password1Input) {
+        password2Input.addEventListener('input', function() {
+            if (this.value && this.value !== password1Input.value) {
+                this.style.borderColor = '#dc3545';
+                this.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.1)';
+            } else if (this.value && this.value === password1Input.value) {
+                this.style.borderColor = '#28a745';
+                this.style.boxShadow = '0 0 0 3px rgba(40, 167, 69, 0.1)';
+            } else {
+                this.style.borderColor = '';
+                this.style.boxShadow = '';
             }
-
-            // 实时密码匹配检查
-            if (this.id === '{{ form.password2.id_for_label }}') {
-                const password1 = document.getElementById('{{ form.password1.id_for_label }}');
-                checkPasswordMatch(this, password1);
-            }
         });
-
-        // 焦点效果增强
-        input.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'translateY(-2px)';
-            playFocusSound();
-        });
-
-        input.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'translateY(0)';
-        });
-    });
+    }
 
     // 自动隐藏消息提示
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach((alert, index) => {
         setTimeout(() => {
-            alert.style.transition = 'all 0.3s ease';
             alert.style.opacity = '0';
-            alert.style.transform = 'translateX(-20px)';
             setTimeout(() => {
-                alert.remove();
+                if (alert.parentNode) {
+                    alert.remove();
+                }
             }, 300);
         }, 5000 + (index * 1000));
     });
-
-    // 添加键盘快捷键支持
-    document.addEventListener('keydown', function(e) {
-        // Enter键提交表单
-        if (e.key === 'Enter' && !e.shiftKey) {
-            const activeElement = document.activeElement;
-            if (activeElement.tagName !== 'BUTTON' && !activeElement.type === 'submit') {
-                registerForm.dispatchEvent(new Event('submit'));
-                e.preventDefault();
-            }
-        }
-
-        // Ctrl/Cmd + L 登录页面快捷键
-        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
-            e.preventDefault();
-            window.location.href = '{% url "accounts:login" %}';
-        }
-    });
-
-    // 添加页面可见性变化处理
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            document.title = '💤 等待返回 - 学生管理系统';
-        } else {
-            document.title = '注册 - 学生信息管理系统';
-        }
-    });
-
-    // 添加实时邮箱格式验证
-    const emailInput = document.getElementById('{{ form.email.id_for_label }}');
-    emailInput.addEventListener('blur', function() {
-        if (this.value && !isValidEmail(this.value)) {
-            showError(this, '请输入有效的邮箱地址');
-        }
-    });
-
-    // 添加手机号格式验证
-    const phoneInput = document.getElementById('{{ form.phone.id_for_label }}');
-    phoneInput.addEventListener('blur', function() {
-        if (this.value && !isValidPhone(this.value)) {
-            showError(this, '请输入有效的手机号码');
-        }
-    });
-
-    // 初始化加载进度条
-    addLoadingProgress();
 });
 
-// 密码强度检测
-function checkPasswordStrength(password) {
-    const strengthBar = document.querySelector('.password-strength-bar');
-    const strengthContainer = document.getElementById('passwordStrength');
-
-    if (!password) {
-        strengthContainer.style.display = 'none';
-        return;
-    }
-
-    strengthContainer.style.display = 'block';
-
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (password.length >= 12) strength++;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-    if (/\d/.test(password)) strength++;
-    if (/[^a-zA-Z\d]/.test(password)) strength++;
-
-    strengthBar.className = 'password-strength-bar';
-    if (strength <= 2) {
-        strengthBar.classList.add('strength-weak');
-    } else if (strength <= 4) {
-        strengthBar.classList.add('strength-medium');
-    } else {
-        strengthBar.classList.add('strength-strong');
-    }
-}
-
-// 密码匹配检查（增强版）
-function checkPasswordMatch(confirmPasswordInput, passwordInput) {
-    const matchStatus = document.getElementById('passwordMatchStatus');
-    const matchText = document.getElementById('passwordMatchText');
-    const checkIcon = matchStatus.querySelector('.fa-check-circle');
-    const timesIcon = matchStatus.querySelector('.fa-times-circle');
-
-    if (confirmPasswordInput.value && passwordInput.value) {
-        if (confirmPasswordInput.value !== passwordInput.value) {
-            confirmPasswordInput.style.borderColor = '#f56565';
-            confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f56565, #fc8181) border-box';
-
-            // 更新状态显示
-            matchText.textContent = '密码不匹配';
-            matchText.className = 'text-danger';
-            checkIcon.style.display = 'none';
-            timesIcon.style.display = 'inline';
-            timesIcon.className = 'fas fa-times-circle text-danger';
-        } else {
-            confirmPasswordInput.style.borderColor = '#48bb78';
-            confirmPasswordInput.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #48bb78, #68d391) border-box';
-
-            // 更新状态显示
-            matchText.textContent = '密码匹配';
-            matchText.className = 'text-success';
-            timesIcon.style.display = 'none';
-            checkIcon.style.display = 'inline';
-            checkIcon.className = 'fas fa-check-circle text-success';
-        }
-    } else {
-        // 重置状态
-        confirmPasswordInput.style.borderColor = '';
-        confirmPasswordInput.style.background = '';
-        matchText.textContent = '请再次输入密码';
-        matchText.className = 'text-muted';
-        checkIcon.style.display = 'none';
-        timesIcon.style.display = 'none';
-    }
-}
-
-// 密码强度验证（更新为更宽松的要求）
-function isPasswordValid(password) {
-    return password.length >= 6 && password.length > 0;
-}
-
-// 邮箱格式验证
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// 手机号格式验证
-function isValidPhone(phone) {
-    const phoneRegex = /^1[3-9]\d{9}$/;
-    return phoneRegex.test(phone);
-}
-
-// 显示错误信息
-function showError(input, message) {
-    // 移除已存在的错误
-    const existingError = input.parentElement.querySelector('.error-message');
-    if (existingError) {
-        existingError.remove();
-    }
-
-    // 创建错误元素
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message text-danger small mt-2';
-    errorDiv.textContent = message;
-    errorDiv.style.animation = 'slideInDown 0.3s ease-out';
-
-    input.parentElement.appendChild(errorDiv);
-    input.parentElement.style.animation = 'shake 0.5s ease-in-out';
-
-    // 输入框抖动效果
-    setTimeout(() => {
-        input.parentElement.style.animation = '';
-    }, 500);
-
-    // 自动清除错误
-    setTimeout(() => {
-        errorDiv.style.opacity = '0';
-        setTimeout(() => {
-            if (errorDiv.parentNode) {
-                errorDiv.remove();
-            }
-        }, 300);
-    }, 5000);
-}
-
-// 播放焦点音效（可选）
-function playFocusSound() {
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
-    } catch (e) {
-        // 静默处理音频错误
-    }
-}
-
-// 添加加载进度条
-function addLoadingProgress() {
-    const progressBar = document.createElement('div');
-    progressBar.id = 'loadingProgress';
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        z-index: 9999;
-        transition: width 0.3s ease;
-        display: none;
-    `;
-    document.body.appendChild(progressBar);
-
-    // 页面加载进度
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 30;
-        if (progress > 90) progress = 90;
-        progressBar.style.width = progress + '%';
-    }, 100);
-
-    window.addEventListener('load', () => {
-        clearInterval(interval);
-        progressBar.style.width = '100%';
-        setTimeout(() => {
-            progressBar.style.display = 'none';
-        }, 500);
-    });
-}
-
-// 抖动动画
+// 添加动画样式
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 `;
 document.head.appendChild(style);

@@ -2,149 +2,243 @@
 {% block title %}编辑个人资料 - 学生信息管理系统{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h3><i class="fas fa-edit"></i> 编辑个人资料</h3>
-        <hr>
+<div class="container-fluid">
+    <!-- 页面标题 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header-card bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="page-header-icon">
+                        <i class="fas fa-user-edit fa-2x"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h3 class="mb-1">编辑个人资料</h3>
+                        <p class="mb-0 opacity-75">更新您的个人信息和联系方式</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
+    <div class="row">
+        <!-- 左侧表单部分 -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-edit me-2"></i>填写个人信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
 
-                    <h5><i class="fas fa-user"></i> 基本信息</h5>
-                    <hr>
+                        <!-- 基本信息部分 -->
+                        <div class="section-title mb-4">
+                            <h6 class="text-primary mb-2">
+                                <i class="fas fa-user-circle me-2"></i>基本信息
+                            </h6>
+                            <div class="divider"></div>
+                        </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">邮箱</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">手机号</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="first_name" class="form-label">姓</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="last_name" class="form-label">名</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
-                        </div>
-                    </div>
-
-                    {% if student_profile %}
-                    <h5 class="mt-4"><i class="fas fa-user-graduate"></i> 学生信息</h5>
-                    <hr>
-
-                    {% if user.role == 'admin' %}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="department" class="form-label">所属院系</label>
-                            <select class="form-select" id="department" name="department">
-                                <option value="">请选择院系</option>
-                                {% for dept in departments %}
-                                <option value="{{ dept.id }}" {% if student_profile.department and student_profile.department.id == dept.id %}selected{% endif %}>
-                                    {{ dept.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="major" class="form-label">专业</label>
-                            <select class="form-select" id="major" name="major">
-                                <option value="">请选择专业</option>
-                                {% if student_profile.department %}
-                                    {% for major in student_profile.department.major_set.all %}
-                                    <option value="{{ major.id }}" {% if student_profile.major and student_profile.major.id == major.id %}selected{% endif %}>
-                                        {{ major.name }}
-                                    </option>
-                                    {% endfor %}
-                                {% else %}
-                                <option value="">请先选择院系</option>
-                                {% endif %}
-                            </select>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="department_display" class="form-label">所属院系</label>
-                            <input type="text" class="form-control" id="department_display" readonly
-                                   value="{% if student_profile.department %}{{ student_profile.department.name }}{% else %}未设置{% endif %}">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="major_display" class="form-label">专业</label>
-                            <input type="text" class="form-control" id="major_display" readonly
-                                   value="{% if student_profile.major %}{{ student_profile.major.name }}{% else %}未设置{% endif %}">
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="address" class="form-label">家庭住址</label>
-                            <textarea class="form-control" id="address" name="address" rows="3">{{ student_profile.address }}</textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    <label for="emergency_contact" class="form-label">紧急联系人</label>
-                                    <input type="text" class="form-control" id="emergency_contact" name="emergency_contact" value="{{ student_profile.emergency_contact }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="email" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-envelope me-1"></i>邮箱
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                           value="{{ user.email }}" placeholder="请输入邮箱地址" required>
+                                    <div class="form-text text-muted mt-1">
+                                        用于登录和接收系统通知
+                                    </div>
                                 </div>
-                                <div class="col-12 mb-3">
-                                    <label for="emergency_phone" class="form-label">紧急联系电话</label>
-                                    <input type="text" class="form-control" id="emergency_phone" name="emergency_phone" value="{{ student_profile.emergency_phone }}">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-phone me-1"></i>手机号
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="phone" name="phone" 
+                                           value="{{ user.phone }}" placeholder="请输入手机号码">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {% endif %}
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> 返回
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> 保存修改
-                        </button>
-                    </div>
-                </form>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="first_name" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-user me-1"></i>姓
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" 
+                                           value="{{ user.first_name }}" placeholder="请输入姓氏">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="last_name" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-user me-1"></i>名
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" 
+                                           value="{{ user.last_name }}" placeholder="请输入名字">
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if student_profile %}
+                        <!-- 学生信息部分 -->
+                        <div class="section-title mb-4 mt-5">
+                            <h6 class="text-primary mb-2">
+                                <i class="fas fa-user-graduate me-2"></i>学生信息
+                            </h6>
+                            <div class="divider"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="department" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-building me-1"></i>所属院系
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg"
+                                           value="{{ student_profile.department.name|default:'未设置' }}"
+                                           readonly disabled>
+                                    <div class="form-text text-muted mt-1">
+                                        院系信息由管理员设置，学生无法自行修改
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="major" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-book me-1"></i>专业
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg"
+                                           value="{{ student_profile.major.name|default:'未设置' }}"
+                                           readonly disabled>
+                                    <div class="form-text text-muted mt-1">
+                                        专业信息由管理员设置，学生无法自行修改
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="address" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-home me-1"></i>家庭住址
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="address" name="address" 
+                                              rows="3" placeholder="请输入家庭住址">{{ student_profile.address }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <div class="form-group">
+                                            <label for="emergency_contact" class="form-label fw-semibold mb-2">
+                                                <i class="fas fa-user-friends me-1"></i>紧急联系人
+                                            </label>
+                                            <input type="text" class="form-control form-control-lg" id="emergency_contact" 
+                                                   name="emergency_contact" value="{{ student_profile.emergency_contact }}" 
+                                                   placeholder="请输入紧急联系人姓名">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-4">
+                                        <div class="form-group">
+                                            <label for="emergency_phone" class="form-label fw-semibold mb-2">
+                                                <i class="fas fa-phone-alt me-1"></i>紧急联系电话
+                                            </label>
+                                            <input type="text" class="form-control form-control-lg" id="emergency_phone" 
+                                                   name="emergency_phone" value="{{ student_profile.emergency_phone }}" 
+                                                   placeholder="请输入紧急联系电话">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- 表单操作按钮 -->
+                        <div class="form-actions mt-5 pt-4 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>返回
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-save me-2"></i>保存修改
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-header">
-                <h5><i class="fas fa-info-circle"></i> 提示</h5>
-            </div>
-            <div class="card-body">
-                <p class="mb-2">请确保您填写的邮箱地址是有效的，系统可能会使用此邮箱与您联系。</p>
-                <p class="mb-2">手机号码用于紧急联系，请务必填写正确。</p>
-                {% if student_profile %}
-                <p class="mb-2">紧急联系人信息将在紧急情况下使用，请确保联系人了解相关情况。</p>
-                {% if user.role == 'admin' %}
-                <p class="mb-0"><i class="fas fa-info-circle text-primary"></i> 作为管理员，您可以修改学生的院系和专业信息。</p>
-                {% else %}
-                <p class="mb-0"><i class="fas fa-lock text-warning"></i> 院系和专业信息由管理员管理，如需修改请联系管理员。</p>
-                {% endif %}
-                {% endif %}
+        <!-- 右侧提示部分 -->
+        <div class="col-lg-4">
+            <div class="sticky-sidebar">
+                <!-- 提示卡片 -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-info-circle me-2"></i>提示
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-primary d-flex align-items-start mb-3" role="alert">
+                            <i class="fas fa-envelope mt-1 me-2"></i>
+                            <div>请确保您填写的邮箱地址是有效的，系统可能会使用此邮箱与您联系。</div>
+                        </div>
+                        <div class="alert alert-success d-flex align-items-start mb-3" role="alert">
+                            <i class="fas fa-mobile-alt mt-1 me-2"></i>
+                            <div>手机号码用于紧急联系，请务必填写正确。</div>
+                        </div>
+                        {% if student_profile %}
+                        <div class="alert alert-light border border-info d-flex align-items-start mb-3" role="alert">
+                            <i class="fas fa-user-shield mt-1 me-2 text-info"></i>
+                            <div class="text-dark">紧急联系人信息将在紧急情况下使用，请确保联系人了解相关情况。</div>
+                        </div>
+                        <div class="alert alert-warning d-flex align-items-start" role="alert">
+                            <i class="fas fa-lock mt-1 me-2"></i>
+                            <div><i class="fas fa-info-circle text-warning me-1"></i> 院系和专业信息由管理员设置，如需修改请联系管理员。</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 帮助卡片 -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-question-circle me-2"></i>填写说明
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2 d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                <span>带<i class="fas fa-asterisk text-danger mx-1" style="font-size: 0.7rem;"></i>标记的为必填项</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                <span>填写完整的信息有助于我们为您提供更好的服务</span>
+                            </li>
+                            <li class="mb-0 d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                <span>保存前请仔细核对所有信息</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript for department-major联动 (仅管理员) -->
-{% if user.role == 'admin' %}
+<!-- JavaScript for department-major联动 -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const departmentSelect = document.getElementById('department');
@@ -180,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const option = document.createElement('option');
                     option.value = major.id;
                     option.textContent = major.name;
+                    option.className = 'option-item';
                     // 如果是之前选中的专业，则保持选中状态
                     if (major.id === currentMajorId) {
                         option.selected = true;
@@ -193,7 +288,190 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // 表单验证
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
 });
 </script>
-{% endif %}
+
+<style>
+    /* 自定义样式 */
+    .page-header-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        margin-top: 0.5rem;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+    
+    .page-header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .section-title {
+        position: relative;
+    }
+    
+    .divider {
+        height: 2px;
+        background: linear-gradient(to right, #667eea, transparent);
+        border-radius: 1px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control-lg, .form-select-lg {
+        padding: 0.875rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+    
+    .form-control-lg:focus, .form-select-lg:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    .form-label {
+        font-size: 0.95rem;
+        color: #495057;
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+    }
+    
+    .option-item {
+        padding: 10px;
+        transition: background-color 0.2s;
+    }
+    
+    .option-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .sticky-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .alert {
+        border-radius: 10px;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+    
+    .alert-primary {
+        background-color: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+    
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+    
+    .alert-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+    
+    .alert-info {
+        background-color: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+    }
+    
+    .form-actions {
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+    
+    .btn-outline-secondary {
+        border-width: 2px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    @media (max-width: 992px) {
+        .sticky-sidebar {
+            position: static;
+            margin-top: 1rem;
+        }
+        
+        .page-header-card {
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .page-header-icon {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .page-header-icon i {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .form-actions .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+    }
+</style>
 {% endblock %}
