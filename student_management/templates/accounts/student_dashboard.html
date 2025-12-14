@@ -47,8 +47,29 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 平均成绩</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {% if average_grade %}{{ average_grade }}{% else %}--{% endif %}
+                                {% if average_grade %}
+                                    <span class="grade-badge grade-{{ average_grade|lower }}">
+                                        {{ average_grade }}
+                                    </span>
+                                    {% if average_score %}
+                                        <small class="text-muted">({{ average_score }}分)</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">暂无成绩</span>
+                                {% endif %}
                             </div>
+                            {% if average_grade %}
+                                <div class="text-xs text-muted">
+                                    {% if average_grade == 'A' %}优秀{% endif %}
+                                    {% if average_grade == 'B' %}良好{% endif %}
+                                    {% if average_grade == 'C' %}中等{% endif %}
+                                    {% if average_grade == 'D' %}及格{% endif %}
+                                    {% if average_grade == 'F' %}不及格{% endif %}
+                                    {% if total_graded_courses %}
+                                        · {{ total_graded_courses }}门课程
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-chart-line fa-2x text-success"></i>

@@ -172,13 +172,77 @@ def student_dashboard(request):
     try:
         student_profile = StudentProfile.objects.get(user=request.user)
         enrollments = student_profile.enrollment_set.all().order_by('-academic_year', '-semester')
+
+        # 计算平均成绩
+        average_grade = None
+        average_score = None
+        graded_enrollments = enrollments.exclude(grade__isnull=True).exclude(grade='')
+
+        # 统计有成绩的课程数
+        total_graded_courses = graded_enrollments.count()
+
+        if graded_enrollments.exists():
+            # 计算等级制的平均GPA
+            grade_points = {'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0}
+            total_points = 0
+            total_scores = 0
+            score_count = 0
+
+            for enrollment in graded_enrollments:
+                # 等级成绩计算GPA
+                if enrollment.grade in grade_points:
+                    total_points += grade_points[enrollment.grade]
+
+                # 分数成绩计算平均分
+                if enrollment.score is not None:
+                    total_scores += float(enrollment.score)
+                    score_count += 1
+
+            # 计算平均GPA并转换为等级
+            if total_graded_courses > 0:
+                average_gpa = total_points / total_graded_courses
+                if average_gpa >= 3.7:
+                    average_grade = 'A'
+                elif average_gpa >= 2.7:
+                    average_grade = 'B'
+                elif average_gpa >= 1.7:
+                    average_grade = 'C'
+                elif average_gpa >= 1.0:
+                    average_grade = 'D'
+                else:
+                    average_grade = 'F'
+
+            # 计算平均分
+            if score_count > 0:
+                average_score = round(total_scores / score_count, 1)
+
+        # 计算当前学期课程数
+        from django.utils import timezone
+        current_year = timezone.now().year
+        current_month = timezone.now().month
+        current_semester = '第2学期' if current_month >= 9 or current_month <= 2 else '第1学期'
+        current_academic_year = f"{current_year-1}-{current_year}" if current_month <= 8 else f"{current_year}-{current_year+1}"
+
+        current_semester_courses = enrollments.filter(
+            semester=current_semester,
+            academic_year=current_academic_year
+        ).count()
+
     except StudentProfile.DoesNotExist:
         student_profile = None
         enrollments = []
+        average_grade = None
+        average_score = None
+        total_graded_courses = 0
+        current_semester_courses = 0
 
     context = {
         'student_profile': student_profile,
         'enrollments': enrollments,
+        'average_grade': average_grade,
+        'average_score': average_score,
+        'total_graded_courses': total_graded_courses,
+        'current_semester_courses': current_semester_courses,
     }
     return render(request, 'accounts/student_dashboard.html', context)
 
