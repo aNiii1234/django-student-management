@@ -47,6 +47,10 @@ urlpatterns = [
     path('course-selection/', views.course_selection, name='course_selection'),
     path('course-selection/submit/', views.course_selection_submit, name='course_selection_submit'),
 
+    # 导出功能
+    path('export/csv/', views.export_students_csv, name='export_students_csv'),
+    path('export/excel/', views.export_students_excel, name='export_students_excel'),
+
     # API 端点
     path('api/student-status/', views_api.api_student_status, name='api_student_status'),
     path('api/course-updates/', views_api.api_course_updates, name='api_course_updates'),

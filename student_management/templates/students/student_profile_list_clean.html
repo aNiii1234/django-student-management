@@ -11,9 +11,15 @@
                     <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> 添加学生档案
                     </a>
-                    <button onclick="exportStudentData()" class="btn btn-secondary ml-2">
-                        <i class="fas fa-download"></i> 导出数据
-                    </button>
+                    <div class="btn-group ml-2">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download"></i> 导出数据
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportData('csv')">导出为CSV</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="exportData('excel')">导出为Excel</a></li>
+                        </ul>
+                    </div>
                 {% endif %}
                 {% if user.role == 'admin' %}
                     <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
@@ -312,8 +318,34 @@ function viewStudentDetails(studentId) {
 }
 
 // 导出学生数据
+function exportData(format) {
+    // 获取当前筛选条件
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 根据格式构建导出URL
+    let exportUrl;
+    if (format === 'csv') {
+        exportUrl = "{% url 'students:export_students_csv' %}";
+    } else if (format === 'excel') {
+        exportUrl = "{% url 'students:export_students_excel' %}";
+    }
+
+    // 添加筛选参数
+    if (urlParams.toString()) {
+        exportUrl += '?' + urlParams.toString();
+    }
+
+    // 创建隐藏的链接并点击下载
+    const link = document.createElement('a');
+    link.href = exportUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// 保留旧的函数名以兼容
 function exportStudentData() {
-    alert('导出功能正在开发中');
+    exportData('csv');
 }
 
 // 打印学生列表

@@ -8,6 +8,9 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import IntegrityError, transaction
+from django.http import HttpResponse
+import csv
+from datetime import datetime
 from .models import StudentProfile, Department, Major, Course, Enrollment
 from .forms import StudentProfileForm, DepartmentForm, MajorForm, CourseForm, EnrollmentForm, AdminEnrollmentForm, GradeForm
 
@@ -453,3 +456,192 @@ def course_selection_submit(request):
     except Exception as e:
         messages.error(request, f'选课失败：{str(e)}')
         return redirect('students:course_selection')
+
+# 导出学生数据功能
+@login_required
+def export_students_csv(request):
+    """导出学生数据为CSV格式"""
+    if request.user.role != 'admin':
+        messages.error(request, '您没有权限执行此操作！')
+        return redirect('home')
+
+    # 获取查询参数（与学生列表页面的筛选条件相同）
+    search_query = request.GET.get('search', '').strip()
+    department_id = request.GET.get('department', '')
+    status = request.GET.get('status', '')
+    gender = request.GET.get('gender', '')
+
+    # 构建查询
+    students = StudentProfile.objects.all().select_related('user', 'department', 'major')
+
+    # 应用相同的筛选条件
+    if search_query:
+        students = students.filter(
+            Q(student_id__icontains=search_query) |
+            Q(real_name__icontains=search_query) |
+            Q(class_name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+
+    if department_id:
+        students = students.filter(department_id=department_id)
+
+    if status:
+        students = students.filter(enrollment_status=status)
+
+    if gender:
+        students = students.filter(gender=gender)
+
+    # 排序
+    students = students.order_by('student_id')
+
+    # 创建HTTP响应
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="学生数据_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+
+    # 设置CSV编码为UTF-8 BOM，解决Excel中文乱码问题
+    response.write('\ufeff')
+
+    writer = csv.writer(response)
+
+    # 写入表头
+    headers = [
+        '学号', '姓名', '性别', '出生日期', '身份证号', '民族',
+        '手机号码', '邮箱', '家庭住址', '所属院系', '专业',
+        '班级', '入学日期', '预计毕业日期', '学籍状态', '政治面貌',
+        '紧急联系人1', '紧急联系电话1', '与学生关系1',
+        '紧急联系人2', '紧急联系电话2', '与学生关系2',
+        '个人简介', '兴趣爱好', '特长技能', '创建时间', '更新时间'
+    ]
+    writer.writerow(headers)
+
+    # 写入数据
+    for student in students:
+        row = [
+            student.student_id or '',
+            student.real_name or '',
+            dict(StudentProfile.GENDER_CHOICES).get(student.gender, '') or '',
+            student.birth_date.strftime('%Y-%m-%d') if student.birth_date else '',
+            student.id_card_number or '',
+            student.nationality or '',
+            student.phone or '',
+            student.email or student.user.email if student.user.email else '',
+            student.address or '',
+            student.department.name if student.department else '',
+            student.major.name if student.major else '',
+            student.class_name or '',
+            student.enrollment_date.strftime('%Y-%m-%d') if student.enrollment_date else '',
+            student.graduation_date.strftime('%Y-%m-%d') if student.graduation_date else '',
+            dict(StudentProfile.ENROLLMENT_STATUS_CHOICES).get(student.enrollment_status, '') or '',
+            dict(StudentProfile.POLITICAL_STATUS_CHOICES).get(student.political_status, '') or '',
+            student.emergency_contact or '',
+            student.emergency_phone or '',
+            student.emergency_relation or '',
+            student.emergency_contact2 or '',
+            student.emergency_phone2 or '',
+            student.emergency_relation2 or '',
+            student.bio or '',
+            student.hobbies or '',
+            student.skills or '',
+            student.created_at.strftime('%Y-%m-%d %H:%M:%S') if student.created_at else '',
+            student.updated_at.strftime('%Y-%m-%d %H:%M:%S') if student.updated_at else '',
+        ]
+        writer.writerow(row)
+
+    return response
+
+@login_required
+def export_students_excel(request):
+    """导出学生数据为Excel格式（使用CSV格式但可被Excel打开）"""
+    if request.user.role != 'admin':
+        messages.error(request, '您没有权限执行此操作！')
+        return redirect('home')
+
+    # 获取查询参数
+    search_query = request.GET.get('search', '').strip()
+    department_id = request.GET.get('department', '')
+    status = request.GET.get('status', '')
+    gender = request.GET.get('gender', '')
+
+    # 构建查询
+    students = StudentProfile.objects.all().select_related('user', 'department', 'major')
+
+    # 应用筛选条件
+    if search_query:
+        students = students.filter(
+            Q(student_id__icontains=search_query) |
+            Q(real_name__icontains=search_query) |
+            Q(class_name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+
+    if department_id:
+        students = students.filter(department_id=department_id)
+
+    if status:
+        students = students.filter(enrollment_status=status)
+
+    if gender:
+        students = students.filter(gender=gender)
+
+    # 排序
+    students = students.order_by('student_id')
+
+    # 创建HTTP响应，设置Excel文件格式
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f'attachment; filename="学生数据_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xls"'
+
+    # 使用tab分隔的格式，Excel可以直接打开
+    response.write('\ufeff')  # UTF-8 BOM
+
+    # 构建表头
+    headers = [
+        '学号', '姓名', '性别', '出生日期', '身份证号', '民族',
+        '手机号码', '邮箱', '家庭住址', '所属院系', '专业',
+        '班级', '入学日期', '预计毕业日期', '学籍状态', '政治面貌',
+        '紧急联系人1', '紧急联系电话1', '与学生关系1',
+        '紧急联系人2', '紧急联系电话2', '与学生关系2',
+        '个人简介', '兴趣爱好', '特长技能', '创建时间', '更新时间'
+    ]
+
+    # 写入表头
+    line = '\t'.join(headers) + '\n'
+    response.write(line.encode('utf-8').decode('utf-8'))
+
+    # 写入数据行
+    for student in students:
+        # 清理数据中的tab和换行符
+        data = [
+            str(student.student_id or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.real_name or '').replace('\t', ' ').replace('\n', ' '),
+            dict(StudentProfile.GENDER_CHOICES).get(student.gender, '') or '',
+            student.birth_date.strftime('%Y-%m-%d') if student.birth_date else '',
+            str(student.id_card_number or ''),
+            str(student.nationality or ''),
+            str(student.phone or ''),
+            str(student.email or student.user.email if student.user.email else ''),
+            str(student.address or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.department.name if student.department else ''),
+            str(student.major.name if student.major else ''),
+            str(student.class_name or '').replace('\t', ' ').replace('\n', ' '),
+            student.enrollment_date.strftime('%Y-%m-%d') if student.enrollment_date else '',
+            student.graduation_date.strftime('%Y-%m-%d') if student.graduation_date else '',
+            dict(StudentProfile.ENROLLMENT_STATUS_CHOICES).get(student.enrollment_status, '') or '',
+            dict(StudentProfile.POLITICAL_STATUS_CHOICES).get(student.political_status, '') or '',
+            str(student.emergency_contact or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.emergency_phone or ''),
+            str(student.emergency_relation or ''),
+            str(student.emergency_contact2 or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.emergency_phone2 or ''),
+            str(student.emergency_relation2 or ''),
+            str(student.bio or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.hobbies or '').replace('\t', ' ').replace('\n', ' '),
+            str(student.skills or '').replace('\t', ' ').replace('\n', ' '),
+            student.created_at.strftime('%Y-%m-%d %H:%M:%S') if student.created_at else '',
+            student.updated_at.strftime('%Y-%m-%d %H:%M:%S') if student.updated_at else '',
+        ]
+
+        line = '\t'.join(data) + '\n'
+        response.write(line.encode('utf-8').decode('utf-8'))
+
+    return response
