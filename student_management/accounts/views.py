@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.cache import cache_page
 from django.db.models import Count, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import IntegrityError
 from .forms import CustomUserCreationForm
 from .models import User
 from students.models import StudentProfile, Department, Major
@@ -459,10 +460,17 @@ def delete_user(request, user_id):
         return redirect('accounts:user_list')
 
     if request.method == 'POST':
-        username = user_to_delete.username
-        user_to_delete.delete()
-        messages.success(request, f'用户 {username} 已被成功删除！')
-        return redirect('accounts:user_list')
+        try:
+            username = user_to_delete.username
+            user_to_delete.delete()
+            messages.success(request, f'用户 {username} 已被成功删除！')
+            return redirect('accounts:user_list')
+        except IntegrityError as e:
+            messages.error(request, f'删除失败：该用户存在关联数据，无法直接删除。请先处理相关的学生档案和选课记录。')
+            return redirect('accounts:user_list')
+        except Exception as e:
+            messages.error(request, f'删除用户时发生未知错误：{str(e)}')
+            return redirect('accounts:user_list')
 
     context = {
         'user_to_delete': user_to_delete,
