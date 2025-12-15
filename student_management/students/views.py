@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import IntegrityError, transaction
 from .models import StudentProfile, Department, Major, Course, Enrollment
 from .forms import StudentProfileForm, DepartmentForm, MajorForm, CourseForm, EnrollmentForm, AdminEnrollmentForm, GradeForm
 
@@ -246,11 +247,20 @@ def student_profile_delete(request, pk):
     student_profile = get_object_or_404(StudentProfile, pk=pk)
 
     if request.method == 'POST':
-        user = student_profile.user
-        student_profile.delete()
-        user.delete()
-        messages.success(request, '学生档案删除成功！')
-        return redirect('students:student_profile_list')
+        try:
+            with transaction.atomic():
+                user = student_profile.user
+                student_name = student_profile.name
+                student_profile.delete()
+                user.delete()
+                messages.success(request, f'学生 {student_name} 的档案已成功删除！')
+                return redirect('students:student_profile_list')
+        except IntegrityError as e:
+            messages.error(request, f'删除失败：该学生存在关联数据，无法直接删除。请先处理相关的选课记录。')
+            return redirect('students:student_profile_list')
+        except Exception as e:
+            messages.error(request, f'删除学生档案时发生未知错误：{str(e)}')
+            return redirect('students:student_profile_list')
 
     return render(request, 'students/student_profile_confirm_delete.html', {'student_profile': student_profile})
 
