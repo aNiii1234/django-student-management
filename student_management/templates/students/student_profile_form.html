@@ -183,17 +183,6 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label for="{{ form.class_name.id_for_label }}" class="form-label">{{ form.class_name.label }}</label>
-                                <input type="text" class="form-control" id="{{ form.class_name.id_for_label }}"
-                                       name="{{ form.class_name.name }}" value="{{ form.class_name.value|default:'' }}">
-                                {% if form.class_name.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.class_name.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-4 mb-3">
                                 <label for="{{ form.enrollment_status.id_for_label }}" class="form-label">{{ form.enrollment_status.label }}</label>
                                 <select class="form-select" id="{{ form.enrollment_status.id_for_label }}"
                                         name="{{ form.enrollment_status.name }}">
@@ -247,6 +236,51 @@
                                     </div>
                                 {% endif %}
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 学业状态 -->
+                    <div class="section-group mb-4">
+                        <h6 class="section-title"><i class="fas fa-graduation-cap"></i> 学业状态</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.grade_level.id_for_label }}" class="form-label">{{ form.grade_level.label }}</label>
+                                {{ form.grade_level }}
+                                {% if form.grade_level.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.grade_level.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">选择学生当前所在年级</small>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.current_academic_year.id_for_label }}" class="form-label">{{ form.current_academic_year.label }}</label>
+                                {{ form.current_academic_year }}
+                                {% if form.current_academic_year.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.current_academic_year.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">设置当前学年，用于课程匹配</small>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.current_semester.id_for_label }}" class="form-label">{{ form.current_semester.label }}</label>
+                                {{ form.current_semester }}
+                                {% if form.current_semester.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.current_semester.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">设置当前学期，用于课程匹配</small>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>学业状态说明：</strong>
+                            设置学生的当前年级、学期和学年后，系统将根据这些信息为学生推荐对应的课程，方便管理员进行课程分配。
                         </div>
                     </div>
 

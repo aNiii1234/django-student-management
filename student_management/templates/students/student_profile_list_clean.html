@@ -76,7 +76,7 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">搜索学生</label>
-                            <input type="text" name="search" class="form-control" placeholder="输入姓名、学号或班级..." value="{{ request.GET.search }}">
+                            <input type="text" name="search" class="form-control" placeholder="输入姓名或学号..." value="{{ request.GET.search }}">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">院系</label>
@@ -172,7 +172,6 @@
                                     <th>学号</th>
                                     <th>院系</th>
                                     <th>专业</th>
-                                    <th>班级</th>
                                     <th>状态</th>
                                     <th>邮箱</th>
                                     <th>手机号</th>
@@ -197,7 +196,6 @@
                                     <td>{{ student.student_id|default:'未设置学号' }}</td>
                                     <td>{{ student.department.name|default:'--' }}</td>
                                     <td>{{ student.major.name|default:'--' }}</td>
-                                    <td>{{ student.class_name|default:'--' }}</td>
                                     <td>
                                         {% if student.enrollment_status == 'enrolled' %}
                                             <span class="badge bg-success">在读</span>

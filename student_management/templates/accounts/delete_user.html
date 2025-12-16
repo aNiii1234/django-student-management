@@ -23,7 +23,7 @@
                     <p>您确定要删除以下用户吗？</p>
 
                     <div class="user-info bg-light p-3 rounded mb-3">
-                        <p class="mb-2"><strong>用户名：</strong>{{ user_to_delete.username }}</p>
+                        <p class="mb-2"><strong>学号：</strong>{{ user_to_delete.username }}</p>
                         <p class="mb-2"><strong>邮箱：</strong>{{ user_to_delete.email|default:"未设置" }}</p>
                         <p class="mb-2"><strong>角色：</strong>
                             {% if user_to_delete.is_superuser %}

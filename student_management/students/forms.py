@@ -29,9 +29,9 @@ class StudentProfileForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
         fields = ['student_id', 'real_name', 'gender', 'birth_date', 'id_card_number', 'nationality',
-                 'phone', 'email', 'enrollment_date', 'graduation_date', 'class_name', 'enrollment_status',
-                 'political_status', 'department', 'major', 'address',
-                 'emergency_contact', 'emergency_phone', 'emergency_relation',
+                 'phone', 'email', 'enrollment_date', 'graduation_date', 'enrollment_status',
+                 'political_status', 'department', 'major', 'grade_level', 'current_academic_year', 'current_semester',
+                 'address', 'emergency_contact', 'emergency_phone', 'emergency_relation',
                  'emergency_contact2', 'emergency_phone2', 'emergency_relation2']
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -43,11 +43,13 @@ class StudentProfileForm(forms.ModelForm):
             'gender': forms.Select(attrs={'class': 'form-select'}),
             'political_status': forms.Select(attrs={'class': 'form-select'}),
             'enrollment_status': forms.Select(attrs={'class': 'form-select'}),
+            'grade_level': forms.Select(attrs={'class': 'form-select'}),
+            'current_academic_year': forms.Select(attrs={'class': 'form-select'}),
+            'current_semester': forms.Select(attrs={'class': 'form-select'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'id_card_number': forms.TextInput(attrs={'class': 'form-control'}),
             'nationality': forms.TextInput(attrs={'class': 'form-control'}),
-            'class_name': forms.TextInput(attrs={'class': 'form-control'}),
             'emergency_contact': forms.TextInput(attrs={'class': 'form-control'}),
             'emergency_phone': forms.TextInput(attrs={'class': 'form-control'}),
             'emergency_relation': forms.TextInput(attrs={'class': 'form-control'}),
@@ -66,11 +68,13 @@ class StudentProfileForm(forms.ModelForm):
             'email': '个人邮箱',
             'enrollment_date': '入学日期',
             'graduation_date': '预计毕业日期',
-            'class_name': '班级',
             'enrollment_status': '学籍状态',
             'political_status': '政治面貌',
             'department': '所属院系',
             'major': '专业',
+            'grade_level': '年级',
+            'current_academic_year': '当前学年',
+            'current_semester': '当前学期',
             'address': '家庭住址',
             'emergency_contact': '紧急联系人1',
             'emergency_phone': '紧急联系电话1',
@@ -126,11 +130,27 @@ class MajorForm(forms.ModelForm):
         }
 
 class CourseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # 为所有字段添加Bootstrap样式
+        for field_name, field in self.fields.items():
+            if field.widget.__class__.__name__ == 'Select':
+                field.widget.attrs.update({'class': 'form-select'})
+            elif field.widget.__class__.__name__ not in ['CheckboxInput', 'RadioSelect']:
+                field.widget.attrs.update({'class': 'form-control'})
+
     class Meta:
         model = Course
-        fields = ['name', 'code', 'course_type', 'credits', 'hours', 'description']
+        fields = ['name', 'code', 'course_type', 'credits', 'hours', 'semester', 'academic_year', 'description']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 3}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': '请输入课程描述，包括课程目标、主要内容、考核方式等...'}),
+            'name': forms.TextInput(attrs={'placeholder': '请输入课程名称', 'class': 'form-control'}),
+            'code': forms.TextInput(attrs={'placeholder': '请输入课程代码，如：CS101', 'class': 'form-control'}),
+            'credits': forms.NumberInput(attrs={'min': 0.5, 'max': 10, 'step': 0.5, 'placeholder': '如：3.0', 'class': 'form-control'}),
+            'hours': forms.NumberInput(attrs={'min': 1, 'max': 200, 'placeholder': '请输入学时', 'class': 'form-control'}),
+            'semester': forms.Select(attrs={'class': 'form-select'}),
+            'academic_year': forms.Select(attrs={'class': 'form-select'}),
         }
         labels = {
             'name': '课程名称',
@@ -138,6 +158,8 @@ class CourseForm(forms.ModelForm):
             'course_type': '课程类型',
             'credits': '学分',
             'hours': '学时',
+            'semester': '开设学期',
+            'academic_year': '学年',
             'description': '课程描述',
         }
 
@@ -166,11 +188,13 @@ class EnrollmentForm(forms.ModelForm):
             label='学期'
         )
 
-        # 设置学年选项
+        # 设置学年选项 - 扩展范围，从2020年到2030年
         import datetime
         current_year = datetime.datetime.now().year
         academic_years = []
-        for year in range(current_year - 3, current_year + 3):
+
+        # 添加从2020年到2030年的学年选项
+        for year in range(2020, 2031):
             academic_year = f"{year}-{year + 1}"
             academic_years.append((academic_year, f"{academic_year}学年"))
 
@@ -195,6 +219,24 @@ class AdminEnrollmentForm(forms.ModelForm):
         self.fields['course'].widget.attrs.update({'class': 'form-select'})
         self.fields['major'].widget.attrs.update({'class': 'form-select'})
 
+        # 如果已选择学生，根据学生的学业状态筛选课程
+        if 'student' in self.data and self.data['student']:
+            try:
+                student_id = self.data['student']
+                student = StudentProfile.objects.get(id=student_id)
+                self.filter_courses_for_student(student)
+            except (ValueError, StudentProfile.DoesNotExist):
+                pass
+        elif self.instance and self.instance.pk:
+            # 编辑已有选课记录
+            self.filter_courses_for_student(self.instance.student)
+        else:
+            # 新建表单，显示所有课程
+            self.fields['course'].queryset = Course.objects.all().order_by('name')
+
+        # 设置专业选项的queryset
+        self.fields['major'].queryset = Major.objects.all().order_by('department__name', 'name')
+
         # 设置学期选项
         semester_choices = [
             ('', '请选择学期'),
@@ -213,11 +255,13 @@ class AdminEnrollmentForm(forms.ModelForm):
             label='学期'
         )
 
-        # 设置学年选项
+        # 设置学年选项 - 扩展范围，从2020年到2030年
         import datetime
         current_year = datetime.datetime.now().year
         academic_years = []
-        for year in range(current_year - 3, current_year + 3):
+
+        # 添加从2020年到2030年的学年选项
+        for year in range(2020, 2031):
             academic_year = f"{year}-{year + 1}"
             academic_years.append((academic_year, f"{academic_year}学年"))
 
@@ -227,6 +271,35 @@ class AdminEnrollmentForm(forms.ModelForm):
             widget=forms.Select(attrs={'class': 'form-select'}),
             label='学年'
         )
+
+    def filter_courses_for_student(self, student):
+        """根据学生的学业状态筛选合适的课程"""
+        courses = Course.objects.all()
+
+        # 如果学生有设置当前学期和学年，优先按此筛选
+        if student.current_semester and student.current_academic_year:
+            courses = courses.filter(
+                semester=student.current_semester,
+                academic_year=student.current_academic_year
+            )
+        # 如果只设置了年级，按年级匹配对应学期
+        elif student.grade_level:
+            grade_semester_mapping = {
+                '1': ['1', '2'],  # 大一：第1、2学期
+                '2': ['3', '4'],  # 大二：第3、4学期
+                '3': ['5', '6'],  # 大三：第5、6学期
+                '4': ['7', '8'],  # 大四：第7、8学期
+            }
+            if student.grade_level in grade_semester_mapping:
+                semesters = grade_semester_mapping[student.grade_level]
+                courses = courses.filter(semester__in=semesters)
+
+        # 排除学生已选的课程
+        enrolled_courses = Enrollment.objects.filter(student=student).values_list('course_id', flat=True)
+        courses = courses.exclude(id__in=enrolled_courses)
+
+        # 设置筛选后的课程queryset
+        self.fields['course'].queryset = courses.order_by('course_type', 'name')
 
     class Meta:
         model = Enrollment

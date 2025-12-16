@@ -7,8 +7,8 @@
         <h3><i class="fas fa-book"></i> 选择课程</h3>
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
-            <strong>当前学期：</strong>{{ current_semester }} {{ current_academic_year }}学年
-            <br><small class="text-muted">学期由管理员统一管理，系统自动为您设置当前学期的课程选择。</small>
+            <strong>当前学期：</strong>第{{ current_semester }}学期 {{ current_academic_year }}学年
+            <br><small class="text-muted">学期由管理员在学生档案中设置，系统将显示匹配您当前学年学期的可选课程。</small>
         </div>
         <hr>
     </div>
@@ -54,10 +54,10 @@
                                         <td>{{ course.credits }}</td>
                                         <td>{{ course.hours }}</td>
                                         <td>
-                                            <span class="badge bg-secondary">{{ current_semester }}</span>
+                                            <span class="badge bg-warning">{{ course.get_semester_display }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ current_academic_year }}</span>
+                                            <span class="badge bg-info">{{ course.academic_year }}</span>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-sm"

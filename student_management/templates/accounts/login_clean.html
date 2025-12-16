@@ -585,13 +585,13 @@
                         <form method="post" id="loginForm">
                             {% csrf_token %}
 
-                            <!-- 用户名 -->
+                            <!-- 学号 -->
                             <div class="mb-3">
                                 <label for="{{ form.username.id_for_label }}" class="auth-label">
-                                    <i class="fas fa-user me-2"></i>用户名
+                                    <i class="fas fa-id-badge me-2"></i>学号
                                 </label>
                                 <input type="text" class="form-control auth-input" id="{{ form.username.id_for_label }}"
-                                       name="{{ form.username.name }}" placeholder="请输入用户名" required
+                                       name="{{ form.username.name }}" placeholder="请输入学号" required
                                        value="{{ form.username.value|default:'' }}">
                                 {% if form.username.errors %}
                                     <div class="text-danger small mt-1">
@@ -647,7 +647,7 @@
 
                             <!-- 分割线 -->
                             <div class="divider">
-                                <span>或</span>
+                                <span></span>
                             </div>
 
                             <!-- 注册链接 -->

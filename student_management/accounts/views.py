@@ -56,8 +56,12 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, '注册成功！请登录。')
+        messages.success(self.request, f'注册成功！欢迎 {form.cleaned_data.get("username", "")}，请使用您的账号登录。')
         return response
+
+    def form_invalid(self, form):
+        messages.error(self.request, '注册失败，请检查输入信息是否正确。')
+        return super().form_invalid(form)
 
 def logout_view(request):
     logout(request)
@@ -128,7 +132,7 @@ def edit_profile(request):
 def admin_dashboard(request):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     # 优化：使用单个查询获取所有统计数据
     stats = User.objects.aggregate(
@@ -166,7 +170,7 @@ def admin_dashboard(request):
 def student_dashboard(request):
     if request.user.role != 'student':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     try:
         student_profile = StudentProfile.objects.get(user=request.user)
@@ -249,7 +253,7 @@ def student_dashboard(request):
 def user_list(request):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     user_type = request.GET.get('type', 'all')
     search_query = request.GET.get('search', '')
@@ -319,7 +323,7 @@ def user_list(request):
 def student_profile_list_admin(request):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     students = StudentProfile.objects.select_related('user').all()
     context = {
@@ -331,7 +335,7 @@ def student_profile_list_admin(request):
 def pending_student_profiles(request):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     # 找出没有学生档案的学生用户
     students_without_profiles = User.objects.filter(role='student').exclude(
@@ -347,7 +351,7 @@ def pending_student_profiles(request):
 def quick_create_student_profile(request, user_id):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     user = get_object_or_404(User, id=user_id, role='student')
 
@@ -407,7 +411,7 @@ def quick_create_student_profile(request, user_id):
 def edit_user(request, user_id):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限访问此页面！')
-        return redirect('home')
+        return redirect('students:home')
 
     user_to_edit = get_object_or_404(User, id=user_id)
 
@@ -445,7 +449,7 @@ def edit_user(request, user_id):
 def delete_user(request, user_id):
     if request.user.role != 'admin':
         messages.error(request, '您没有权限删除用户！')
-        return redirect('home')
+        return redirect('students:home')
 
     user_to_delete = get_object_or_404(User, id=user_id)
 
