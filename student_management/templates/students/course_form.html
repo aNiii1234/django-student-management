@@ -1,134 +1,754 @@
 {% extends 'base.html' %}
 {% block title %}{% if form.instance.pk %}编辑课程{% else %}添加课程{% endif %} - 学生信息管理系统{% endblock %}
 
+{% block extra_css %}
+<style>
+/* 课程表单美化样式 */
+:root {
+    --primary-color: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e40af;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --bg-white: #ffffff;
+    --bg-light: #f8fafc;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 页面背景 */
+.page-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 2.5rem 0;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-header .subtitle {
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* 主卡片样式 */
+.main-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.main-card:hover {
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid var(--primary-color);
+    padding: 1.5rem 2rem;
+}
+
+.card-header-custom h5 {
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* 表单样式增强 */
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: var(--bg-white);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.form-control:hover, .form-select:hover {
+    border-color: var(--primary-light);
+}
+
+/* 必填字段标记 */
+.form-label .required {
+    color: var(--danger-color);
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+/* 表单字段分组 */
+.form-section {
+    background: var(--bg-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* 按钮样式 */
+.btn-custom {
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    color: white;
+}
+
+.btn-secondary-custom {
+    background: #6b7280;
+    color: white;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+}
+
+.btn-secondary-custom:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* 侧边信息卡片 */
+.info-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.info-card-header {
+    background: linear-gradient(135deg, var(--info-color) 0%, #0891b2 100%);
+    color: white;
+    padding: 1.25rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-white);
+    border-radius: 8px;
+    border-left: 3px solid var(--info-color);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.info-icon {
+    color: var(--info-color);
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.info-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* 警告提示 */
+.alert-tips {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 4px solid var(--warning-color);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-tips .alert-title {
+    color: #92400e;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 课程类型标签 */
+.course-type-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.type-required {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.type-elective {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.type-practical {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-custom {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-section, .main-card, .info-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.main-card {
+    animation-delay: 0.1s;
+}
+
+.info-card {
+    animation-delay: 0.2s;
+}
+
+/* 进度指示器 */
+.progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.progress-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+.progress-dot.completed {
+    background: var(--success-color);
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h3><i class="fas fa-book"></i> {% if form.instance.pk %}编辑课程{% else %}添加课程{% endif %}</h3>
-        <hr>
+<!-- 页面头部 -->
+<div class="page-header">
+    <div class="container">
+        <h1>
+            <i class="fas fa-graduation-cap"></i>
+            {% if form.instance.pk %}
+                <span>编辑课程</span>
+            {% else %}
+                <span>添加新课程</span>
+            {% endif %}
+        </h1>
+        <div class="subtitle">
+            完善课程信息，确保教学计划的顺利实施
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
+<div class="container">
+    <div class="row">
+        <!-- 主要表单区域 -->
+        <div class="col-lg-8">
+            <div class="card main-card">
+                <div class="card-header card-header-custom">
+                    <h5>
+                        <i class="fas fa-edit"></i>
+                        课程基本信息
+                    </h5>
+                </div>
 
+                <div class="card-body p-4">
                     {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <strong>错误！</strong> 请检查表单中的错误。
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="fas fa-exclamation-triangle"></i> 表单错误！</strong>
+                            请检查以下字段并更正错误。
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endif %}
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.code.id_for_label }}" class="form-label">{{ form.code.label }} *</label>
-                            {{ form.code }}
-                            {% if form.code.errors %}
-                                <div class="text-danger">
-                                    {{ form.code.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
+                    <form method="post" id="courseForm">
+                        {% csrf_token %}
 
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }} *</label>
-                            {{ form.name }}
-                            {% if form.name.errors %}
-                                <div class="text-danger">
-                                    {{ form.name.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.course_type.id_for_label }}" class="form-label">{{ form.course_type.label }} *</label>
-                            {{ form.course_type }}
-                            {% if form.course_type.errors %}
-                                <div class="text-danger">
-                                    {{ form.course_type.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.credits.id_for_label }}" class="form-label">{{ form.credits.label }} *</label>
-                            {{ form.credits }}
-                            {% if form.credits.errors %}
-                                <div class="text-danger">
-                                    {{ form.credits.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.hours.id_for_label }}" class="form-label">{{ form.hours.label }} *</label>
-                            {{ form.hours }}
-                            {% if form.hours.errors %}
-                                <div class="text-danger">
-                                    {{ form.hours.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
-                        {{ form.description }}
-                        {% if form.description.errors %}
-                            <div class="text-danger">
-                                {{ form.description.errors.0 }}
+                        <!-- 基本信息部分 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-info-circle"></i>
+                                基本信息
                             </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'students:course_list' %}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> 返回列表
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> {% if form.instance.pk %}更新课程{% else %}创建课程{% endif %}
-                        </button>
-                    </div>
-                </form>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.code.id_for_label }}" class="form-label">
+                                        <i class="fas fa-hashtag"></i>
+                                        {{ form.code.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.code }}
+                                    {% if form.code.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.code.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">如：CS101、MATH201等，建议使用英文缩写</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        <i class="fas fa-book"></i>
+                                        {{ form.name.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">如：计算机科学基础、高等数学等</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课程属性部分 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-cogs"></i>
+                                课程属性
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.course_type.id_for_label }}" class="form-label">
+                                        <i class="fas fa-tag"></i>
+                                        {{ form.course_type.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.course_type }}
+                                    {% if form.course_type.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.course_type.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.credits.id_for_label }}" class="form-label">
+                                        <i class="fas fa-star"></i>
+                                        {{ form.credits.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.credits }}
+                                    {% if form.credits.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.credits.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">通常为0.5-10学分</small>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.hours.id_for_label }}" class="form-label">
+                                        <i class="fas fa-clock"></i>
+                                        {{ form.hours.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.hours }}
+                                    {% if form.hours.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.hours.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">总教学时长</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 时间安排部分 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-calendar-alt"></i>
+                                时间安排
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.semester.id_for_label }}" class="form-label">
+                                        <i class="fas fa-layer-group"></i>
+                                        {{ form.semester.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.semester }}
+                                    {% if form.semester.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.semester.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">选择课程开设的学期</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.academic_year.id_for_label }}" class="form-label">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ form.academic_year.label }}
+                                        <span class="required">*</span>
+                                    </label>
+                                    {{ form.academic_year }}
+                                    {% if form.academic_year.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.academic_year.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">选择课程开设的学年</small>
+                                </div>
+                            </div>
+
+                            <div class="alert-tips">
+                                <div class="alert-title">
+                                    <i class="fas fa-lightbulb"></i>
+                                    时间安排提示
+                                </div>
+                                <div>
+                                    <strong>学期安排：</strong>第1-8学期分别对应大一上到大四下<br>
+                                    <strong>学年安排：</strong>格式为 "YYYY-YYYY"，如 "2024-2025"<br>
+                                    <strong>选课限制：</strong>学生只能选择对应学期和学年的课程
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课程描述部分 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-file-alt"></i>
+                                课程描述
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    {{ form.description.label }}
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ form.description.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">
+                                    建议包含：课程目标、主要内容、教学方式、考核方式、先修要求等
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a href="{% url 'students:course_list' %}" class="btn btn-custom btn-secondary-custom">
+                                <i class="fas fa-arrow-left"></i>
+                                返回课程列表
+                            </a>
+                            <button type="submit" class="btn btn-custom btn-primary-custom">
+                                <i class="fas fa-save"></i>
+                                {% if form.instance.pk %}
+                                    更新课程
+                                {% else %}
+                                    创建课程
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-header">
-                <h5><i class="fas fa-info-circle"></i> 操作说明</h5>
+        <!-- 侧边信息栏 -->
+        <div class="col-lg-4">
+            <!-- 操作指南 -->
+            <div class="card info-card mb-4">
+                <div class="info-card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i>
+                        操作指南
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <i class="fas fa-hashtag info-icon"></i>
+                        <div class="info-text">
+                            <strong>课程代码：</strong>建议使用英文缩写，如CS101、MATH201等
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-tag info-icon"></i>
+                        <div class="info-text">
+                            <strong>课程类型：</strong>必修课、选修课或实践课
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-star info-icon"></i>
+                        <div class="info-text">
+                            <strong>学分设置：</strong>通常为0.5-10学分，根据课程重要性
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-layer-group info-icon"></i>
+                        <div class="info-text">
+                            <strong>学期安排：</strong>选择课程开设的具体学期
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar info-icon"></i>
+                        <div class="info-text">
+                            <strong>学年安排：</strong>设置课程开设的学年
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 课程代码是课程的唯一标识符
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 课程名称应清晰明确，便于识别
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 学分和学时要符合教学计划要求
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 课程类型决定了课程的性质
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-check text-success"></i> 课程描述可以帮助学生了解课程内容
-                    </li>
-                    <li>
-                        <i class="fas fa-check text-success"></i> 所有带 * 的字段为必填项
-                    </li>
-                </ul>
+
+            <!-- 课程类型说明 -->
+            <div class="card info-card mb-4">
+                <div class="info-card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-graduation-cap"></i>
+                        课程类型说明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="course-type-badge type-required">必修课</span>
+                        <div class="ms-2">
+                            <strong>专业必修</strong><br>
+                            <small class="text-muted">学生必须修读的课程</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="course-type-badge type-elective">选修课</span>
+                        <div class="ms-2">
+                            <strong>专业选修</strong><br>
+                            <small class="text-muted">学生可以选择的课程</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="course-type-badge type-practical">实践课</span>
+                        <div class="ms-2">
+                            <strong>实践教学</strong><br>
+                            <small class="text-muted">实验、实习等实践课程</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注意事项 -->
+            <div class="card info-card">
+                <div class="info-card-header" style="background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        注意事项
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert" style="background: #fffbeb; border-color: #fbbf24; color: #92400e;">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>重要提醒：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>课程代码必须唯一</li>
+                            <li>学期和学年设置将影响学生选课</li>
+                            <li>学生只能选择对应学期和学年的课程</li>
+                            <li>课程信息修改后立即生效</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 表单验证增强
+    const form = document.getElementById('courseForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // 客户端验证
+            const code = document.getElementById('{{ form.code.id_for_label }}');
+            const name = document.getElementById('{{ form.name.id_for_label }}');
+
+            if (!code.value.trim()) {
+                e.preventDefault();
+                alert('请输入课程代码！');
+                code.focus();
+                return;
+            }
+
+            if (!name.value.trim()) {
+                e.preventDefault();
+                alert('请输入课程名称！');
+                name.focus();
+                return;
+            }
+        });
+    }
+
+    // 课程类型标签动态显示
+    const courseTypeSelect = document.getElementById('{{ form.course_type.id_for_label }}');
+    if (courseTypeSelect) {
+        courseTypeSelect.addEventListener('change', function() {
+            // 可以在这里添加动态显示逻辑
+            console.log('选择了课程类型：', this.value);
+        });
+    }
+
+    // 学年选择提示
+    const academicYearSelect = document.getElementById('{{ form.academic_year.id_for_label }}');
+    if (academicYearSelect) {
+        academicYearSelect.addEventListener('change', function() {
+            const selectedYear = this.value;
+            if (selectedYear) {
+                console.log('选择了学年：', selectedYear);
+            }
+        });
+    }
+
+    // 添加表单字段的交互效果
+    const formControls = document.querySelectorAll('.form-control, .form-select');
+    formControls.forEach(function(element) {
+        element.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+        });
+
+        element.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
 {% endblock %}

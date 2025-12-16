@@ -11,15 +11,9 @@
                     <a href="{% url 'students:student_profile_create' %}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> 添加学生档案
                     </a>
-                    <div class="btn-group ml-2">
-                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-download"></i> 导出数据
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="exportData('csv')">导出为CSV</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="exportData('excel')">导出为Excel</a></li>
-                        </ul>
-                    </div>
+                    <button onclick="exportStudentData()" class="btn btn-secondary ml-2">
+                        <i class="fas fa-download"></i> 导出数据
+                    </button>
                 {% endif %}
                 {% if user.role == 'admin' %}
                     <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary ml-2">
@@ -82,7 +76,7 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">搜索学生</label>
-                            <input type="text" name="search" class="form-control" placeholder="输入姓名、学号或班级..." value="{{ request.GET.search }}">
+                            <input type="text" name="search" class="form-control" placeholder="输入姓名或学号..." value="{{ request.GET.search }}">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">院系</label>
@@ -178,7 +172,6 @@
                                     <th>学号</th>
                                     <th>院系</th>
                                     <th>专业</th>
-                                    <th>班级</th>
                                     <th>状态</th>
                                     <th>邮箱</th>
                                     <th>手机号</th>
@@ -203,7 +196,6 @@
                                     <td>{{ student.student_id|default:'未设置学号' }}</td>
                                     <td>{{ student.department.name|default:'--' }}</td>
                                     <td>{{ student.major.name|default:'--' }}</td>
-                                    <td>{{ student.class_name|default:'--' }}</td>
                                     <td>
                                         {% if student.enrollment_status == 'enrolled' %}
                                             <span class="badge bg-success">在读</span>
@@ -318,34 +310,8 @@ function viewStudentDetails(studentId) {
 }
 
 // 导出学生数据
-function exportData(format) {
-    // 获取当前筛选条件
-    const urlParams = new URLSearchParams(window.location.search);
-
-    // 根据格式构建导出URL
-    let exportUrl;
-    if (format === 'csv') {
-        exportUrl = "{% url 'students:export_students_csv' %}";
-    } else if (format === 'excel') {
-        exportUrl = "{% url 'students:export_students_excel' %}";
-    }
-
-    // 添加筛选参数
-    if (urlParams.toString()) {
-        exportUrl += '?' + urlParams.toString();
-    }
-
-    // 创建隐藏的链接并点击下载
-    const link = document.createElement('a');
-    link.href = exportUrl;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-// 保留旧的函数名以兼容
 function exportStudentData() {
-    exportData('csv');
+    alert('导出功能正在开发中');
 }
 
 // 打印学生列表

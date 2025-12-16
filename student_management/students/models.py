@@ -57,6 +57,32 @@ class StudentProfile(models.Model):
         ('transferred', '转出'),
     ]
 
+    # 学期和学年选择常量
+    SEMESTER_CHOICES = [
+        ('1', '第1学期（大一上）'),
+        ('2', '第2学期（大一下）'),
+        ('3', '第3学期（大二上）'),
+        ('4', '第4学期（大二下）'),
+        ('5', '第5学期（大三上）'),
+        ('6', '第6学期（大三下）'),
+        ('7', '第7学期（大四上）'),
+        ('8', '第8学期（大四下）'),
+    ]
+
+    ACADEMIC_YEAR_CHOICES = [
+        ('2020-2021', '2020-2021学年'),
+        ('2021-2022', '2021-2022学年'),
+        ('2022-2023', '2022-2023学年'),
+        ('2023-2024', '2023-2024学年'),
+        ('2024-2025', '2024-2025学年'),
+        ('2025-2026', '2025-2026学年'),
+        ('2026-2027', '2026-2027学年'),
+        ('2027-2028', '2027-2028学年'),
+        ('2028-2029', '2028-2029学年'),
+        ('2029-2030', '2029-2030学年'),
+        ('2030-2031', '2030-2031学年'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='用户')
     student_id = models.CharField(max_length=20, unique=True, verbose_name='学号')
     real_name = models.CharField(max_length=50, verbose_name='真实姓名')
@@ -75,7 +101,6 @@ class StudentProfile(models.Model):
     # 学籍信息
     enrollment_date = models.DateField(null=True, blank=True, verbose_name='入学日期')
     graduation_date = models.DateField(null=True, blank=True, verbose_name='预计毕业日期')
-    class_name = models.CharField(max_length=50, blank=True, null=True, verbose_name='班级')
     enrollment_status = models.CharField(max_length=20, choices=ENROLLMENT_STATUS_CHOICES, default='enrolled', verbose_name='学籍状态')
 
     # 政治面貌
@@ -94,6 +119,17 @@ class StudentProfile(models.Model):
     # 新增院系和专业关联
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='所属院系')
     major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='专业')
+
+    # 当前学业状态
+    current_semester = models.CharField(max_length=2, blank=True, null=True, choices=SEMESTER_CHOICES, verbose_name='当前学期')
+    current_academic_year = models.CharField(max_length=10, blank=True, null=True, choices=ACADEMIC_YEAR_CHOICES, verbose_name='当前学年')
+    grade_level = models.CharField(max_length=10, blank=True, null=True, choices=[
+        ('1', '大一'),
+        ('2', '大二'),
+        ('3', '大三'),
+        ('4', '大四'),
+        ('graduate', '研究生'),
+    ], verbose_name='年级')
 
     # 个人描述
     bio = models.TextField(blank=True, null=True, verbose_name='个人简介')
@@ -126,11 +162,17 @@ class Course(models.Model):
         ('practical', '实践课'),
     ]
 
+    # 引用StudentProfile中定义的常量
+    SEMESTER_CHOICES = StudentProfile.SEMESTER_CHOICES
+    ACADEMIC_YEAR_CHOICES = StudentProfile.ACADEMIC_YEAR_CHOICES
+
     name = models.CharField(max_length=100, verbose_name='课程名称')
     code = models.CharField(max_length=10, unique=True, verbose_name='课程代码')
     course_type = models.CharField(max_length=10, choices=COURSE_TYPE_CHOICES, verbose_name='课程类型')
     credits = models.DecimalField(max_digits=3, decimal_places=1, verbose_name='学分')
     hours = models.IntegerField(verbose_name='学时')
+    semester = models.CharField(max_length=2, default='1', choices=SEMESTER_CHOICES, verbose_name='开设学期')
+    academic_year = models.CharField(max_length=10, default='2024-2025', choices=ACADEMIC_YEAR_CHOICES, verbose_name='学年')
     description = models.TextField(blank=True, null=True, verbose_name='课程描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')

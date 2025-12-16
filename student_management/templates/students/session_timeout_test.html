@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block title %}会话超时测试 - 学生信息管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-clock"></i> 会话超时测试</h2>
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> 当前会话配置</h5>
+                <ul>
+                    <li><strong>会话过期时间：</strong>{{ settings_session_age }} 秒 ({{ settings_session_age|div:60 }} 分钟)</li>
+                    <li><strong>会话引擎：</strong>数据库存储 (SESSION_ENGINE = 'django.contrib.sessions.backends.db')</li>
+                    <li><strong>每次请求更新：</strong>是 (SESSION_SAVE_EVERY_REQUEST = True)</li>
+                    <li><strong>当前用户：</strong>{{ user.username }} ({{ user.get_role_display }})</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-stopwatch"></i> 实时会话监控</h5>
+                </div>
+                <div class="card-body">
+                    <div id="session-info">
+                        <p><strong>会话状态：</strong><span class="badge bg-success">活跃</span></p>
+                        <p><strong>剩余时间：</strong><span id="remaining-time">计算中...</span></p>
+                        <p><strong>当前时间：</strong><span id="current-time">--</span></p>
+                        <p><strong>最后活动时间：</strong><span id="last-activity">--</span></p>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-info" onclick="updateSessionInfo()">
+                            <i class="fas fa-sync"></i> 刷新会话信息
+                        </button>
+                        <button class="btn btn-warning" onclick="forceExpireSession()">
+                            <i class="fas fa-exclamation-triangle"></i> 强制会话过期（测试用）
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-question-circle"></i> 如何测试会话超时</h5>
+                </div>
+                <div class="card-body">
+                    <h6>方法1：等待超时</h6>
+                    <ol>
+                        <li>登录系统后访问此页面</li>
+                        <li>不要进行任何操作（关闭其他标签页）</li>
+                        <li>等待10分钟后刷新页面</li>
+                        <li>应该会自动跳转到登录页面</li>
+                    </ol>
+
+                    <h6>方法2：强制过期（快速测试）</h6>
+                    <ol>
+                        <li>点击上方的"强制会话过期"按钮</li>
+                        <li>等待5秒</li>
+                        <li>尝试访问其他页面</li>
+                        <li>应该会自动跳转到登录页面</li>
+                    </ol>
+
+                    <h6>方法3：浏览器工具测试</h6>
+                    <ol>
+                        <li>按F12打开开发者工具</li>
+                        <li>转到Application/Storage标签页</li>
+                        <li>查看Cookies中的sessionid</li>
+                        <li>等待10分钟后检查cookie是否被删除</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-cog"></i> 当前会话设置详解</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>settings.py 中的配置：</h6>
+                            <pre class="bg-light p-3 rounded">
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 600  # 10分钟 = 600秒
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'</pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>配置说明：</h6>
+                            <ul>
+                                <li><strong>SESSION_ENGINE</strong>：使用数据库存储会话，支持多实例共享</li>
+                                <li><strong>SESSION_COOKIE_AGE</strong>：会话保持10分钟（600秒）</li>
+                                <li><strong>SESSION_SAVE_EVERY_REQUEST</strong>：每次请求都会重置过期时间</li>
+                                <li><strong>SESSION_COOKIE_HTTPONLY</strong>：防止XSS攻击访问cookie</li>
+                                <li><strong>SESSION_COOKIE_SAMESITE</strong>：防止CSRF攻击</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let lastActivityTime = new Date();
+let sessionExpired = false;
+
+// 更新最后活动时间
+document.addEventListener('mousemove', updateLastActivity);
+document.addEventListener('keypress', updateLastActivity);
+document.addEventListener('scroll', updateLastActivity);
+document.addEventListener('click', updateLastActivity);
+
+function updateLastActivity() {
+    lastActivityTime = new Date();
+    document.getElementById('last-activity').textContent = lastActivityTime.toLocaleTimeString();
+}
+
+// 更新会话信息
+function updateSessionInfo() {
+    fetch('/students/api/session-info/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.authenticated) {
+                document.getElementById('session-info').innerHTML = `
+                    <p><strong>会话状态：</strong><span class="badge bg-success">活跃</span></p>
+                    <p><strong>用户：</strong>${data.user}</p>
+                    <p><strong>剩余时间：</strong><span id="remaining-time">${data.session_age} 秒</span></p>
+                    <p><strong>当前时间：</strong><span id="current-time">${new Date().toLocaleTimeString()}</span></p>
+                    <p><strong>最后活动时间：</strong><span id="last-activity">${lastActivityTime.toLocaleTimeString()}</span></p>
+                `;
+
+                // 更新当前时间显示
+                document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+            } else {
+                document.getElementById('session-info').innerHTML = `
+                    <p><strong>会话状态：</strong><span class="badge bg-danger">已过期</span></p>
+                    <p><strong>当前时间：</strong>${new Date().toLocaleTimeString()}</p>
+                    <p class="text-danger"><strong>会话已过期，请重新登录</strong></p>
+                `;
+                sessionExpired = true;
+            }
+        })
+        .catch(error => {
+            console.error('获取会话信息失败:', error);
+            document.getElementById('session-info').innerHTML = `
+                <p><strong>会话状态：</strong><span class="badge bg-warning">未知</span></p>
+                <p class="text-danger">无法获取会话信息</p>
+            `;
+        });
+}
+
+// 强制会话过期
+function forceExpireSession() {
+    if (confirm('确定要强制会话过期吗？这将使您立即退出登录。')) {
+        fetch('/students/api/force-session-expire/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('会话已强制过期，5秒后将重定向到登录页面...');
+                    setTimeout(() => {
+                        window.location.href = '/accounts/login/';
+                    }, 5000);
+                } else {
+                    alert('操作失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('强制过期失败:', error);
+                alert('操作失败，请查看控制台');
+            });
+    }
+}
+
+// 定时更新会话信息
+updateSessionInfo();
+updateLastActivity();
+
+// 每30秒检查一次会话状态
+setInterval(() => {
+    if (!sessionExpired) {
+        updateSessionInfo();
+    }
+}, 30000);
+
+// 每秒更新当前时间
+setInterval(() => {
+    if (!sessionExpired) {
+        document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+    }
+}, 1000);
+</script>
+{% endblock %}

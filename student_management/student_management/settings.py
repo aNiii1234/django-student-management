@@ -111,7 +111,12 @@ DATABASES = {
 
 # 会话配置（支持多实例共享）
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用数据库存储会话
-SESSION_COOKIE_AGE = 86400  # 会话保持24小时
+SESSION_COOKIE_AGE = 600  # 会话保持10分钟（600秒）
+SESSION_SAVE_EVERY_REQUEST = True  # 每次请求都更新会话过期时间
+# 启用会话安全设置
+SESSION_COOKIE_SECURE = False  # 开发环境设为False，生产环境设为True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # 缓存配置（可选，用于提升性能）
 CACHES = {
